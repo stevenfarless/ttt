@@ -32,16 +32,7 @@ function initMultiplayer() {
         mySymbol = sessionStorage.getItem('mySymbol');
         opponentSymbol = sessionStorage.getItem('opponentSymbol');
         
-        const myPeerId = sessionStorage.getItem('myPeerId');
-        const remotePeerId = sessionStorage.getItem('remotePeerId');
-        
-        console.log('🎮 Initializing multiplayer game:', {
-            isHost,
-            mySymbol,
-            opponentSymbol,
-            myPeerId,
-            remotePeerId
-        });
+        console.log('🎮 Initializing multiplayer:', { isHost, mySymbol, opponentSymbol });
         
         // Set player names
         playerOneInput.value = mySymbol;
@@ -64,53 +55,70 @@ function initMultiplayer() {
             backToMenuBtn.style.display = 'inline-block';
         }
         
-        // Recreate peer connection
-        recreatePeerConnection(myPeerId, remotePeerId);
+        // Get existing peer and connection from window
+        setTimeout(() => {
+            getExistingConnection();
+        }, 500);
     }
 }
 
-// Recreate the peer connection from stored IDs
-function recreatePeerConnection(myPeerId, remotePeerId) {
-    console.log('🔄 Recreating peer connection...');
+// Get the existing peer connection
+function getExistingConnection() {
+    console.log('🔍 Looking for existing connection...');
     
-    // Create peer with my stored ID
-    peer = new Peer(myPeerId, { debug: 1 });
+    // Try to get from window object
+    if (window.gamePeer) {
+        peer = window.gamePeer;
+        console.log('✅ Found peer:', peer.id);
+    }
     
-    peer.on('open', (id) => {
-        console.log('✅ Peer reopened with ID:', id);
+    if (window.gameConn) {
+        conn = window.gameConn;
+        console.log('✅ Found connection, open:', conn.open);
         
-        if (isHost) {
-            // Host waits for incoming connection
-            console.log('👑 Host waiting for connection...');
-            
-            peer.on('connection', (connection) => {
-                console.log('✅ Host received connection!');
-                conn = connection;
+        if (conn.open) {
+            setupConnectionHandlers();
+        } else {
+            conn.on('open', () => {
+                console.log('✅ Connection opened in game page');
                 setupConnectionHandlers();
             });
+        }
+    } else if (peer) {
+        // If we have peer but no connection, we might be host waiting
+        if (isHost) {
+            console.log('👑 Host waiting for connection...');
+            peer.on('connection', (connection) => {
+                console.log('✅ Host received connection in game page');
+                conn = connection;
+                window.gameConn = conn;
+                
+                conn.on('open', () => {
+                    setupConnectionHandlers();
+                });
+            });
         } else {
-            // Guest connects to host
-            console.log('🔌 Guest connecting to host:', remotePeerId);
+            // Guest needs to reconnect
+            const remotePeerId = sessionStorage.getItem('remotePeerId');
+            console.log('🔌 Guest reconnecting to:', remotePeerId);
             
             setTimeout(() => {
                 conn = peer.connect(remotePeerId, { reliable: true });
-                console.log('Connection object created:', conn);
+                window.gameConn = conn;
                 
                 conn.on('open', () => {
-                    console.log('✅ Guest connected to host!');
+                    console.log('✅ Guest reconnected!');
                     setupConnectionHandlers();
                 });
                 
                 conn.on('error', (err) => {
-                    console.error('❌ Guest connection error:', err);
+                    console.error('❌ Reconnection error:', err);
                 });
             }, 1000);
         }
-    });
-    
-    peer.on('error', (err) => {
-        console.error('❌ Peer error:', err);
-    });
+    } else {
+        console.error('❌ No peer or connection found!');
+    }
 }
 
 // Setup connection event handlers
@@ -120,10 +128,15 @@ function setupConnectionHandlers() {
         return;
     }
     
-    console.log('⚙️ Setting up connection handlers...');
+    console.log('⚙️ Setting up handlers...');
+    
+    // Remove old listeners
+    conn.off('data');
+    conn.off('close');
+    conn.off('error');
     
     conn.on('data', (data) => {
-        console.log('📨 Received data:', data);
+        console.log('📨 Received:', data);
         
         if (data.type === 'move') {
             receiveOpponentMove(data.cellIndex);
@@ -142,7 +155,7 @@ function setupConnectionHandlers() {
         console.error('❌ Connection error:', err);
     });
     
-    console.log('✅ Connection handlers setup complete!');
+    console.log('✅ Handlers setup complete!');
 }
 
 // Send move to opponent
@@ -164,7 +177,7 @@ function sendMove(cellIndex) {
 
 // Receive opponent's move
 function receiveOpponentMove(cellIndex) {
-    console.log('📥 Processing opponent move at cell:', cellIndex);
+    console.log('📥 Processing opponent move:', cellIndex);
     
     if (gameBoard[cellIndex] === "") {
         gameBoard[cellIndex] = opponentSymbol;
@@ -320,6 +333,8 @@ function resetGameState() {
 function endMultiplayerSession() {
     if (conn) conn.close();
     if (peer) peer.destroy();
+    window.gameConn = null;
+    window.gamePeer = null;
     sessionStorage.clear();
     window.location.href = 'home.html';
 }

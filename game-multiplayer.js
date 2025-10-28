@@ -117,7 +117,8 @@ function getExistingConnection() {
             }, 1000);
         }
     } else {
-        console.error('❌ No peer or connection found!');
+        console.log('🔄 Recreating connection:', { myPeerId, remotePeerId, isHost });
+
     }
 }
 

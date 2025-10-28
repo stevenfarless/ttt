@@ -5,6 +5,7 @@ let conn = null;
 let isHost = false;
 let mySymbol = '';
 let opponentSymbol = '';
+let remotePeerId = '';
 
 // Home screen elements
 const createRoomBtn = document.getElementById('createRoomBtn');
@@ -16,10 +17,10 @@ const joinStatus = document.getElementById('joinStatus');
 
 // Initialize PeerJS
 function initPeer(roomCode = null) {
-    const config = { debug: 0 }; // Reduced debug to 0 for cleaner console
+    const config = { debug: 0 };
     
     if (roomCode) {
-        // Joining a room
+        // Joining a room - create peer with random ID
         peer = new Peer(config);
     } else {
         // Creating a room with custom ID
@@ -29,6 +30,9 @@ function initPeer(roomCode = null) {
 
     peer.on('open', (id) => {
         console.log('My peer ID is: ' + id);
+        
+        // Store my peer ID for reconnection
+        sessionStorage.setItem('myPeerId', id);
         
         if (!roomCode) {
             // Host created room
@@ -44,24 +48,26 @@ function initPeer(roomCode = null) {
     peer.on('connection', (connection) => {
         // Host receives connection from guest
         conn = connection;
+        remotePeerId = conn.peer;
         
-        // IMPORTANT: Setup connection handlers BEFORE navigating
+        console.log('Received connection from:', remotePeerId);
+        
+        // Store remote peer ID
+        sessionStorage.setItem('remotePeerId', remotePeerId);
+        
+        // Setup connection
         conn.on('open', () => {
-            console.log('Connection established with guest');
+            console.log('Connection fully established');
             createStatus.textContent = 'Player joined! Starting game...';
+            
+            // Send a test message
+            conn.send({ type: 'test', message: 'Hello from host!' });
+            
             setTimeout(() => startGame(), 1000);
         });
         
         conn.on('data', (data) => {
-            console.log('Received data:', data);
-        });
-        
-        conn.on('close', () => {
-            console.log('Connection closed');
-        });
-        
-        conn.on('error', (err) => {
-            console.error('Connection error:', err);
+            console.log('Host received:', data);
         });
     });
 
@@ -127,6 +133,10 @@ if (joinRoomBtn) {
         isHost = false;
         mySymbol = '⭕';
         opponentSymbol = '❌';
+        remotePeerId = roomCode;
+        
+        // Store remote peer ID
+        sessionStorage.setItem('remotePeerId', remotePeerId);
 
         initPeer(roomCode);
         
@@ -134,18 +144,20 @@ if (joinRoomBtn) {
         setTimeout(() => {
             conn = peer.connect(roomCode, { reliable: true });
             
+            console.log('Attempting to connect to:', roomCode);
+            
             conn.on('open', () => {
-                console.log('Connected to host');
+                console.log('Connected to host successfully!');
                 joinStatus.textContent = 'Connected! Starting game...';
+                
+                // Send a test message
+                conn.send({ type: 'test', message: 'Hello from guest!' });
+                
                 setTimeout(() => startGame(), 1000);
             });
             
             conn.on('data', (data) => {
-                console.log('Received data:', data);
-            });
-            
-            conn.on('close', () => {
-                console.log('Connection closed');
+                console.log('Guest received:', data);
             });
             
             conn.on('error', (err) => {
@@ -155,7 +167,7 @@ if (joinRoomBtn) {
                 joinRoomBtn.disabled = false;
                 roomCodeInput.disabled = false;
             });
-        }, 1000);
+        }, 1500);
     });
 }
 
@@ -167,17 +179,13 @@ function startGame() {
     sessionStorage.setItem('mySymbol', mySymbol);
     sessionStorage.setItem('opponentSymbol', opponentSymbol);
     
-    // Store peer ID for reconnection
-    sessionStorage.setItem('peerId', peer.id);
+    console.log('Navigating to game with state:', {
+        isHost,
+        mySymbol,
+        opponentSymbol,
+        myPeerId: sessionStorage.getItem('myPeerId'),
+        remotePeerId: sessionStorage.getItem('remotePeerId')
+    });
     
     window.location.href = 'game.html';
 }
-
-// Export peer and connection for use in game
-window.multiplayerState = {
-    peer: peer,
-    conn: conn,
-    isHost: isHost,
-    mySymbol: mySymbol,
-    opponentSymbol: opponentSymbol
-};

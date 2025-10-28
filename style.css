@@ -1,0 +1,64 @@
+body {
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #282a36;
+    margin: 0;
+    padding: 10px;
+}
+
+#game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #44475a;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+}
+
+input[type="text"] {
+    width: calc(100% - 24px);
+    height: 5px;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 2px solid #39959f;
+    border-radius: 5px;
+    background-color: #6272a4;
+    color: #f8f8f2;
+    font-size: clamp(18px, 5vw, 20px);
+    text-align: center;
+    -webkit-transition: border-color 0.3s ease, transform 0.1s ease;
+    -moz-transition: border-color 0.3s ease, transform 0.1s ease;
+    -ms-transition: border-color 0.3s ease, transform 0.1s ease;
+    -o-transition: border-color 0.3s ease, transform 0.1s ease;
+    transition: border-color 0.3s ease, transform 0.1s ease;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: #50fa7b;
+    transform: scale(1.02);
+    -webkit-transform: scale(1.02);
+    -moz-transform: scale(1.02);
+    -ms-transform: scale(1.02);
+    -o-transform: scale(1.02);
+}
+
+input[type="text"]::placeholder {
+    color: #f8f8f2;
+}
+
+h1 {
+    color: #f8f8f2;
+    margin-bottom: 20px;
+}
+
+#board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap

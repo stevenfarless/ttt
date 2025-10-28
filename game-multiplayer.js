@@ -32,6 +32,8 @@ function initMultiplayer() {
         mySymbol = sessionStorage.getItem('mySymbol');
         opponentSymbol = sessionStorage.getItem('opponentSymbol');
         
+        console.log('Multiplayer mode:', { isHost, mySymbol, opponentSymbol });
+        
         // Set player names
         playerOneInput.value = mySymbol;
         playerTwoInput.value = opponentSymbol;
@@ -54,55 +56,64 @@ function initMultiplayer() {
         }
         
         // Get existing connection from multiplayer.js
-        reconnectPeer();
+        setTimeout(() => {
+            reconnectPeer();
+        }, 500);
     }
 }
 
 // Reconnect to peer after page load
 function reconnectPeer() {
-    // CRITICAL FIX: Use existing connection from window.multiplayerState
-    if (window.opener && window.opener.multiplayerState) {
-        // If opened in new window
-        peer = window.opener.multiplayerState.peer;
-        conn = window.opener.multiplayerState.conn;
-    } else if (window.multiplayerState) {
-        // Same window navigation
+    console.log('Attempting to reconnect...');
+    
+    // Get connection from window.multiplayerState
+    if (window.multiplayerState) {
         peer = window.multiplayerState.peer;
         conn = window.multiplayerState.conn;
-    }
-    
-    // Setup handlers for the EXISTING connection
-    if (conn && conn.open) {
-        console.log('Using existing connection');
-        setupMultiplayerHandlers();
-    } else if (conn) {
-        // Connection exists but not open yet, wait for it
-        conn.on('open', () => {
-            console.log('Connection opened in game page');
-            setupMultiplayerHandlers();
+        
+        console.log('Got connection from window.multiplayerState:', {
+            hasPeer: !!peer,
+            hasConn: !!conn,
+            connOpen: conn ? conn.open : false
         });
+        
+        if (conn) {
+            if (conn.open) {
+                console.log('Connection already open, setting up handlers');
+                setupMultiplayerHandlers();
+            } else {
+                console.log('Connection exists but not open yet, waiting...');
+                conn.on('open', () => {
+                    console.log('Connection opened!');
+                    setupMultiplayerHandlers();
+                });
+            }
+        } else {
+            console.error('No connection found in window.multiplayerState');
+        }
     } else {
-        console.error('No connection available - this should not happen');
+        console.error('window.multiplayerState not found');
     }
 }
 
 // Setup multiplayer message handlers
 function setupMultiplayerHandlers() {
     if (!conn) {
-        console.error('No connection to setup handlers');
+        console.error('Cannot setup handlers - no connection');
         return;
     }
     
-    console.log('Setting up multiplayer handlers');
+    console.log('Setting up multiplayer handlers...');
     
-    // Remove any existing listeners to prevent duplicates
+    // Remove existing listeners to prevent duplicates
     conn.off('data');
     conn.off('close');
     conn.off('error');
     
-    // Setup new listeners
+    // Setup data listener
     conn.on('data', (data) => {
-        console.log('Game received data:', data);
+        console.log('📨 Received data:', data);
+        
         if (data.type === 'move') {
             receiveOpponentMove(data.cellIndex);
         } else if (data.type === 'reset') {
@@ -110,39 +121,60 @@ function setupMultiplayerHandlers() {
         }
     });
     
+    // Setup close listener
     conn.on('close', () => {
-        console.log('Opponent disconnected');
+        console.log('Connection closed by opponent');
         alert('Opponent disconnected!');
         endMultiplayerSession();
     });
     
+    // Setup error listener
     conn.on('error', (err) => {
-        console.error('Connection error in game:', err);
+        console.error('Connection error:', err);
     });
+    
+    console.log('✅ Multiplayer handlers setup complete');
 }
 
 // Send move to opponent
 function sendMove(cellIndex) {
-    if (conn && conn.open) {
-        console.log('Sending move:', cellIndex);
-        conn.send({
-            type: 'move',
-            cellIndex: cellIndex,
-            symbol: mySymbol
-        });
-    } else {
+    if (!conn) {
+        console.error('Cannot send move - no connection');
+        return;
+    }
+    
+    if (!conn.open) {
         console.error('Cannot send move - connection not open');
+        return;
+    }
+    
+    const moveData = {
+        type: 'move',
+        cellIndex: cellIndex,
+        symbol: mySymbol
+    };
+    
+    console.log('📤 Sending move:', moveData);
+    
+    try {
+        conn.send(moveData);
+        console.log('✅ Move sent successfully');
+    } catch (err) {
+        console.error('❌ Failed to send move:', err);
     }
 }
 
 // Receive opponent's move
 function receiveOpponentMove(cellIndex) {
-    console.log('Received opponent move:', cellIndex);
+    console.log('📥 Processing opponent move:', cellIndex);
+    
     if (gameBoard[cellIndex] === "") {
         gameBoard[cellIndex] = opponentSymbol;
         cells[cellIndex].textContent = opponentSymbol;
         cells[cellIndex].style.animation = "pop 0.3s";
         moveCount++;
+        
+        console.log('✅ Opponent move applied to board');
         
         const winner = checkWinner();
         if (winner) {
@@ -153,7 +185,10 @@ function receiveOpponentMove(cellIndex) {
             currentPlayer = mySymbol;
             isMyTurn = true;
             updateTurnDisplay();
+            console.log('✅ Switched to my turn');
         }
+    } else {
+        console.error('❌ Cell already occupied:', cellIndex);
     }
 }
 
@@ -166,6 +201,7 @@ function updateTurnDisplay() {
         result.textContent = "Opponent's turn... ⏳";
         result.style.color = "#f1fa8c";
     }
+    console.log('Turn display updated:', { isMyTurn, currentPlayer });
 }
 
 // Modified cell click handler for multiplayer
@@ -180,6 +216,7 @@ function handleCellClick(event) {
     
     // Check if it's player's turn in multiplayer
     if (isMultiplayer && !isMyTurn) {
+        console.log('Not your turn!');
         result.style.animation = "none";
         setTimeout(() => {
             result.style.animation = "shake 0.3s";
@@ -188,6 +225,7 @@ function handleCellClick(event) {
     }
 
     const cellIndex = parseInt(event.target.id) - 1;
+    console.log('Cell clicked:', cellIndex);
     
     if (gameBoard[cellIndex] === "") {
         gameBoard[cellIndex] = currentPlayer;
@@ -195,10 +233,14 @@ function handleCellClick(event) {
         event.target.style.animation = "pop 0.3s";
         moveCount++;
         
+        console.log('Move made:', { cellIndex, symbol: currentPlayer });
+        
         // Send move to opponent if multiplayer
         if (isMultiplayer) {
             sendMove(cellIndex);
             isMyTurn = false;
+            currentPlayer = opponentSymbol;
+            updateTurnDisplay();
         }
 
         const winner = checkWinner();
@@ -210,12 +252,10 @@ function handleCellClick(event) {
             if (!isMultiplayer) {
                 currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
                 result.textContent = `${currentPlayer}'s turn`;
-            } else {
-                currentPlayer = opponentSymbol;
-                updateTurnDisplay();
             }
         }
     } else {
+        console.log('Cell already occupied');
         event.target.style.animation = "none";
         setTimeout(() => {
             event.target.style.animation = "shake 0.3s";
@@ -363,6 +403,7 @@ if (!isMultiplayer) {
 }
 
 // Initialize
+console.log('Initializing game...');
 initMultiplayer();
 if (!isMultiplayer) {
     updateGameStatus();

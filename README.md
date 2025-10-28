@@ -1,83 +1,80 @@
-# TTT - Multiplayer Tic-Tac-Toe
+# TTT - Real-Time Multiplayer Tic-Tac-Toe
 
-**TTT** (Tic Tac Toe) is a real-time multiplayer web-based game featuring peer-to-peer connections. Play with friends anywhere in the world with zero server costs!
+**TTT** (Tic Tac Toe) is a peer-to-peer multiplayer web game with instant room creation and zero server costs. Play with anyone, anywhere using simple 4-digit room codes!
 
-![TTT Game Screenshot](https://github.com/user-attachments/assets/c5be143e-c540-4c20-be29-37ed7bcad573)
-
-## 🎮 Play Now
-
-**Live Demo:** [https://stevenfarless.github.io/ttt/](https://stevenfarless.github.io/ttt/)
+🎮 **[Play Now](https://stevenfarless.github.io/ttt/)**
 
 ## ✨ Features
 
-- 🌐 **Real-Time Multiplayer** - Play with anyone, anywhere
-- 🔐 **Simple Room Codes** - Easy 6-character codes to share
-- 🚀 **Peer-to-Peer Connection** - No server required (uses WebRTC)
-- 🎨 **Custom Symbols** - Use emojis or any characters
-- 📱 **Responsive Design** - Works on desktop, tablet, and mobile
-- 🆓 **100% Free** - No costs, no ads, no accounts needed
+- 🌐 **Real-Time Multiplayer** - Play with friends anywhere in the world
+- 🔐 **Simple 4-Digit Codes** - Easy room codes like `A7K2` or `Q5M8`
+- 🚀 **Peer-to-Peer Connection** - Direct browser-to-browser via WebRTC
+- 🎨 **Dracula Theme** - My favorite dark mode colors
+- 📱 **Fully Responsive** - Works on desktop, tablet, and mobile
+- 🆓 **100% Free** - No servers, no costs, no accounts, no ads
 - ⚡ **Instant Setup** - Create or join a game in seconds
+- 🔄 **In-Game Reset** - Start a new match without leaving the room
 
 ## 🎯 How to Play
 
-### Create a Room (Host)
-1. Visit the game URL
+### Host a Game
+1. Visit [stevenfarless.github.io/ttt](https://stevenfarless.github.io/ttt/)
 2. Click **"Create New Room"**
-3. Share the generated room code (e.g., `TTT-ABC123`) with your friend
+3. Share your 4-digit room code with a friend (e.g., `B3X9`)
 4. Wait for them to join
-5. Game starts automatically - you play as ❌ and go first!
+5. Game starts automatically - you're ❌ and go first!
 
-### Join a Room (Guest)
-1. Visit the game URL
-2. Get the room code from your friend
-3. Enter the code and click **"Join Room"**
-3. Game starts automatically - you play as ⭕ and go second!
+### Join a Game
+1. Get the 4-digit room code from your friend
+2. Enter the code and click **"Join Room"**
+3. Game starts automatically - you're ⭕ and go second!
 
 ### During the Game
 - Click any empty cell when it's your turn
-- Moves sync instantly between players
+- Moves sync instantly to your opponent's screen
 - First to get 3 in a row wins!
-- Click **"Reset Game"** to play again
-- Click **"Back to Menu"** to return to the lobby
+- Click **"Reset Game"** to play another round
+- Click **"← Back to Menu"** to return to the lobby
 
 ## 🛠️ Technical Details
 
 ### Built With
-- **HTML5** - Structure
-- **CSS3** - Styling with Dracula theme
-- **Vanilla JavaScript** - Game logic
-- **PeerJS** - WebRTC peer-to-peer connections
-- **GitHub Pages** - Free hosting
+- **HTML5/CSS3** - Structure and styling
+- **Vanilla JavaScript** - Game logic and state management
+- **PeerJS (WebRTC)** - Peer-to-peer connections
+- **localStorage** - Peer ID persistence across navigation
+- **GitHub Pages** - Free static hosting
 
 ### Architecture
-- **No Backend Required** - Fully client-side application
-- **Peer-to-Peer** - Direct browser-to-browser communication
-- **Session Storage** - Maintains state across page navigation
+- **No Backend** - Entirely client-side application
+- **P2P Communication** - Direct browser connections using WebRTC
+- **4-Digit Room Codes** - Alphanumeric peer IDs for easy sharing
+- **State Persistence** - localStorage + sessionStorage for reconnection
 
 ### Browser Compatibility
-- ✅ Chrome/Edge (Recommended)
-- ✅ Firefox
-- ✅ Safari
-- ✅ Opera
+- ✅ Chrome/Edge 90+ (Recommended)
+- ✅ Firefox 88+
+- ✅ Safari 14+
+- ✅ Opera 76+
 
 ## 📂 Project Structure
 
 ```
-TTT/
-├── index.html              # Entry point (redirects to lobby)
+ttt/
+├── index.html              # Entry point (redirects to home)
 ├── home.html               # Multiplayer lobby
 ├── home.css                # Lobby styling
-├── game.html               # Game page
-├── style.css               # Game styling
-├── multiplayer.js          # Connection & room logic
-├── game-multiplayer.js     # Game logic & state management
-└── README.md               # Documentation
+├── game.html               # Game board page
+├── style.css               # Game styling (Dracula theme)
+├── multiplayer.js          # Room creation & WebRTC connection
+├── game-multiplayer.js     # Game logic with multiplayer support
+└── README.md               # This file
 ```
 
 ## 🚀 Local Development
 
 ### Prerequisites
-- Any modern web browser
+- Modern web browser
 - Local server (optional but recommended)
 
 ### Setup
@@ -101,30 +98,27 @@ TTT/
    ```
    
    Option C - VS Code:
-   Install "Live Server" extension and click "Go Live"
+   - Install "Live Server" extension
+   - Right-click `home.html` → "Open with Live Server"
 
 3. **Open in browser**
    ```
    http://localhost:8080
    ```
 
-4. **Test multiplayer**
-   - Open two browser tabs/windows
+4. **Test multiplayer locally**
+   - Open two browser tabs
    - Create room in first tab
    - Join with code in second tab
 
 ## 🎨 Customization
 
-### Change Colors
-Edit `style.css` and `home.css` to customize the Dracula theme colors:
-- Background: `#282a36`
-- Foreground: `#f8f8f2`
-- Accent: `#50fa7b`
-- Purple: `#bd93f9`
-- Yellow: `#f1fa8c`
+### Change Theme Colors
+Edit `style.css` and `home.css`:
+```
 
-### Change Game Symbols
-Edit `multiplayer.js` (lines 38-39) to change default symbols:
+### Change Default Symbols
+Edit `multiplayer.js` (lines 33-34):
 ```
 mySymbol = '🔥';        // Host symbol
 opponentSymbol = '💧';   // Guest symbol
@@ -133,20 +127,24 @@ opponentSymbol = '💧';   // Guest symbol
 ## 🐛 Troubleshooting
 
 ### "Connection Error" Message
-- **Cause:** PeerJS server unavailable or network issues
-- **Solution:** Refresh the page and try again, or check your internet connection
+- **Cause:** PeerJS server temporarily unavailable or network issues
+- **Solution:** Refresh the page and create a new room
 
 ### Moves Not Syncing
 - **Cause:** Connection dropped or firewall blocking WebRTC
-- **Solution:** Create a new room or check firewall settings
+- **Solution:** Create a new room; check firewall/network settings
 
 ### Room Code Not Working
-- **Cause:** Host closed their browser/tab
-- **Solution:** Host must keep their tab open; create a new room
+- **Cause:** Host closed their browser tab
+- **Solution:** Host must keep tab open; create a new room if needed
 
-### Page Not Loading
+### Old Room Code Appearing
+- **Cause:** Browser cache
+- **Solution:** Hard refresh (Ctrl+Shift+R / Cmd+Shift+R) or open in incognito mode
+
+### Page Not Loading After Upload
 - **Cause:** GitHub Pages deployment in progress
-- **Solution:** Wait 2-3 minutes after pushing changes
+- **Solution:** Wait 2-3 minutes after pushing changes to GitHub
 
 ## 🤝 Contributing
 
@@ -159,16 +157,28 @@ Contributions are welcome! Here's how:
 5. Open a Pull Request
 
 ### Ideas for Contributions
-- Add sound effects
-- Implement score tracking across multiple games
-- Add animations for winning combinations
-- Create different themes
-- Add AI opponent for single-player mode
-- Implement chat between players
+- Sound effects for moves and wins
+- Score tracking across multiple games
+- Winning line animation
+- Additional themes (Light mode, Matrix, etc.)
+- AI opponent for single-player mode
+- In-game chat between players
+- Game history/replay feature
 
 ## 📜 License
 
-This project is open source and available under the MIT License.
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+
+This means you are free to:
+- ✅ Use the software for any purpose
+- ✅ Study and modify the source code
+- ✅ Share copies of the software
+- ✅ Share modified versions
+
+Under the condition that:
+- ⚖️ Modified versions must also be open source under GPL-3.0
+- ⚖️ You must include the original copyright notice
+- ⚖️ You must state significant changes made to the software
 
 ## 👤 Author
 
@@ -178,18 +188,20 @@ This project is open source and available under the MIT License.
 
 ## 🙏 Acknowledgments
 
-- [PeerJS](https://peerjs.com) - Simple WebRTC peer-to-peer connections
-- [Dracula Theme](https://draculatheme.com/) - Color scheme inspiration
-- GitHub Pages - Free hosting platform
-- Development assisted by Claude (Anthropic)
+- [PeerJS](https://peerjs.com) - Simplified WebRTC peer-to-peer connections
+- [Dracula Theme](https://draculatheme.com/) - Beautiful color scheme
+- GitHub Pages - Free, reliable hosting platform
 
-## 📊 Stats
+## 📊 Project Stats
 
 - **Lines of Code:** ~800
 - **Load Time:** < 1 second
-- **Dependencies:** 1 (PeerJS via CDN)
+- **External Dependencies:** 1 (PeerJS via CDN)
 - **Server Costs:** $0.00 forever!
 
 ---
 
-*Play anywhere, anytime, with anyone!*
+**Made with ❤️ by Steven Farless**
+
+*Play anywhere, anytime, with anyone - completely free!* 🎮✨
+```

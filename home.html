@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe - Multiplayer</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="home.css">
+</head>
+<body>
+    <div class="home-container">
+        <h1>🎮 Tic-Tac-Toe Multiplayer</h1>
+
+        <div class="room-section">
+            <h2>Create Room</h2>
+            <button id="createRoomBtn" class="button">Create New Room</button>
+            <div id="roomCodeDisplay" class="room-code-display" style="display: none;"></div>
+            <div id="createStatus" class="status"></div>
+        </div>
+
+        <div class="divider">OR</div>
+
+        <div class="room-section">
+            <h2>Join Room</h2>
+            <input type="text" id="roomCodeInput" placeholder="Enter Room Code" maxlength="20">
+            <button id="joinRoomBtn" class="button">Join Room</button>
+            <div id="joinStatus" class="status"></div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
+    <script src="multiplayer.js"></script>
+</body>
+</html>

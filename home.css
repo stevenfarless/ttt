@@ -1,0 +1,84 @@
+/* home.css - Home screen styling */
+
+.home-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 40px 20px;
+}
+
+.room-section {
+    background-color: #44475a;
+    padding: 30px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.room-code-display {
+    background-color: #6272a4;
+    padding: 20px;
+    border-radius: 5px;
+    font-size: 32px;
+    font-weight: bold;
+    color: #f1fa8c;
+    margin: 20px 0;
+    letter-spacing: 4px;
+    word-break: break-all;
+}
+
+.button {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 25px;
+    background-color: #50fa7b;
+    color: #282a36;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.button:hover {
+    background-color: #f1fa8c;
+    transform: scale(1.05);
+}
+
+.button:disabled {
+    background-color: #6272a4;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.status {
+    color: #50fa7b;
+    font-size: 16px;
+    margin-top: 15px;
+    min-height: 24px;
+}
+
+.divider {
+    color: #f8f8f2;
+    margin: 20px 0;
+    font-size: 18px;
+}
+
+h1 {
+    color: #f8f8f2;
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+h2 {
+    color: #bd93f9;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.error {
+    color: #ff5555;
+}

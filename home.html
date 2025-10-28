@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic-Tac-Toe - Multiplayer</title>
+    <title>TTT - Multiplayer</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="home.css">
 </head>
 <body>
     <div class="home-container">
-        <h1>🎮 Tic-Tac-Toe Multiplayer</h1>
-
+        <h1>🎮 TTT Multiplayer</h1>
+        
         <div class="room-section">
             <h2>Create Room</h2>
             <button id="createRoomBtn" class="button">Create New Room</button>
@@ -22,7 +22,7 @@
 
         <div class="room-section">
             <h2>Join Room</h2>
-            <input type="text" id="roomCodeInput" placeholder="Enter Room Code" maxlength="20">
+            <input type="text" id="roomCodeInput" placeholder="Enter 4-Digit Code" maxlength="4" style="text-transform: uppercase;">
             <button id="joinRoomBtn" class="button">Join Room</button>
             <div id="joinStatus" class="status"></div>
         </div>

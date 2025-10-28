@@ -1,4 +1,14 @@
-/* home.css - Home screen styling */
+/* Body and base styling (matching game page) */
+body {
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #282a36;  /* Dracula dark background */
+    margin: 0;
+    padding: 10px;
+}
 
 .home-container {
     display: flex;
@@ -81,4 +91,27 @@ h2 {
 
 .error {
     color: #ff5555;
+}
+
+/* Input styling for room code (matching game page) */
+input[type="text"] {
+    width: calc(100% - 24px);
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 2px solid #6272a4;
+    border-radius: 5px;
+    background-color: #44475a;
+    color: #f8f8f2;
+    font-size: 20px;
+    text-align: center;
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: #50fa7b;
+}
+
+input[type="text"]::placeholder {
+    color: #6272a4;
 }

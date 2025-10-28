@@ -5,7 +5,6 @@ let conn = null;
 let isHost = false;
 let mySymbol = '';
 let opponentSymbol = '';
-let remotePeerId = '';
 
 // Home screen elements
 const createRoomBtn = document.getElementById('createRoomBtn');
@@ -15,12 +14,16 @@ const roomCodeDisplay = document.getElementById('roomCodeDisplay');
 const createStatus = document.getElementById('createStatus');
 const joinStatus = document.getElementById('joinStatus');
 
+// Store connection globally so it persists
+window.gamePeer = null;
+window.gameConn = null;
+
 // Initialize PeerJS
 function initPeer(roomCode = null) {
-    const config = { debug: 0 };
+    const config = { debug: 2 };
     
     if (roomCode) {
-        // Joining a room - create peer with random ID
+        // Joining a room
         peer = new Peer(config);
     } else {
         // Creating a room with custom ID
@@ -28,10 +31,11 @@ function initPeer(roomCode = null) {
         peer = new Peer(customId, config);
     }
 
+    // Store globally
+    window.gamePeer = peer;
+
     peer.on('open', (id) => {
-        console.log('My peer ID is: ' + id);
-        
-        // Store my peer ID for reconnection
+        console.log('✅ My peer ID is: ' + id);
         sessionStorage.setItem('myPeerId', id);
         
         if (!roomCode) {
@@ -47,32 +51,29 @@ function initPeer(roomCode = null) {
 
     peer.on('connection', (connection) => {
         // Host receives connection from guest
+        console.log('👑 Host received connection from:', connection.peer);
         conn = connection;
-        remotePeerId = conn.peer;
+        window.gameConn = conn;
         
-        console.log('Received connection from:', remotePeerId);
+        sessionStorage.setItem('remotePeerId', connection.peer);
         
-        // Store remote peer ID
-        sessionStorage.setItem('remotePeerId', remotePeerId);
-        
-        // Setup connection
         conn.on('open', () => {
-            console.log('Connection fully established');
+            console.log('✅ Connection opened!');
             createStatus.textContent = 'Player joined! Starting game...';
-            
-            // Send a test message
-            conn.send({ type: 'test', message: 'Hello from host!' });
-            
             setTimeout(() => startGame(), 1000);
         });
         
         conn.on('data', (data) => {
-            console.log('Host received:', data);
+            console.log('📨 Data received:', data);
+        });
+        
+        conn.on('close', () => {
+            console.log('🔌 Connection closed');
         });
     });
 
     peer.on('error', (err) => {
-        console.error('PeerJS error:', err);
+        console.error('❌ PeerJS error:', err);
         const errorMsg = 'Connection error. Please try again.';
         if (isHost) {
             createStatus.textContent = errorMsg;
@@ -133,35 +134,33 @@ if (joinRoomBtn) {
         isHost = false;
         mySymbol = '⭕';
         opponentSymbol = '❌';
-        remotePeerId = roomCode;
         
-        // Store remote peer ID
-        sessionStorage.setItem('remotePeerId', remotePeerId);
+        sessionStorage.setItem('remotePeerId', roomCode);
 
         initPeer(roomCode);
         
         // Connect to host
         setTimeout(() => {
+            console.log('🔌 Attempting to connect to:', roomCode);
             conn = peer.connect(roomCode, { reliable: true });
-            
-            console.log('Attempting to connect to:', roomCode);
+            window.gameConn = conn;
             
             conn.on('open', () => {
-                console.log('Connected to host successfully!');
+                console.log('✅ Connected to host!');
                 joinStatus.textContent = 'Connected! Starting game...';
-                
-                // Send a test message
-                conn.send({ type: 'test', message: 'Hello from guest!' });
-                
                 setTimeout(() => startGame(), 1000);
             });
             
             conn.on('data', (data) => {
-                console.log('Guest received:', data);
+                console.log('📨 Data received:', data);
+            });
+            
+            conn.on('close', () => {
+                console.log('🔌 Connection closed');
             });
             
             conn.on('error', (err) => {
-                console.error('Connection error:', err);
+                console.error('❌ Connection error:', err);
                 joinStatus.textContent = 'Failed to connect. Check the code.';
                 joinStatus.classList.add('error');
                 joinRoomBtn.disabled = false;
@@ -173,18 +172,17 @@ if (joinRoomBtn) {
 
 // Redirect to game page
 function startGame() {
-    // Store multiplayer state in sessionStorage
     sessionStorage.setItem('isMultiplayer', 'true');
     sessionStorage.setItem('isHost', isHost.toString());
     sessionStorage.setItem('mySymbol', mySymbol);
     sessionStorage.setItem('opponentSymbol', opponentSymbol);
     
-    console.log('Navigating to game with state:', {
+    console.log('🎮 Starting game with:', {
         isHost,
         mySymbol,
         opponentSymbol,
-        myPeerId: sessionStorage.getItem('myPeerId'),
-        remotePeerId: sessionStorage.getItem('remotePeerId')
+        hasPeer: !!window.gamePeer,
+        hasConn: !!window.gameConn
     });
     
     window.location.href = 'game.html';

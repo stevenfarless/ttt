@@ -16,8 +16,8 @@ const joinStatus = document.getElementById('joinStatus');
 
 // Initialize PeerJS
 function initPeer(roomCode = null) {
-    const config = roomCode ? { debug: 2 } : { debug: 2 };
-
+    const config = { debug: 0 }; // Reduced debug to 0 for cleaner console
+    
     if (roomCode) {
         // Joining a room
         peer = new Peer(config);
@@ -29,7 +29,7 @@ function initPeer(roomCode = null) {
 
     peer.on('open', (id) => {
         console.log('My peer ID is: ' + id);
-
+        
         if (!roomCode) {
             // Host created room
             isHost = true;
@@ -44,9 +44,25 @@ function initPeer(roomCode = null) {
     peer.on('connection', (connection) => {
         // Host receives connection from guest
         conn = connection;
-        setupConnection();
-        createStatus.textContent = 'Player joined! Starting game...';
-        setTimeout(() => startGame(), 1000);
+        
+        // IMPORTANT: Setup connection handlers BEFORE navigating
+        conn.on('open', () => {
+            console.log('Connection established with guest');
+            createStatus.textContent = 'Player joined! Starting game...';
+            setTimeout(() => startGame(), 1000);
+        });
+        
+        conn.on('data', (data) => {
+            console.log('Received data:', data);
+        });
+        
+        conn.on('close', () => {
+            console.log('Connection closed');
+        });
+        
+        conn.on('error', (err) => {
+            console.error('Connection error:', err);
+        });
     });
 
     peer.on('error', (err) => {
@@ -62,9 +78,14 @@ function initPeer(roomCode = null) {
     });
 }
 
-// Generate a simple 6-character room code
+// Generate a 4-character alphanumeric room code
 function generateRoomCode() {
-    return 'TTT-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code = '';
+    for (let i = 0; i < 4; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
 }
 
 // Display room code to host
@@ -84,10 +105,16 @@ if (createRoomBtn) {
 // Join room button handler
 if (joinRoomBtn) {
     joinRoomBtn.addEventListener('click', () => {
-        const roomCode = roomCodeInput.value.trim();
-
+        const roomCode = roomCodeInput.value.trim().toUpperCase();
+        
         if (!roomCode) {
             joinStatus.textContent = 'Please enter a room code';
+            joinStatus.classList.add('error');
+            return;
+        }
+        
+        if (roomCode.length !== 4) {
+            joinStatus.textContent = 'Room code must be 4 characters';
             joinStatus.classList.add('error');
             return;
         }
@@ -102,52 +129,34 @@ if (joinRoomBtn) {
         opponentSymbol = '❌';
 
         initPeer(roomCode);
-
+        
         // Connect to host
         setTimeout(() => {
-            conn = peer.connect(roomCode);
-            setupConnection();
-
+            conn = peer.connect(roomCode, { reliable: true });
+            
             conn.on('open', () => {
+                console.log('Connected to host');
                 joinStatus.textContent = 'Connected! Starting game...';
                 setTimeout(() => startGame(), 1000);
             });
+            
+            conn.on('data', (data) => {
+                console.log('Received data:', data);
+            });
+            
+            conn.on('close', () => {
+                console.log('Connection closed');
+            });
+            
+            conn.on('error', (err) => {
+                console.error('Connection error:', err);
+                joinStatus.textContent = 'Failed to connect. Check the code.';
+                joinStatus.classList.add('error');
+                joinRoomBtn.disabled = false;
+                roomCodeInput.disabled = false;
+            });
         }, 1000);
     });
-}
-
-// Setup connection event handlers
-function setupConnection() {
-    conn.on('data', (data) => {
-        handleReceivedData(data);
-    });
-
-    conn.on('close', () => {
-        alert('Opponent disconnected!');
-        window.location.href = 'home.html';
-    });
-
-    conn.on('error', (err) => {
-        console.error('Connection error:', err);
-    });
-}
-
-// Send data to opponent
-function sendData(data) {
-    if (conn && conn.open) {
-        conn.send(data);
-    }
-}
-
-// Handle received data from opponent
-function handleReceivedData(data) {
-    if (data.type === 'move') {
-        // Opponent made a move
-        makeOpponentMove(data.cellIndex, data.symbol);
-    } else if (data.type === 'reset') {
-        // Opponent wants to reset
-        resetGameState();
-    }
 }
 
 // Redirect to game page
@@ -157,17 +166,18 @@ function startGame() {
     sessionStorage.setItem('isHost', isHost.toString());
     sessionStorage.setItem('mySymbol', mySymbol);
     sessionStorage.setItem('opponentSymbol', opponentSymbol);
-
+    
+    // Store peer ID for reconnection
+    sessionStorage.setItem('peerId', peer.id);
+    
     window.location.href = 'game.html';
 }
 
 // Export peer and connection for use in game
 window.multiplayerState = {
-    peer,
-    conn,
-    isHost,
-    mySymbol,
-    opponentSymbol,
-    sendData,
-    setupConnection
+    peer: peer,
+    conn: conn,
+    isHost: isHost,
+    mySymbol: mySymbol,
+    opponentSymbol: opponentSymbol
 };

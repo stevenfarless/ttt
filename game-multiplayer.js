@@ -83,42 +83,48 @@ function recreatePeerConnection() {
             // Host waits for guest to reconnect
             console.log('👑 Host waiting for connection...');
         } else {
-            // Guest connects to host
-            console.log('🔌 Guest connecting to:', remotePeerId);
-            conn = peer.connect(remotePeerId, { reliable: true });
-            
-            conn.on('open', () => {
-                console.log('✅ Guest connected!');
-                setupHandlers();
-            });
+            // Guest waits 2 seconds to ensure host peer is ready, then connects
+            console.log('⏳ Guest waiting 2s for host to be ready...');
+            setTimeout(() => {
+                console.log('🔌 Guest connecting to:', remotePeerId);
+                conn = peer.connect(remotePeerId, { reliable: true });
+                
+                conn.on('open', () => {
+                    console.log('✅ Guest connected!');
+                    setupHandlers();
+                });
 
-            conn.on('error', (err) => {
-                console.error('❌ Connection error:', err);
-                alert('Failed to connect. Returning to menu...');
-                endMultiplayerSession();
-            });
+                conn.on('error', (err) => {
+                    console.error('❌ Connection error:', err);
+                    alert('Failed to connect. Returning to menu...');
+                    endMultiplayerSession();
+                });
+            }, 2000);  // 2 second delay for guest
         }
     });
 
     peer.on('connection', (connection) => {
-        console.log('📞 Received connection');
+        console.log('📞 Host received connection from:', connection.peer);
         conn = connection;
         
         conn.on('open', () => {
-            console.log('✅ Connection opened!');
+            console.log('✅ Host connection opened!');
             setupHandlers();
+        });
+        
+        conn.on('error', (err) => {
+            console.error('❌ Connection error:', err);
         });
     });
 
     peer.on('error', (err) => {
         console.error('❌ Peer error:', err);
         
-        // If ID is taken, it means the peer from home.html is still active
-        // Wait a bit and try again, or use a slightly different ID
+        // If ID is taken, the old peer is still active - wait and retry
         if (err.type === 'unavailable-id') {
             console.log('🔄 ID taken, retrying in 2 seconds...');
             setTimeout(() => {
-                peer.destroy();
+                if (peer) peer.destroy();
                 recreatePeerConnection();
             }, 2000);
         } else {

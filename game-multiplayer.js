@@ -52,23 +52,80 @@ function initMultiplayer() {
 }
 
 function recreatePeerConnection() {
-    console.log('🔄 Getting existing connection');
+    const myPeerId = sessionStorage.getItem('myPeerId');
+    const remotePeerId = sessionStorage.getItem('remotePeerId');
     
-    // CRITICAL FIX: Use the existing peer and connection from multiplayer.js
-    peer = window.multiplayerPeer;
-    conn = window.multiplayerConn;
+    console.log('🔄 Recreating connection:', { myPeerId, remotePeerId, isHost });
     
-    if (!peer || !conn) {
-        console.error('❌ No peer/connection found');
-        alert('Connection lost. Returning to menu...');
+    if (!myPeerId || !remotePeerId) {
+        console.error('❌ Missing peer IDs');
+        alert('Connection data lost. Returning to menu...');
         endMultiplayerSession();
         return;
     }
-    
-    console.log('✅ Using existing peer and connection');
-    
-    // Set up data handlers immediately
-    setupHandlers();
+
+    const config = {
+        debug: 2,
+        config: {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' }
+            ]
+        }
+    };
+
+    // Create new peer with same ID
+    peer = new Peer(myPeerId, config);
+
+    peer.on('open', (id) => {
+        console.log('✅ Peer reopened:', id);
+        
+        if (isHost) {
+            // Host waits for guest to reconnect
+            console.log('👑 Host waiting for connection...');
+        } else {
+            // Guest connects to host
+            console.log('🔌 Guest connecting to:', remotePeerId);
+            conn = peer.connect(remotePeerId, { reliable: true });
+            
+            conn.on('open', () => {
+                console.log('✅ Guest connected!');
+                setupHandlers();
+            });
+
+            conn.on('error', (err) => {
+                console.error('❌ Connection error:', err);
+                alert('Failed to connect. Returning to menu...');
+                endMultiplayerSession();
+            });
+        }
+    });
+
+    peer.on('connection', (connection) => {
+        console.log('📞 Received connection');
+        conn = connection;
+        
+        conn.on('open', () => {
+            console.log('✅ Connection opened!');
+            setupHandlers();
+        });
+    });
+
+    peer.on('error', (err) => {
+        console.error('❌ Peer error:', err);
+        
+        // If ID is taken, it means the peer from home.html is still active
+        // Wait a bit and try again, or use a slightly different ID
+        if (err.type === 'unavailable-id') {
+            console.log('🔄 ID taken, retrying in 2 seconds...');
+            setTimeout(() => {
+                peer.destroy();
+                recreatePeerConnection();
+            }, 2000);
+        } else {
+            alert('Connection error. Returning to menu...');
+            endMultiplayerSession();
+        }
+    });
 }
 
 function setupHandlers() {
@@ -88,6 +145,10 @@ function setupHandlers() {
         console.log('🔌 Connection closed');
         alert('Opponent disconnected!');
         endMultiplayerSession();
+    });
+
+    conn.on('error', (err) => {
+        console.error('❌ Connection error:', err);
     });
 
     console.log('✅ Handlers ready!');
@@ -240,12 +301,6 @@ function endMultiplayerSession() {
     if (conn) conn.close();
     if (peer) peer.destroy();
     
-    // Clear the global references
-    window.multiplayerPeer = null;
-    window.multiplayerConn = null;
-    
-    localStorage.removeItem('myPeerId');
-    localStorage.removeItem('remotePeerId');
     sessionStorage.clear();
     window.location.href = 'home.html';
 }

@@ -66,33 +66,36 @@ function recreatePeerConnection() {
     }
 
     const config = {
-        debug: 2,
-        config: {
-            iceServers: [
-                { 
-                    urls: 'stun:stun.l.google.com:19302' 
-                },
-                {
-                    urls: 'stun:stun1.l.google.com:19302'
-                },
-                {
-                    urls: 'turn:openrelay.metered.ca:80',
-                    username: 'openrelayproject',
-                    credential: 'openrelayproject'
-                },
-                {
-                    urls: 'turn:openrelay.metered.ca:443',
-                    username: 'openrelayproject',
-                    credential: 'openrelayproject'
-                },
-                {
-                    urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-                    username: 'openrelayproject',
-                    credential: 'openrelayproject'
-                }
-            ]
-        }
-    };
+    debug: 2,
+    config: {
+        iceTransportPolicy: 'relay',  // FORCE use of TURN servers only
+        iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' },
+            {
+                urls: 'turn:openrelay.metered.ca:80',
+                username: 'openrelayproject',
+                credential: 'openrelayproject'
+            },
+            {
+                urls: 'turn:openrelay.metered.ca:443',
+                username: 'openrelayproject',
+                credential: 'openrelayproject'
+            },
+            {
+                urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+                username: 'openrelayproject',
+                credential: 'openrelayproject'
+            },
+            {
+                urls: 'turn:relay1.expressturn.com:3478',
+                username: 'ef3N5RMW42DAXRQEOT',
+                credential: 'sxNiOHPmVPa1bpH83O'
+            }
+        ]
+    }
+};
+
 
     // Create new peer with same ID
     peer = new Peer(myPeerId, config);

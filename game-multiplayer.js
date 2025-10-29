@@ -22,6 +22,7 @@ let isMyTurn = false;
 
 let peer = null;
 let conn = null;
+let connectionReady = false;  // NEW: Track if connection is fully ready
 
 function initMultiplayer() {
     isMultiplayer = sessionStorage.getItem('isMultiplayer') === 'true';
@@ -164,6 +165,10 @@ function setupHandlers() {
             receiveOpponentMove(data.cellIndex);
         } else if (data.type === 'reset') {
             resetGameState();
+        } else if (data.type === 'ready') {
+            // Opponent confirmed they're ready
+            console.log('✅ Opponent is ready!');
+            markConnectionReady();
         }
     });
 
@@ -178,6 +183,23 @@ function setupHandlers() {
     });
 
     console.log('✅ Handlers ready!');
+    
+    // Send ready signal to opponent
+    setTimeout(() => {
+        if (conn && conn.open) {
+            conn.send({ type: 'ready' });
+            console.log('📤 Sent ready signal');
+            markConnectionReady();
+        }
+    }, 500);  // Small delay to ensure handlers are set up on both sides
+}
+
+function markConnectionReady() {
+    if (!connectionReady) {
+        connectionReady = true;
+        console.log('🎮 Connection fully ready - game can start!');
+        updateTurnDisplay();
+    }
 }
 
 function sendMove(cellIndex) {
@@ -213,11 +235,23 @@ function receiveOpponentMove(cellIndex) {
 }
 
 function updateTurnDisplay() {
-    result.textContent = isMyTurn ? "Your turn! 🎮" : "Opponent's turn... ⏳";
-    result.style.color = isMyTurn ? "#50fa7b" : "#f1fa8c";
+    if (!connectionReady) {
+        result.textContent = "Connecting... ⏳";
+        result.style.color = "#f1fa8c";
+    } else {
+        result.textContent = isMyTurn ? "Your turn! 🎮" : "Opponent's turn... ⏳";
+        result.style.color = isMyTurn ? "#50fa7b" : "#f1fa8c";
+    }
 }
 
 function handleCellClick(event) {
+    // NEW: Check if connection is ready
+    if (isMultiplayer && !connectionReady) {
+        result.style.animation = "none";
+        setTimeout(() => { result.style.animation = "shake 0.3s"; }, 10);
+        return;
+    }
+
     if (!gameActive) {
         result.style.animation = "none";
         setTimeout(() => { result.style.animation = "shake 0.3s"; }, 10);
@@ -327,6 +361,7 @@ function endMultiplayerSession() {
     if (conn) conn.close();
     if (peer) peer.destroy();
     
+    connectionReady = false;
     sessionStorage.clear();
     window.location.href = 'home.html';
 }

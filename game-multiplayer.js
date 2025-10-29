@@ -95,7 +95,6 @@ function recreatePeerConnection() {
         }
     };
 
-    // Create new peer with same ID
     peer = new Peer(myPeerId, config);
 
     peer.on('open', (id) => {
@@ -156,6 +155,12 @@ function recreatePeerConnection() {
 function setupHandlers() {
     if (!conn) return;
     console.log('⚙️ Setting up handlers');
+    
+    // ⭐ FIX: Check if connection is already open
+    if (conn.open) {
+        console.log('✅ Connection was already open!');
+        markConnectionReady();
+    }
     
     conn.on('data', (data) => {
         console.log('📨 Received:', data);

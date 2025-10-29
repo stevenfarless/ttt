@@ -14,7 +14,14 @@ const createStatus = document.getElementById('createStatus');
 const joinStatus = document.getElementById('joinStatus');
 
 function initPeer(roomCode = null) {
-    const config = { debug: 2 };
+    const config = {
+        debug: 2,
+        config: {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' }  // Google's free public STUN server
+            ]
+        }
+    };
     
     if (roomCode) {
         peer = new Peer(config);
@@ -22,6 +29,7 @@ function initPeer(roomCode = null) {
         const customId = generateRoomCode();
         peer = new Peer(customId, config);
     }
+
 
     peer.on('open', (id) => {
         console.log('✅ Peer opened:', id);

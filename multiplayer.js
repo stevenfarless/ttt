@@ -66,42 +66,36 @@ function recreatePeerConnection() {
     }
 
     const config = {
-        debug: 2,
-        config: {
-            iceServers: [
-                // Multiple STUN servers for redundancy
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' },
-                { urls: 'stun:stun2.l.google.com:19302' },
-                { urls: 'stun:stun3.l.google.com:19302' },
-                { urls: 'stun:stun4.l.google.com:19302' },
-                
-                // Open Relay TURN servers (primary)
-                {
-                    urls: 'turn:openrelay.metered.ca:80',
-                    username: 'openrelayproject',
-                    credential: 'openrelayproject'
-                },
-                {
-                    urls: 'turn:openrelay.metered.ca:443',
-                    username: 'openrelayproject',
-                    credential: 'openrelayproject'
-                },
-                {
-                    urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-                    username: 'openrelayproject',
-                    credential: 'openrelayproject'
-                },
-                
-                // Backup TURN server (more reliable for iOS)
-                {
-                    urls: 'turn:relay1.expressturn.com:3478',
-                    username: 'ef3N5RMW42DAXRQEOT',
-                    credential: 'sxNiOHPmVPa1bpH83O'
-                }
-            ]
-        }
-    };
+    debug: 2,
+    config: {
+        iceTransportPolicy: 'relay',  // FORCE use of TURN servers only
+        iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' },
+            {
+                urls: 'turn:openrelay.metered.ca:80',
+                username: 'openrelayproject',
+                credential: 'openrelayproject'
+            },
+            {
+                urls: 'turn:openrelay.metered.ca:443',
+                username: 'openrelayproject',
+                credential: 'openrelayproject'
+            },
+            {
+                urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+                username: 'openrelayproject',
+                credential: 'openrelayproject'
+            },
+            {
+                urls: 'turn:relay1.expressturn.com:3478',
+                username: 'ef3N5RMW42DAXRQEOT',
+                credential: 'sxNiOHPmVPa1bpH83O'
+            }
+        ]
+    }
+};
+
 
     // Create new peer with same ID
     peer = new Peer(myPeerId, config);

@@ -18,12 +18,14 @@ function initPeer(roomCode = null) {
         debug: 2,
         config: {
             iceServers: [
-                { 
-                    urls: 'stun:stun.l.google.com:19302' 
-                },
-                {
-                    urls: 'stun:stun1.l.google.com:19302'
-                },
+                // Multiple STUN servers for redundancy
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:stun2.l.google.com:19302' },
+                { urls: 'stun:stun3.l.google.com:19302' },
+                { urls: 'stun:stun4.l.google.com:19302' },
+                
+                // Open Relay TURN servers (primary)
                 {
                     urls: 'turn:openrelay.metered.ca:80',
                     username: 'openrelayproject',
@@ -38,6 +40,13 @@ function initPeer(roomCode = null) {
                     urls: 'turn:openrelay.metered.ca:443?transport=tcp',
                     username: 'openrelayproject',
                     credential: 'openrelayproject'
+                },
+                
+                // Backup TURN server (more reliable for iOS)
+                {
+                    urls: 'turn:relay1.expressturn.com:3478',
+                    username: 'ef3N5RMW42DAXRQEOT',
+                    credential: 'sxNiOHPmVPa1bpH83O'
                 }
             ]
         }

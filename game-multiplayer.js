@@ -22,7 +22,7 @@ let isMyTurn = false;
 
 let peer = null;
 let conn = null;
-let connectionReady = false;  // NEW: Track if connection is fully ready
+let connectionReady = false;
 
 function initMultiplayer() {
     isMultiplayer = sessionStorage.getItem('isMultiplayer') === 'true';
@@ -66,36 +66,34 @@ function recreatePeerConnection() {
     }
 
     const config = {
-    debug: 2,
-    config: {
-        iceTransportPolicy: 'relay',  // FORCE use of TURN servers only
-        iceServers: [
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:stun1.l.google.com:19302' },
-            {
-                urls: 'turn:openrelay.metered.ca:80',
-                username: 'openrelayproject',
-                credential: 'openrelayproject'
-            },
-            {
-                urls: 'turn:openrelay.metered.ca:443',
-                username: 'openrelayproject',
-                credential: 'openrelayproject'
-            },
-            {
-                urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-                username: 'openrelayproject',
-                credential: 'openrelayproject'
-            },
-            {
-                urls: 'turn:relay1.expressturn.com:3478',
-                username: 'ef3N5RMW42DAXRQEOT',
-                credential: 'sxNiOHPmVPa1bpH83O'
-            }
-        ]
-    }
-};
-
+        debug: 2,
+        config: {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' },
+                {
+                    urls: 'turn:openrelay.metered.ca:80',
+                    username: 'openrelayproject',
+                    credential: 'openrelayproject'
+                },
+                {
+                    urls: 'turn:openrelay.metered.ca:443',
+                    username: 'openrelayproject',
+                    credential: 'openrelayproject'
+                },
+                {
+                    urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+                    username: 'openrelayproject',
+                    credential: 'openrelayproject'
+                },
+                {
+                    urls: 'turn:relay1.expressturn.com:3478',
+                    username: 'ef3N5RMW42DAXRQEOT',
+                    credential: 'sxNiOHPmVPa1bpH83O'
+                }
+            ]
+        }
+    };
 
     // Create new peer with same ID
     peer = new Peer(myPeerId, config);
@@ -104,10 +102,8 @@ function recreatePeerConnection() {
         console.log('✅ Peer reopened:', id);
         
         if (isHost) {
-            // Host waits for guest to reconnect
             console.log('👑 Host waiting for connection...');
         } else {
-            // Guest waits 2 seconds to ensure host peer is ready, then connects
             console.log('⏳ Guest waiting 2s for host to be ready...');
             setTimeout(() => {
                 console.log('🔌 Guest connecting to:', remotePeerId);
@@ -123,7 +119,7 @@ function recreatePeerConnection() {
                     alert('Failed to connect. Returning to menu...');
                     endMultiplayerSession();
                 });
-            }, 2000);  // 2 second delay for guest
+            }, 2000);
         }
     });
 
@@ -144,7 +140,6 @@ function recreatePeerConnection() {
     peer.on('error', (err) => {
         console.error('❌ Peer error:', err);
         
-        // If ID is taken, the old peer is still active - wait and retry
         if (err.type === 'unavailable-id') {
             console.log('🔄 ID taken, retrying in 2 seconds...');
             setTimeout(() => {
@@ -169,7 +164,6 @@ function setupHandlers() {
         } else if (data.type === 'reset') {
             resetGameState();
         } else if (data.type === 'ready') {
-            // Opponent confirmed they're ready
             console.log('✅ Opponent is ready!');
             markConnectionReady();
         }
@@ -187,14 +181,13 @@ function setupHandlers() {
 
     console.log('✅ Handlers ready!');
     
-    // Send ready signal to opponent
     setTimeout(() => {
         if (conn && conn.open) {
             conn.send({ type: 'ready' });
             console.log('📤 Sent ready signal');
             markConnectionReady();
         }
-    }, 500);  // Small delay to ensure handlers are set up on both sides
+    }, 500);
 }
 
 function markConnectionReady() {
@@ -248,7 +241,6 @@ function updateTurnDisplay() {
 }
 
 function handleCellClick(event) {
-    // NEW: Check if connection is ready
     if (isMultiplayer && !connectionReady) {
         result.style.animation = "none";
         setTimeout(() => { result.style.animation = "shake 0.3s"; }, 10);

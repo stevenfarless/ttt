@@ -1,19 +1,70 @@
-// multiplayer.js - Handles room creation, joining, and peer connections
+// game-multiplayer.js - Multiplayer version
 
-let peer = null;
-let conn = null;
+const playerOneInput = document.querySelector("#playerOneInput");
+const playerTwoInput = document.querySelector("#playerTwoInput");
+const cells = document.querySelectorAll(".cell");
+const result = document.querySelector("#result");
+const resetButton = document.querySelector("#reset");
+const backToMenuBtn = document.querySelector("#backToMenu");
+
+let playerOne = "";
+let playerTwo = "";
+let currentPlayer = "";
+let gameBoard = ["", "", "", "", "", "", "", "", ""];
+let gameActive = false;
+let moveCount = 0;
+
+let isMultiplayer = false;
 let isHost = false;
 let mySymbol = '';
 let opponentSymbol = '';
+let isMyTurn = false;
 
-const createRoomBtn = document.getElementById('createRoomBtn');
-const joinRoomBtn = document.getElementById('joinRoomBtn');
-const roomCodeInput = document.getElementById('roomCodeInput');
-const roomCodeDisplay = document.getElementById('roomCodeDisplay');
-const createStatus = document.getElementById('createStatus');
-const joinStatus = document.getElementById('joinStatus');
+let peer = null;
+let conn = null;
+let connectionReady = false;
 
-function initPeer(roomCode = null) {
+function initMultiplayer() {
+    isMultiplayer = sessionStorage.getItem('isMultiplayer') === 'true';
+    
+    if (isMultiplayer) {
+        isHost = sessionStorage.getItem('isHost') === 'true';
+        mySymbol = sessionStorage.getItem('mySymbol');
+        opponentSymbol = sessionStorage.getItem('opponentSymbol');
+        
+        console.log('🎮 Init multiplayer:', { isHost, mySymbol, opponentSymbol });
+
+        playerOneInput.value = mySymbol;
+        playerTwoInput.value = opponentSymbol;
+        playerOneInput.disabled = true;
+        playerTwoInput.disabled = true;
+        
+        playerOne = mySymbol;
+        playerTwo = opponentSymbol;
+        currentPlayer = '❌';
+        isMyTurn = isHost;
+        gameActive = true;
+        
+        updateTurnDisplay();
+        if (backToMenuBtn) backToMenuBtn.style.display = 'inline-block';
+        
+        recreatePeerConnection();
+    }
+}
+
+function recreatePeerConnection() {
+    const myPeerId = sessionStorage.getItem('myPeerId');
+    const remotePeerId = sessionStorage.getItem('remotePeerId');
+    
+    console.log('🔄 Recreating connection:', { myPeerId, remotePeerId, isHost });
+    
+    if (!myPeerId || !remotePeerId) {
+        console.error('❌ Missing peer IDs');
+        alert('Connection data lost. Returning to menu...');
+        endMultiplayerSession();
+        return;
+    }
+
     const config = {
         debug: 2,
         config: {
@@ -51,124 +102,314 @@ function initPeer(roomCode = null) {
             ]
         }
     };
-    
-    if (roomCode) {
-        peer = new Peer(config);
-    } else {
-        const customId = generateRoomCode();
-        peer = new Peer(customId, config);
-    }
+
+    // Create new peer with same ID
+    peer = new Peer(myPeerId, config);
 
     peer.on('open', (id) => {
-        console.log('✅ Peer opened:', id);
-        sessionStorage.setItem('myPeerId', id);
+        console.log('✅ Peer reopened:', id);
         
-        if (!roomCode) {
-            isHost = true;
-            mySymbol = '❌';
-            opponentSymbol = '⭕';
-            displayRoomCode(id);
-            createStatus.textContent = 'Waiting for player to join...';
-            createStatus.classList.remove('error');
+        if (isHost) {
+            // Host waits for guest to reconnect
+            console.log('👑 Host waiting for connection...');
+        } else {
+            // Guest waits 2 seconds to ensure host peer is ready, then connects
+            console.log('⏳ Guest waiting 2s for host to be ready...');
+            setTimeout(() => {
+                console.log('🔌 Guest connecting to:', remotePeerId);
+                conn = peer.connect(remotePeerId, { reliable: true });
+                
+                conn.on('open', () => {
+                    console.log('✅ Guest connected!');
+                    setupHandlers();
+                });
+
+                conn.on('error', (err) => {
+                    console.error('❌ Connection error:', err);
+                    alert('Failed to connect. Returning to menu...');
+                    endMultiplayerSession();
+                });
+            }, 2000);  // 2 second delay for guest
         }
     });
 
     peer.on('connection', (connection) => {
-        console.log('👑 Host received connection');
+        console.log('📞 Host received connection from:', connection.peer);
         conn = connection;
-        sessionStorage.setItem('remotePeerId', connection.peer);
         
         conn.on('open', () => {
-            console.log('✅ Connection opened');
-            createStatus.textContent = 'Player joined! Starting game...';
-            setTimeout(() => startGame(), 1000);
+            console.log('✅ Host connection opened!');
+            setupHandlers();
+        });
+        
+        conn.on('error', (err) => {
+            console.error('❌ Connection error:', err);
         });
     });
 
     peer.on('error', (err) => {
         console.error('❌ Peer error:', err);
-        const errorMsg = 'Connection error. Try again.';
-        if (isHost) {
-            createStatus.textContent = errorMsg;
-            createStatus.classList.add('error');
+        
+        // If ID is taken, the old peer is still active - wait and retry
+        if (err.type === 'unavailable-id') {
+            console.log('🔄 ID taken, retrying in 2 seconds...');
+            setTimeout(() => {
+                if (peer) peer.destroy();
+                recreatePeerConnection();
+            }, 2000);
         } else {
-            joinStatus.textContent = errorMsg;
-            joinStatus.classList.add('error');
+            alert('Connection error. Returning to menu...');
+            endMultiplayerSession();
         }
     });
 }
 
-function generateRoomCode() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = '';
-    for (let i = 0; i < 4; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return code;
-}
-
-function displayRoomCode(code) {
-    roomCodeDisplay.textContent = code;
-    roomCodeDisplay.style.display = 'block';
-}
-
-if (createRoomBtn) {
-    createRoomBtn.addEventListener('click', () => {
-        sessionStorage.clear();
-        createRoomBtn.disabled = true;
-        initPeer();
-    });
-}
-
-if (joinRoomBtn) {
-    joinRoomBtn.addEventListener('click', () => {
-        const roomCode = roomCodeInput.value.trim().toUpperCase();
-        if (!roomCode || roomCode.length !== 4) {
-            joinStatus.textContent = 'Enter 4-character code';
-            joinStatus.classList.add('error');
-            return;
-        }
-
-        sessionStorage.clear();
-        joinRoomBtn.disabled = true;
-        roomCodeInput.disabled = true;
-        joinStatus.textContent = 'Connecting...';
-        joinStatus.classList.remove('error');
-
-        isHost = false;
-        mySymbol = '⭕';
-        opponentSymbol = '❌';
-        sessionStorage.setItem('remotePeerId', roomCode);
-
-        initPeer(roomCode);
-
-        setTimeout(() => {
-            console.log('🔌 Connecting to:', roomCode);
-            conn = peer.connect(roomCode, { reliable: true });
-
-            conn.on('open', () => {
-                console.log('✅ Connected!');
-                joinStatus.textContent = 'Connected! Starting...';
-                setTimeout(() => startGame(), 1000);
-            });
-
-            conn.on('error', (err) => {
-                console.error('❌ Connection error:', err);
-                joinStatus.textContent = 'Failed. Check code.';
-                joinStatus.classList.add('error');
-                joinRoomBtn.disabled = false;
-                roomCodeInput.disabled = false;
-            });
-        }, 1500);
-    });
-}
-
-function startGame() {
-    sessionStorage.setItem('isMultiplayer', 'true');
-    sessionStorage.setItem('isHost', isHost.toString());
-    sessionStorage.setItem('mySymbol', mySymbol);
-    sessionStorage.setItem('opponentSymbol', opponentSymbol);
+function setupHandlers() {
+    if (!conn) return;
+    console.log('⚙️ Setting up handlers');
     
-    console.log('🎮 Starting game - stored session data');
-    window.location.href = 'game.html';
+    conn.on('data', (data) => {
+        console.log('📨 Received:', data);
+        if (data.type === 'move') {
+            receiveOpponentMove(data.cellIndex);
+        } else if (data.type === 'reset') {
+            resetGameState();
+        } else if (data.type === 'ready') {
+            // Opponent confirmed they're ready
+            console.log('✅ Opponent is ready!');
+            markConnectionReady();
+        }
+    });
+
+    conn.on('close', () => {
+        console.log('🔌 Connection closed');
+        alert('Opponent disconnected!');
+        endMultiplayerSession();
+    });
+
+    conn.on('error', (err) => {
+        console.error('❌ Connection error:', err);
+    });
+
+    console.log('✅ Handlers ready!');
+    
+    // Send ready signal to opponent
+    setTimeout(() => {
+        if (conn && conn.open) {
+            conn.send({ type: 'ready' });
+            console.log('📤 Sent ready signal');
+            markConnectionReady();
+        }
+    }, 500);  // Small delay to ensure handlers are set up on both sides
 }
+
+function markConnectionReady() {
+    if (!connectionReady) {
+        connectionReady = true;
+        console.log('🎮 Connection fully ready - game can start!');
+        updateTurnDisplay();
+    }
+}
+
+function sendMove(cellIndex) {
+    if (!conn || !conn.open) {
+        console.error('❌ Cannot send - connection not open');
+        return;
+    }
+    
+    console.log('📤 Sending move:', cellIndex);
+    conn.send({ type: 'move', cellIndex: cellIndex, symbol: mySymbol });
+}
+
+function receiveOpponentMove(cellIndex) {
+    console.log('📥 Opponent move:', cellIndex);
+    
+    if (gameBoard[cellIndex] === "") {
+        gameBoard[cellIndex] = opponentSymbol;
+        cells[cellIndex].textContent = opponentSymbol;
+        cells[cellIndex].style.animation = "pop 0.3s";
+        moveCount++;
+
+        const winner = checkWinner();
+        if (winner) {
+            endGame(winner);
+        } else if (moveCount === 9) {
+            endGame(null);
+        } else {
+            currentPlayer = mySymbol;
+            isMyTurn = true;
+            updateTurnDisplay();
+        }
+    }
+}
+
+function updateTurnDisplay() {
+    if (!connectionReady) {
+        result.textContent = "Connecting... ⏳";
+        result.style.color = "#f1fa8c";
+    } else {
+        result.textContent = isMyTurn ? "Your turn! 🎮" : "Opponent's turn... ⏳";
+        result.style.color = isMyTurn ? "#50fa7b" : "#f1fa8c";
+    }
+}
+
+function handleCellClick(event) {
+    // Check if connection is ready
+    if (isMultiplayer && !connectionReady) {
+        result.style.animation = "none";
+        setTimeout(() => { result.style.animation = "shake 0.3s"; }, 10);
+        return;
+    }
+
+    if (!gameActive) {
+        result.style.animation = "none";
+        setTimeout(() => { result.style.animation = "shake 0.3s"; }, 10);
+        return;
+    }
+
+    if (isMultiplayer && !isMyTurn) {
+        result.style.animation = "none";
+        setTimeout(() => { result.style.animation = "shake 0.3s"; }, 10);
+        return;
+    }
+
+    const cellIndex = parseInt(event.target.id) - 1;
+    
+    if (gameBoard[cellIndex] === "") {
+        gameBoard[cellIndex] = currentPlayer;
+        event.target.textContent = currentPlayer;
+        event.target.style.animation = "pop 0.3s";
+        moveCount++;
+
+        if (isMultiplayer) {
+            sendMove(cellIndex);
+            isMyTurn = false;
+            currentPlayer = opponentSymbol;
+            updateTurnDisplay();
+        }
+
+        const winner = checkWinner();
+        if (winner) {
+            endGame(winner);
+        } else if (moveCount === 9) {
+            endGame(null);
+        } else if (!isMultiplayer) {
+            currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
+            result.textContent = `${currentPlayer}'s turn`;
+        }
+    } else {
+        event.target.style.animation = "none";
+        setTimeout(() => { event.target.style.animation = "shake 0.3s"; }, 10);
+    }
+}
+
+function endGame(winner) {
+    gameActive = false;
+    if (winner) {
+        if (isMultiplayer) {
+            result.textContent = winner === mySymbol ? "🎉 You won! 🏆" : "💫 Opponent won! 💫";
+        } else {
+            result.textContent = `🎉 ${winner} wins! 🏆`;
+        }
+        result.style.color = "#f1fa8c";
+    } else {
+        result.textContent = "It's a draw! 🤝";
+        result.style.color = "#bd93f9";
+    }
+}
+
+function checkWinner() {
+    const winConditions = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        [0, 4, 8], [2, 4, 6]
+    ];
+
+    for (const [a, b, c] of winConditions) {
+        if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+            return gameBoard[a];
+        }
+    }
+    return null;
+}
+
+function resetGame() {
+    if (isMultiplayer && conn && conn.open) {
+        conn.send({ type: 'reset' });
+    }
+    resetGameState();
+}
+
+function resetGameState() {
+    gameBoard = ["", "", "", "", "", "", "", "", ""];
+    moveCount = 0;
+    
+    cells.forEach((cell) => {
+        cell.textContent = "";
+        cell.style.animation = "none";
+    });
+
+    if (isMultiplayer) {
+        currentPlayer = '❌';
+        isMyTurn = isHost;
+        gameActive = true;
+        updateTurnDisplay();
+    } else {
+        playerOneInput.value = "";
+        playerTwoInput.value = "";
+        playerOne = "";
+        playerTwo = "";
+        currentPlayer = "";
+        gameActive = false;
+        result.textContent = "Enter both player names to start";
+        result.style.color = "#f8f8f2";
+    }
+}
+
+function endMultiplayerSession() {
+    if (conn) conn.close();
+    if (peer) peer.destroy();
+    
+    connectionReady = false;
+    sessionStorage.clear();
+    window.location.href = 'home.html';
+}
+
+function updateGameStatus() {
+    if (isMultiplayer) return;
+    
+    if (!playerOne || !playerTwo) {
+        result.textContent = "Enter both player names to start";
+        result.style.color = "#f8f8f2";
+        gameActive = false;
+    } else if (playerOne === playerTwo) {
+        result.textContent = "Players must use different symbols";
+        result.style.color = "#ff5555";
+        gameActive = false;
+    } else {
+        if (!currentPlayer) currentPlayer = playerOne;
+        result.textContent = `${currentPlayer}'s turn`;
+        result.style.color = "#50fa7b";
+        gameActive = true;
+    }
+}
+
+// Initialize
+cells.forEach((cell) => cell.addEventListener("click", handleCellClick));
+resetButton.addEventListener("click", resetGame);
+if (backToMenuBtn) backToMenuBtn.addEventListener("click", endMultiplayerSession);
+
+if (!isMultiplayer) {
+    playerOneInput.addEventListener("input", () => {
+        playerOne = playerOneInput.value.trim();
+        updateGameStatus();
+    });
+
+    playerTwoInput.addEventListener("input", () => {
+        playerTwo = playerTwoInput.value.trim();
+        updateGameStatus();
+    });
+}
+
+initMultiplayer();
+if (!isMultiplayer) updateGameStatus();

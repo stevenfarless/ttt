@@ -18,7 +18,7 @@ function initPeer(roomCode = null) {
         debug: 2,
         config: {
             iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' }  // Google's free public STUN server
+                { urls: 'stun:stun.l.google.com:19302' }
             ]
         }
     };
@@ -32,7 +32,7 @@ function initPeer(roomCode = null) {
 
     peer.on('open', (id) => {
         console.log('✅ Peer opened:', id);
-        localStorage.setItem('myPeerId', id);
+        sessionStorage.setItem('myPeerId', id);
         
         if (!roomCode) {
             isHost = true;
@@ -47,7 +47,7 @@ function initPeer(roomCode = null) {
     peer.on('connection', (connection) => {
         console.log('👑 Host received connection');
         conn = connection;
-        localStorage.setItem('remotePeerId', connection.peer);
+        sessionStorage.setItem('remotePeerId', connection.peer);
         
         conn.on('open', () => {
             console.log('✅ Connection opened');
@@ -85,8 +85,7 @@ function displayRoomCode(code) {
 
 if (createRoomBtn) {
     createRoomBtn.addEventListener('click', () => {
-        localStorage.removeItem('myPeerId');
-        localStorage.removeItem('remotePeerId');
+        sessionStorage.clear();
         createRoomBtn.disabled = true;
         initPeer();
     });
@@ -101,8 +100,7 @@ if (joinRoomBtn) {
             return;
         }
 
-        localStorage.removeItem('myPeerId');
-        localStorage.removeItem('remotePeerId');
+        sessionStorage.clear();
         joinRoomBtn.disabled = true;
         roomCodeInput.disabled = true;
         joinStatus.textContent = 'Connecting...';
@@ -111,7 +109,7 @@ if (joinRoomBtn) {
         isHost = false;
         mySymbol = '⭕';
         opponentSymbol = '❌';
-        localStorage.setItem('remotePeerId', roomCode);
+        sessionStorage.setItem('remotePeerId', roomCode);
 
         initPeer(roomCode);
 
@@ -142,10 +140,6 @@ function startGame() {
     sessionStorage.setItem('mySymbol', mySymbol);
     sessionStorage.setItem('opponentSymbol', opponentSymbol);
     
-    // CRITICAL FIX: Store peer and connection globally before navigation
-    window.multiplayerPeer = peer;
-    window.multiplayerConn = conn;
-    
-    console.log('🎮 Starting game with connection stored');
+    console.log('🎮 Starting game - stored session data');
     window.location.href = 'game.html';
 }

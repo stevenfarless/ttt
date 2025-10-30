@@ -48,6 +48,13 @@ function startGameSession(roomCode, isHost, myEmoji, opponentEmoji) {
   window.location.href = "game.html";
 }
 
+// AUTO-UPPERCASE INPUT
+if (roomCodeInput) {
+  roomCodeInput.addEventListener('input', (e) => {
+    e.target.value = e.target.value.toUpperCase();
+  });
+}
+
 if (createRoomBtn) {
   createRoomBtn.addEventListener('click', () => {
     const myEmoji = emojiDisplay.textContent;
@@ -110,7 +117,7 @@ if (joinRoomBtn) {
       const hostEmoji = snapshot.val().hostEmoji;
       
       if (myEmoji === hostEmoji) {
-        joinStatus.textContent = "❌ Same as other player, choose another one";
+        joinStatus.textContent = "❌ Can't use the same emoji as the host!";
         joinStatus.classList.add("error");
         joinRoomBtn.disabled = false;
         roomCodeInput.disabled = false;

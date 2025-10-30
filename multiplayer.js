@@ -12,16 +12,16 @@ function generateRoomCode() {
   let code = "";
   for (let i = 0; i < 4; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
   return code;
-} // <-- Missing closing brace was here
+}
 
 function startGameSession(roomCode, isHost, mySymbol, opponentSymbol) {
-  sessionStorage.setItem('isMultiplayer', true);
+  sessionStorage.setItem('isMultiplayer', 'true');
   sessionStorage.setItem('isHost', isHost.toString());
   sessionStorage.setItem('roomCode', roomCode);
   sessionStorage.setItem('mySymbol', mySymbol);
   sessionStorage.setItem('opponentSymbol', opponentSymbol);
   window.location.href = "game.html";
-} // <-- Missing closing brace was here
+}
 
 if (createRoomBtn) {
   createRoomBtn.addEventListener('click', () => {
@@ -31,18 +31,19 @@ if (createRoomBtn) {
     roomCodeDisplay.style.display = "block";
     createStatus.textContent = "Waiting for player to join...";
     createStatus.classList.remove("error");
+    
+    // THIS IS THE FIX - board MUST be initialized!
     db.ref('rooms/' + code).set({
       hostJoined: true,
       guestJoined: false,
-      board: Array(9).fill(null),
+      board: Array(9).fill(null),  // <-- THIS WAS MISSING OR NULL
       turn: "X",
       winner: null,
       reset: false
     });
-    // Listen for guest join
+    
     db.ref('rooms/' + code + '/guestJoined').on('value', snapshot => {
       if (snapshot.val()) {
-        sessionStorage.setItem('roomCode', code);
         startGameSession(code, true, "X", "O");
       }
     });
@@ -61,6 +62,7 @@ if (joinRoomBtn) {
     roomCodeInput.disabled = true;
     joinStatus.textContent = "Checking room...";
     joinStatus.classList.remove("error");
+    
     db.ref('rooms/' + code).once('value').then(snapshot => {
       if (!snapshot.exists() || snapshot.val().guestJoined) {
         joinStatus.textContent = "Room not found or already full.";

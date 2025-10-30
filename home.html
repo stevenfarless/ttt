@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TTT - Multiplayer 1</title>
+  <title>TTT - Multiplayer</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="home.css">
 </head>
 <body>
   <div class="home-container">
-    <h1>TTT Multiplayer 2</h1>
+    <h1>TTT Multiplayer</h1>
     <div class="room-section">
       <h2>Create Room</h2>
       <button id="createRoomBtn" class="button">Create New Room</button>
@@ -24,9 +24,10 @@
       <div id="joinStatus" class="status"></div>
     </div>
   </div>
-  <!-- Firebase SDK and config -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
+  
+  <!-- Firebase v8 SDK (compat mode) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyB7CW4zuf7KmqlsWWmlNf8GIqncCVAmZlg",

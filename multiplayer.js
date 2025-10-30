@@ -110,7 +110,7 @@ if (joinRoomBtn) {
       const hostEmoji = snapshot.val().hostEmoji;
       
       if (myEmoji === hostEmoji) {
-        joinStatus.textContent = "❌ Can't use the same emoji as the host!";
+        joinStatus.textContent = "❌ Same as other player, choose another one";
         joinStatus.classList.add("error");
         joinRoomBtn.disabled = false;
         roomCodeInput.disabled = false;

@@ -2,6 +2,25 @@ const DEBUG = true;
 
 const db = firebase.database();
 
+// EMOJI PICKER FUNCTIONALITY
+const emojiDisplay = document.getElementById('emojiDisplay');
+const emojiPicker = document.getElementById('emojiPicker');
+const emojiOptions = document.querySelectorAll('.emoji-option');
+
+if (emojiDisplay) {
+  emojiDisplay.addEventListener('click', () => {
+    emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'grid' : 'none';
+  });
+
+  emojiOptions.forEach(option => {
+    option.addEventListener('click', (e) => {
+      const selectedEmoji = e.target.getAttribute('data-emoji');
+      emojiDisplay.textContent = selectedEmoji;
+      emojiPicker.style.display = 'none';
+    });
+  });
+}
+
 const createRoomBtn = document.getElementById('createRoomBtn');
 const joinRoomBtn = document.getElementById('joinRoomBtn');
 const roomCodeInput = document.getElementById('roomCodeInput');

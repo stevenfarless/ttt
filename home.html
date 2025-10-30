@@ -10,9 +10,13 @@
   <div id="menu-container">
     <h1>Tic-Tac-Toe Multiplayer</h1>
 
+    <div id="emoji-selector">
+      <label for="myEmoji">Your Game Piece:</label>
+      <input type="text" id="myEmoji" placeholder="🎮" maxlength="2" value="🎮">
+    </div>
+
     <div id="create-section">
       <h2>Create New Room</h2>
-      <input type="text" id="myEmoji" placeholder="Enter your emoji" maxlength="2" value="🎮">
       <button id="createRoomBtn">Create Room</button>
       <p id="roomCodeDisplay"></p>
       <p id="createStatus"></p>

@@ -1,117 +1,104 @@
-/* home.css - Home screen styling */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
-    font-family: sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #282a36;
-    margin: 0;
-    padding: 10px;
+  background-color: #282a36;
+  color: #f8f8f2;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 
-.home-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    padding: 40px 20px;
-}
-
-.room-section {
-    background-color: #44475a;
-    padding: 30px;
-    border-radius: 10px;
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
-}
-
-.room-code-display {
-    background-color: #6272a4;
-    padding: 20px;
-    border-radius: 5px;
-    font-size: 32px;
-    font-weight: bold;
-    color: #f1fa8c;
-    margin: 20px 0;
-    letter-spacing: 4px;
-    word-break: break-all;
-}
-
-.button {
-    padding: 15px 30px;
-    border: none;
-    border-radius: 25px;
-    background-color: #50fa7b;
-    color: #282a36;
-    cursor: pointer;
-    font-size: 18px;
-    font-weight: bold;
-    transition: all 0.3s ease;
-    width: 100%;
-    margin-top: 10px;
-}
-
-.button:hover {
-    background-color: #f1fa8c;
-    transform: scale(1.05);
-}
-
-.button:disabled {
-    background-color: #6272a4;
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-
-.status {
-    color: #50fa7b;
-    font-size: 16px;
-    margin-top: 15px;
-    min-height: 24px;
-}
-
-.divider {
-    color: #f8f8f2;
-    margin: 20px 0;
-    font-size: 18px;
+#menu-container {
+  background-color: #44475a;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  max-width: 400px;
+  width: 90%;
 }
 
 h1 {
-    color: #f8f8f2;
-    font-size: 36px;
-    margin-bottom: 10px;
+  text-align: center;
+  margin-bottom: 30px;
+  color: #f8f8f2;
+  font-size: 32px;
 }
 
 h2 {
-    color: #bd93f9;
-    font-size: 24px;
-    margin-bottom: 20px;
+  color: #bd93f9;
+  margin-bottom: 15px;
+  font-size: 18px;
 }
 
-.error {
-    color: #ff5555;
+#create-section,
+#join-section {
+  margin-bottom: 40px;
 }
 
-input[type="text"] {
-    width: calc(100% - 24px);
-    padding: 12px;
-    margin-bottom: 10px;
-    border: 2px solid #6272a4;
-    border-radius: 5px;
-    background-color: #44475a;
-    color: #f8f8f2;
-    font-size: 20px;
-    text-align: center;
-    transition: border-color 0.3s ease;
+input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 2px solid #6272a4;
+  border-radius: 4px;
+  background-color: #44475a;
+  color: #f8f8f2;
+  font-size: 16px;
+  transition: border-color 0.3s;
 }
 
-input[type="text"]:focus {
-    outline: none;
-    border-color: #50fa7b;
+input:focus {
+  outline: none;
+  border-color: #50fa7b;
+  box-shadow: 0 0 5px rgba(80, 250, 123, 0.3);
 }
 
-input[type="text"]::placeholder {
-    color: #6272a4;
+input::placeholder {
+  color: #6272a4;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: #50fa7b;
+  color: #282a36;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #5eff85;
+}
+
+button:active {
+  background-color: #48d966;
+}
+
+p {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #f8f8f2;
+  text-align: center;
+  min-height: 20px;
+}
+
+p.error {
+  color: #ff5555;
+}
+
+#roomCodeDisplay {
+  font-size: 24px;
+  color: #50fa7b;
+  font-weight: bold;
+  letter-spacing: 2px;
 }

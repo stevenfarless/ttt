@@ -29,11 +29,11 @@ function updateFirebaseGame(data) {
 if (isMultiplayer && roomCode) {
   firebase.database().ref('rooms/' + roomCode).on('value', snapshot => {
     const data = snapshot.val();
-    if (!data) return;
+    if (!data || !data.board) return;  // <-- CRITICAL FIX: Check if board exists
     
     gameBoard = data.board;
     currentPlayer = data.turn;
-    moveCount = data.board.filter(cell => cell).length;
+    moveCount = data.board.filter(cell => cell !== null).length;  // <-- Also check for null explicitly
     
     // Turn logic - MUST BE CALCULATED FIRST
     isMyTurn = (currentPlayer === mySymbol && !data.winner);

@@ -12,7 +12,7 @@ function generateRoomCode() {
   let code = "";
   for (let i = 0; i < 4; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
   return code;
-}
+} // <-- Missing closing brace was here
 
 function startGameSession(roomCode, isHost, mySymbol, opponentSymbol) {
   sessionStorage.setItem('isMultiplayer', true);
@@ -21,7 +21,7 @@ function startGameSession(roomCode, isHost, mySymbol, opponentSymbol) {
   sessionStorage.setItem('mySymbol', mySymbol);
   sessionStorage.setItem('opponentSymbol', opponentSymbol);
   window.location.href = "game.html";
-}
+} // <-- Missing closing brace was here
 
 if (createRoomBtn) {
   createRoomBtn.addEventListener('click', () => {

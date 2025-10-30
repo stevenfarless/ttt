@@ -6,25 +6,29 @@ const roomCodeInput = document.getElementById('roomCodeInput');
 const roomCodeDisplay = document.getElementById('roomCodeDisplay');
 const createStatus = document.getElementById('createStatus');
 const joinStatus = document.getElementById('joinStatus');
+const hostEmojiInput = document.getElementById('hostEmoji');
+const guestEmojiInput = document.getElementById('guestEmoji');
 
 function generateRoomCode() {
-  const chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  const chars = "ABCDEFGHJKMNPQRSTUVWXYZ123456789";
   let code = "";
   for (let i = 0; i < 4; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
   return code;
 }
 
-function startGameSession(roomCode, isHost, mySymbol, opponentSymbol) {
+function startGameSession(roomCode, isHost, myEmoji, opponentEmoji) {
   sessionStorage.setItem('isMultiplayer', 'true');
   sessionStorage.setItem('isHost', isHost.toString());
   sessionStorage.setItem('roomCode', roomCode);
-  sessionStorage.setItem('mySymbol', mySymbol);
-  sessionStorage.setItem('opponentSymbol', opponentSymbol);
+  sessionStorage.setItem('mySymbol', myEmoji);
+  sessionStorage.setItem('opponentSymbol', opponentEmoji);
   window.location.href = "game.html";
 }
 
 if (createRoomBtn) {
   createRoomBtn.addEventListener('click', () => {
+    const hostEmoji = hostEmojiInput.value.trim() || "🎮";
+    
     createRoomBtn.disabled = true;
     const code = generateRoomCode();
     roomCodeDisplay.textContent = code;
@@ -32,23 +36,21 @@ if (createRoomBtn) {
     createStatus.textContent = "Waiting for player to join...";
     createStatus.classList.remove("error");
     
-    // CRITICAL FIX - Use explicit array notation that Firebase can store properly
     db.ref('rooms/' + code).set({
       hostJoined: true,
       guestJoined: false,
-      board: [null, null, null, null, null, null, null, null, null],  // <-- EXPLICIT ARRAY
-      turn: "X",
+      hostEmoji: hostEmoji,
+      guestEmoji: null,
+      board: [null, null, null, null, null, null, null, null, null],
+      turn: hostEmoji,
       winner: null,
       reset: false
-    }).then(() => {
-      console.log("Room created successfully with board:", code);
-    }).catch(err => {
-      console.error("Error creating room:", err);
     });
     
-    db.ref('rooms/' + code + '/guestJoined').on('value', snapshot => {
-      if (snapshot.val()) {
-        startGameSession(code, true, "X", "O");
+    db.ref('rooms/' + code).on('value', snapshot => {
+      const data = snapshot.val();
+      if (data && data.guestJoined && data.guestEmoji) {
+        startGameSession(code, true, hostEmoji, data.guestEmoji);
       }
     });
   });
@@ -57,6 +59,8 @@ if (createRoomBtn) {
 if (joinRoomBtn) {
   joinRoomBtn.addEventListener('click', () => {
     const code = roomCodeInput.value.trim().toUpperCase();
+    const guestEmoji = guestEmojiInput.value.trim() || "🚀";
+    
     if (!code || code.length !== 4) {
       joinStatus.textContent = "Enter 4-character code";
       joinStatus.classList.add("error");
@@ -75,10 +79,15 @@ if (joinRoomBtn) {
         roomCodeInput.disabled = false;
         return;
       }
+      
+      const hostEmoji = snapshot.val().hostEmoji;
+      
       db.ref('rooms/' + code).update({
-        guestJoined: true
+        guestJoined: true,
+        guestEmoji: guestEmoji
       });
-      startGameSession(code, false, "O", "X");
+      
+      startGameSession(code, false, guestEmoji, hostEmoji);
     });
   });
 }

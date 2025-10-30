@@ -32,14 +32,18 @@ if (createRoomBtn) {
     createStatus.textContent = "Waiting for player to join...";
     createStatus.classList.remove("error");
     
-    // THIS IS THE FIX - board MUST be initialized!
+    // CRITICAL FIX - Use explicit array notation that Firebase can store properly
     db.ref('rooms/' + code).set({
       hostJoined: true,
       guestJoined: false,
-      board: Array(9).fill(null),  // <-- THIS WAS MISSING OR NULL
+      board: [null, null, null, null, null, null, null, null, null],  // <-- EXPLICIT ARRAY
       turn: "X",
       winner: null,
       reset: false
+    }).then(() => {
+      console.log("Room created successfully with board:", code);
+    }).catch(err => {
+      console.error("Error creating room:", err);
     });
     
     db.ref('rooms/' + code + '/guestJoined').on('value', snapshot => {

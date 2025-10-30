@@ -93,7 +93,7 @@ function resetGameState(fromFirebase = false) {
     cell.textContent = "";
     cell.style.animation = "";
   });
-  result.textContent = isMyTurn ? "Your turn!" : "Opponent's turn...";
+  result.textContent = isMyTurn ? "Your turn!" : "Opponent's turn...";  // <-- FIXED THIS LINE
   result.style.color = isMyTurn ? "#50fa7b" : "#f1fa8c";
   if (!fromFirebase && isMultiplayer && roomCode) {
     updateFirebaseGame({

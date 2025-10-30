@@ -1,102 +1,169 @@
-const DEBUG = true;
-
 const db = firebase.database();
 
-const createRoomBtn = document.getElementById('createRoomBtn');
-const joinRoomBtn = document.getElementById('joinRoomBtn');
-const roomCodeInput = document.getElementById('roomCodeInput');
-const roomCodeDisplay = document.getElementById('roomCodeDisplay');
-const createStatus = document.getElementById('createStatus');
-const joinStatus = document.getElementById('joinStatus');
-const myEmojiInput = document.getElementById('myEmoji');
+const player1Indicator = document.getElementById('player1-indicator');
+const player2Indicator = document.getElementById('player2-indicator');
+const player1Emoji = document.getElementById('player1-emoji');
+const player2Emoji = document.getElementById('player2-emoji');
+const cells = document.querySelectorAll('.cell');
+const result = document.getElementById('result');
+const resetButton = document.getElementById('reset');
+const backToMenuBtn = document.getElementById('backToMenu');
 
-function debug(...args) {
-  if (DEBUG) console.log(...args);
+let roomCode = sessionStorage.getItem('roomCode');
+let isHost = sessionStorage.getItem('isHost') === "true";
+let mySymbol = sessionStorage.getItem('mySymbol') || "🎮";
+let opponentSymbol = sessionStorage.getItem('opponentSymbol') || "🚀";
+let isMultiplayer = sessionStorage.getItem('isMultiplayer') === "true";
+
+let gameBoard = Array(9).fill(null);
+let gameActive = false;
+let currentPlayer = mySymbol;
+let isMyTurn = true;
+let moveCount = 0;
+
+// Set player emojis in indicators
+player1Emoji.textContent = mySymbol;
+player2Emoji.textContent = opponentSymbol;
+
+function updateTurnHighlight() {
+  if (isMyTurn) {
+    player1Indicator.classList.add('active');
+    player1Indicator.classList.remove('inactive');
+    player2Indicator.classList.remove('active');
+    player2Indicator.classList.add('inactive');
+  } else {
+    player2Indicator.classList.add('active');
+    player2Indicator.classList.remove('inactive');
+    player1Indicator.classList.remove('active');
+    player1Indicator.classList.add('inactive');
+  }
 }
 
-function generateRoomCode() {
-  const chars = "ABCDEFGHJKMNPQRSTUVWXYZ123456789";
-  let code = "";
-  for (let i = 0; i < 4; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
-  return code;
+function updateFirebaseGame(data) {
+  firebase.database().ref('rooms/' + roomCode).update(data);
 }
 
-function startGameSession(roomCode, isHost, myEmoji, opponentEmoji) {
-  sessionStorage.setItem('isMultiplayer', 'true');
-  sessionStorage.setItem('isHost', isHost.toString());
-  sessionStorage.setItem('roomCode', roomCode);
-  sessionStorage.setItem('mySymbol', myEmoji);
-  sessionStorage.setItem('opponentSymbol', opponentEmoji);
-  window.location.href = "game.html";
-}
-
-if (createRoomBtn) {
-  createRoomBtn.addEventListener('click', () => {
-    const myEmoji = myEmojiInput.value.trim() || "🎮";
+function updateCells() {
+  cells.forEach((cell, i) => {
+    cell.textContent = gameBoard[i] || "";
     
-    createRoomBtn.disabled = true;
-    const code = generateRoomCode();
-    roomCodeDisplay.textContent = code;
-    roomCodeDisplay.style.display = "block";
-    createStatus.textContent = "Waiting for player to join...";
-    createStatus.classList.remove("error");
-    
-    db.ref('rooms/' + code).set({
-      hostJoined: true,
-      guestJoined: false,
-      hostEmoji: myEmoji,
-      guestEmoji: null,
-      board: [null, null, null, null, null, null, null, null, null],
-      turn: myEmoji,
-      winner: null,
-      reset: false
-    }).then(() => {
-      debug("Room created successfully with code:", code);
-    }).catch(err => {
-      console.error("Error creating room:", err);
-    });
-    
-    db.ref('rooms/' + code).on('value', snapshot => {
-      const data = snapshot.val();
-      if (data && data.guestJoined && data.guestEmoji) {
-        startGameSession(code, true, myEmoji, data.guestEmoji);
-      }
-    });
-  });
-}
-
-if (joinRoomBtn) {
-  joinRoomBtn.addEventListener('click', () => {
-    const code = roomCodeInput.value.trim().toUpperCase();
-    const myEmoji = myEmojiInput.value.trim() || "🚀";
-    
-    if (!code || code.length !== 4) {
-      joinStatus.textContent = "Enter 4-character code";
-      joinStatus.classList.add("error");
-      return;
+    // CRITICAL: Set data-player BASED ON THE EMOJI, NOT INDEX
+    if (gameBoard[i] === mySymbol) {
+      cell.setAttribute('data-player', 'player1');
+    } else if (gameBoard[i] === opponentSymbol) {
+      cell.setAttribute('data-player', 'player2');
+    } else {
+      cell.setAttribute('data-player', '');
     }
-    joinRoomBtn.disabled = true;
-    roomCodeInput.disabled = true;
-    joinStatus.textContent = "Checking room...";
-    joinStatus.classList.remove("error");
-    
-    db.ref('rooms/' + code).once('value').then(snapshot => {
-      if (!snapshot.exists() || snapshot.val().guestJoined) {
-        joinStatus.textContent = "Room not found or already full.";
-        joinStatus.classList.add("error");
-        joinRoomBtn.disabled = false;
-        roomCodeInput.disabled = false;
-        return;
-      }
-      
-      const hostEmoji = snapshot.val().hostEmoji;
-      
-      db.ref('rooms/' + code).update({
-        guestJoined: true,
-        guestEmoji: myEmoji
-      });
-      
-      startGameSession(code, false, myEmoji, hostEmoji);
-    });
   });
 }
+
+if (isMultiplayer && roomCode) {
+  firebase.database().ref('rooms/' + roomCode).on('value', snapshot => {
+    const data = snapshot.val();
+    
+    if (!data) return;
+    
+    if (data.board) {
+      gameBoard = Array(9).fill(null);
+      Object.keys(data.board).forEach(key => {
+        const index = parseInt(key);
+        if (!isNaN(index) && index >= 0 && index < 9) {
+          gameBoard[index] = data.board[key];
+        }
+      });
+    } else {
+      gameBoard = Array(9).fill(null);
+    }
+    
+    currentPlayer = data.turn || mySymbol;
+    moveCount = gameBoard.filter(cell => cell !== null).length;
+    
+    isMyTurn = (currentPlayer === mySymbol && !data.winner);
+    
+    // UPDATE ALL CELLS WITH CORRECT PLAYER COLORS
+    updateCells();
+    
+    if (data.winner) {
+      result.textContent = (data.winner === mySymbol) ? "You won! 🎉" : (data.winner === "draw" ? "It's a draw! 🤝" : "Opponent won! 😔");
+      result.style.color = "#f1fa8c";
+      gameActive = false;
+      player1Indicator.classList.remove('active', 'inactive');
+      player2Indicator.classList.remove('active', 'inactive');
+    } else {
+      result.textContent = isMyTurn ? "Your turn!" : "Opponent's turn...";
+      result.style.color = isMyTurn ? "#50fa7b" : "#f1fa8c";
+      gameActive = true;
+      updateTurnHighlight();
+    }
+    
+    if (data.reset) resetGameState(true);
+  });
+}
+
+function handleCellClick(event) {
+  if (!gameActive || !isMyTurn) return;
+  const cellIndex = parseInt(event.target.id) - 1;
+  if (gameBoard[cellIndex]) return;
+  
+  gameBoard[cellIndex] = mySymbol;
+  moveCount++;
+  
+  const winner = checkWinner(gameBoard);
+  updateFirebaseGame({
+    board: gameBoard,
+    turn: opponentSymbol,
+    winner: winner ? mySymbol : (moveCount === 9 ? "draw" : null),
+    reset: false
+  });
+}
+
+function checkWinner(board) {
+  const wins = [
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6]
+  ];
+  for (let [a, b, c] of wins) {
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) return board[a];
+  }
+  return null;
+}
+
+function resetGameState(fromFirebase = false) {
+  gameBoard = Array(9).fill(null);
+  moveCount = 0;
+  currentPlayer = mySymbol;
+  isMyTurn = (currentPlayer === mySymbol);
+  gameActive = true;
+  cells.forEach(cell => {
+    cell.textContent = "";
+    cell.setAttribute('data-player', '');
+  });
+  result.textContent = isMyTurn ? "Your turn!" : "Opponent's turn...";
+  result.style.color = isMyTurn ? "#50fa7b" : "#f1fa8c";
+  updateTurnHighlight();
+  
+  if (!fromFirebase && isMultiplayer && roomCode) {
+    updateFirebaseGame({
+      board: gameBoard,
+      turn: mySymbol,
+      winner: null,
+      reset: true
+    });
+    setTimeout(() => updateFirebaseGame({reset: false}), 100);
+  }
+}
+
+cells.forEach(cell => {
+  cell.addEventListener('click', handleCellClick);
+});
+
+if (resetButton) resetButton.addEventListener('click', () => resetGameState(false));
+if (backToMenuBtn) backToMenuBtn.addEventListener('click', () => {
+  if (isMultiplayer && roomCode) firebase.database().ref('rooms/' + roomCode).remove();
+  sessionStorage.clear();
+  window.location.href = "home.html";
+});
+
+updateTurnHighlight();

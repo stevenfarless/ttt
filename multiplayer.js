@@ -27,7 +27,6 @@ const roomCodeInput = document.getElementById('roomCodeInput');
 const roomCodeDisplay = document.getElementById('roomCodeDisplay');
 const createStatus = document.getElementById('createStatus');
 const joinStatus = document.getElementById('joinStatus');
-const myEmojiInput = document.getElementById('myEmoji');
 
 function debug(...args) {
   if (DEBUG) console.log(...args);
@@ -51,7 +50,7 @@ function startGameSession(roomCode, isHost, myEmoji, opponentEmoji) {
 
 if (createRoomBtn) {
   createRoomBtn.addEventListener('click', () => {
-    const myEmoji = myEmojiInput.value.trim() || "🎮";
+    const myEmoji = emojiDisplay.textContent;
     
     createRoomBtn.disabled = true;
     const code = generateRoomCode();
@@ -87,7 +86,7 @@ if (createRoomBtn) {
 if (joinRoomBtn) {
   joinRoomBtn.addEventListener('click', () => {
     const code = roomCodeInput.value.trim().toUpperCase();
-    const myEmoji = myEmojiInput.value.trim() || "🚀";
+    const myEmoji = emojiDisplay.textContent;
     
     if (!code || code.length !== 4) {
       joinStatus.textContent = "Enter 4-character code";
@@ -110,7 +109,6 @@ if (joinRoomBtn) {
       
       const hostEmoji = snapshot.val().hostEmoji;
       
-      // CHECK IF EMOJIS ARE THE SAME
       if (myEmoji === hostEmoji) {
         joinStatus.textContent = "❌ Can't use the same emoji as the host!";
         joinStatus.classList.add("error");

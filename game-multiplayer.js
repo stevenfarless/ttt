@@ -30,14 +30,20 @@ if (isMultiplayer && roomCode) {
   firebase.database().ref('rooms/' + roomCode).on('value', snapshot => {
     const data = snapshot.val();
     if (!data) return;
+    
     gameBoard = data.board;
     currentPlayer = data.turn;
     moveCount = data.board.filter(cell => cell).length;
+    
+    // Turn logic - MUST BE CALCULATED FIRST
+    isMyTurn = (currentPlayer === mySymbol && !data.winner);
+    
     // Sync board to UI
     cells.forEach((cell, i) => {
       cell.textContent = gameBoard[i] || "";
       cell.style.animation = "";
     });
+    
     // Show result/winner
     if (data.winner) {
       result.textContent = (data.winner === mySymbol) ? "You won!" : (data.winner === "draw" ? "It's a draw!" : "Opponent won!");
@@ -48,8 +54,7 @@ if (isMultiplayer && roomCode) {
       result.style.color = isMyTurn ? "#50fa7b" : "#f1fa8c";
       gameActive = true;
     }
-    // Turn logic
-    isMyTurn = (currentPlayer === mySymbol && !data.winner);
+    
     // Handle reset
     if (data.reset) resetGameState(true);
   });
@@ -59,8 +64,10 @@ function handleCellClick(event) {
   if (!gameActive || !isMyTurn) return;
   const cellIndex = parseInt(event.target.id) - 1;
   if (gameBoard[cellIndex]) return;
+  
   gameBoard[cellIndex] = mySymbol;
   moveCount++;
+  
   // Check for win/draw
   const winner = checkWinner(gameBoard);
   updateFirebaseGame({
@@ -93,7 +100,7 @@ function resetGameState(fromFirebase = false) {
     cell.textContent = "";
     cell.style.animation = "";
   });
-  result.textContent = isMyTurn ? "Your turn!" : "Opponent's turn...";  // <-- FIXED THIS LINE
+  result.textContent = isMyTurn ? "Your turn!" : "Opponent's turn...";
   result.style.color = isMyTurn ? "#50fa7b" : "#f1fa8c";
   if (!fromFirebase && isMultiplayer && roomCode) {
     updateFirebaseGame({
@@ -102,7 +109,7 @@ function resetGameState(fromFirebase = false) {
       winner: null,
       reset: true
     });
-    setTimeout(() => updateFirebaseGame({reset: false}), 100); // Acknowledge reset
+    setTimeout(() => updateFirebaseGame({reset: false}), 100);
   }
 }
 

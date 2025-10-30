@@ -3,29 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TTT - Multiplayer</title>
-  <link rel="stylesheet" href="style.css">
+  <title>TTT - Multiplayer Menu</title>
   <link rel="stylesheet" href="home.css">
 </head>
 <body>
-  <div class="home-container">
-    <h1>TTT Multiplayer</h1>
-    <div class="room-section">
-      <h2>Create Room</h2>
-      <button id="createRoomBtn" class="button">Create New Room</button>
-      <div id="roomCodeDisplay" class="room-code-display" style="display: none;"></div>
-      <div id="createStatus" class="status"></div>
+  <div id="menu-container">
+    <h1>Tic-Tac-Toe Multiplayer</h1>
+    
+    <div id="create-section">
+      <h2>Create New Room</h2>
+      <label for="hostEmoji">Choose Your Emoji:</label>
+      <input type="text" id="hostEmoji" placeholder="🎮" maxlength="2" value="🎮">
+      <button id="createRoomBtn">Create Room</button>
+      <p id="roomCodeDisplay" style="display: none;"></p>
+      <p id="createStatus"></p>
     </div>
-    <div class="divider">OR</div>
-    <div class="room-section">
+    
+    <div id="join-section">
       <h2>Join Room</h2>
-      <input type="text" id="roomCodeInput" placeholder="Enter 4-Digit Code" maxlength="4" style="text-transform: uppercase;">
-      <button id="joinRoomBtn" class="button">Join Room</button>
-      <div id="joinStatus" class="status"></div>
+      <input type="text" id="roomCodeInput" placeholder="Enter Room Code" maxlength="4">
+      <label for="guestEmoji">Choose Your Emoji:</label>
+      <input type="text" id="guestEmoji" placeholder="🚀" maxlength="2" value="🚀">
+      <button id="joinRoomBtn">Join Room</button>
+      <p id="joinStatus"></p>
     </div>
   </div>
-  
-  <!-- Firebase v8 SDK (compat mode) -->
+
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script>

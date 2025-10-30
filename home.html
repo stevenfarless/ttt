@@ -6,9 +6,6 @@
   <title>TTT - Multiplayer</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="home.css">
-  <!-- Firebase App (core), Database -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
 </head>
 <body>
   <div class="home-container">
@@ -27,30 +24,22 @@
       <div id="joinStatus" class="status"></div>
     </div>
   </div>
-  <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyB7CW4zuf7KmqlsWWmlNf8GIqncCVAmZlg",
-    authDomain: "tic-tac-toe-80bd7.firebaseapp.com",
-    databaseURL: "https://tic-tac-toe-80bd7-default-rtdb.firebaseio.com",
-    projectId: "tic-tac-toe-80bd7",
-    storageBucket: "tic-tac-toe-80bd7.firebasestorage.app",
-    messagingSenderId: "423174319963",
-    appId: "1:423174319963:web:c5329be46c388da0eb347e",
-    measurementId: "G-2WC5RPCT3Q"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
+  <!-- Firebase SDK and config -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyB7CW4zuf7KmqlsWWmlNf8GIqncCVAmZlg",
+      authDomain: "tic-tac-toe-80bd7.firebaseapp.com",
+      databaseURL: "https://tic-tac-toe-80bd7-default-rtdb.firebaseio.com",
+      projectId: "tic-tac-toe-80bd7",
+      storageBucket: "tic-tac-toe-80bd7.firebasestorage.app",
+      messagingSenderId: "423174319963",
+      appId: "1:423174319963:web:c5329be46c388da0eb347e",
+      measurementId: "G-2WC5RPCT3Q"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
   <script src="multiplayer.js"></script>
 </body>
 </html>

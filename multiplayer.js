@@ -1,13 +1,3 @@
-// Replace this with your Firebase config (from Firebase console)
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  // ...other keys
-};
-
-firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 const createRoomBtn = document.getElementById('createRoomBtn');
@@ -41,7 +31,7 @@ if (createRoomBtn) {
     roomCodeDisplay.style.display = "block";
     createStatus.textContent = "Waiting for player to join...";
     createStatus.classList.remove("error");
-    firebase.database().ref('rooms/' + code).set({
+    db.ref('rooms/' + code).set({
       hostJoined: true,
       guestJoined: false,
       board: Array(9).fill(null),
@@ -50,7 +40,7 @@ if (createRoomBtn) {
       reset: false
     });
     // Listen for guest join
-    firebase.database().ref('rooms/' + code + '/guestJoined').on('value', snapshot => {
+    db.ref('rooms/' + code + '/guestJoined').on('value', snapshot => {
       if (snapshot.val()) {
         sessionStorage.setItem('roomCode', code);
         startGameSession(code, true, "X", "O");
@@ -71,8 +61,7 @@ if (joinRoomBtn) {
     roomCodeInput.disabled = true;
     joinStatus.textContent = "Checking room...";
     joinStatus.classList.remove("error");
-
-    firebase.database().ref('rooms/' + code).once('value').then(snapshot => {
+    db.ref('rooms/' + code).once('value').then(snapshot => {
       if (!snapshot.exists() || snapshot.val().guestJoined) {
         joinStatus.textContent = "Room not found or already full.";
         joinStatus.classList.add("error");
@@ -80,8 +69,7 @@ if (joinRoomBtn) {
         roomCodeInput.disabled = false;
         return;
       }
-      // Mark guest as joined
-      firebase.database().ref('rooms/' + code).update({
+      db.ref('rooms/' + code).update({
         guestJoined: true
       });
       startGameSession(code, false, "O", "X");

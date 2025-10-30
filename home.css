@@ -59,6 +59,7 @@ h1 {
   padding: 10px;
   justify-content: center;
   align-items: center;
+  line-height: 1;
 }
 
 .emoji-picker {
@@ -81,6 +82,11 @@ h1 {
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 45px;
 }
 
 .emoji-option:hover,
@@ -210,6 +216,7 @@ p.error {
     font-size: 1.13rem;
     padding: 3px 0;
     min-width: 0;
+    min-height: 40px;
   }
 
   #create-section,

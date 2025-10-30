@@ -1,104 +1,47 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe</title>
+  <link rel="stylesheet" href="home.css">
+</head>
+<body>
+  <div id="menu-container">
+    <h1>Tic-Tac-Toe Multiplayer</h1>
 
-body {
-  background-color: #282a36;
-  color: #f8f8f2;
-  font-family: Arial, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-}
+    <div id="create-section">
+      <h2>Create New Room</h2>
+      <input type="text" id="hostEmoji" placeholder="Enter emoji" maxlength="2" value="🎮">
+      <button id="createRoomBtn">Create Room</button>
+      <p id="roomCodeDisplay"></p>
+      <p id="createStatus"></p>
+    </div>
 
-#menu-container {
-  background-color: #44475a;
-  padding: 40px;
-  border-radius: 8px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  max-width: 400px;
-  width: 90%;
-}
+    <div id="join-section">
+      <h2>Join Room</h2>
+      <input type="text" id="roomCodeInput" placeholder="Enter room code">
+      <input type="text" id="guestEmoji" placeholder="Enter emoji" maxlength="2" value="🚀">
+      <button id="joinRoomBtn">Join Room</button>
+      <p id="joinStatus"></p>
+    </div>
+  </div>
 
-h1 {
-  text-align: center;
-  margin-bottom: 30px;
-  color: #f8f8f2;
-  font-size: 32px;
-}
-
-h2 {
-  color: #bd93f9;
-  margin-bottom: 15px;
-  font-size: 18px;
-}
-
-#create-section,
-#join-section {
-  margin-bottom: 40px;
-}
-
-input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 10px;
-  border: 2px solid #6272a4;
-  border-radius: 4px;
-  background-color: #44475a;
-  color: #f8f8f2;
-  font-size: 16px;
-  transition: border-color 0.3s;
-}
-
-input:focus {
-  outline: none;
-  border-color: #50fa7b;
-  box-shadow: 0 0 5px rgba(80, 250, 123, 0.3);
-}
-
-input::placeholder {
-  color: #6272a4;
-}
-
-button {
-  width: 100%;
-  padding: 12px;
-  background-color: #50fa7b;
-  color: #282a36;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-button:hover {
-  background-color: #5eff85;
-}
-
-button:active {
-  background-color: #48d966;
-}
-
-p {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #f8f8f2;
-  text-align: center;
-  min-height: 20px;
-}
-
-p.error {
-  color: #ff5555;
-}
-
-#roomCodeDisplay {
-  font-size: 24px;
-  color: #50fa7b;
-  font-weight: bold;
-  letter-spacing: 2px;
-}
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyB7CW4zuf7KmqlsWWmlNf8GIqncCVAmZlg",
+      authDomain: "tic-tac-toe-80bd7.firebaseapp.com",
+      databaseURL: "https://tic-tac-toe-80bd7-default-rtdb.firebaseio.com",
+      projectId: "tic-tac-toe-80bd7",
+      storageBucket: "tic-tac-toe-80bd7.firebasestorage.app",
+      messagingSenderId: "423174319963",
+      appId: "1:423174319963:web:c5329be46c388da0eb347e",
+      measurementId: "G-2WC5RPCT3Q"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+  <script src="multiplayer.js"></script>
+</body>
+</html>

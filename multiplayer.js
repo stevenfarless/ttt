@@ -1,10 +1,14 @@
-// multiplayer.js - Handles room creation, joining, and peer connections
+// Replace this with your Firebase config (from Firebase console)
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+  projectId: "YOUR_PROJECT_ID",
+  // ...other keys
+};
 
-let peer = null;
-let conn = null;
-let isHost = false;
-let mySymbol = '';
-let opponentSymbol = '';
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
 const createRoomBtn = document.getElementById('createRoomBtn');
 const joinRoomBtn = document.getElementById('joinRoomBtn');
@@ -13,154 +17,74 @@ const roomCodeDisplay = document.getElementById('roomCodeDisplay');
 const createStatus = document.getElementById('createStatus');
 const joinStatus = document.getElementById('joinStatus');
 
-function initPeer(roomCode = null) {
-    const config = {
-        debug: 2,
-        config: {
-            iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' },
-                {
-                    urls: 'turn:openrelay.metered.ca:80',
-                    username: 'openrelayproject',
-                    credential: 'openrelayproject'
-                },
-                {
-                    urls: 'turn:openrelay.metered.ca:443',
-                    username: 'openrelayproject',
-                    credential: 'openrelayproject'
-                },
-                {
-                    urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-                    username: 'openrelayproject',
-                    credential: 'openrelayproject'
-                },
-                {
-                    urls: 'turn:relay1.expressturn.com:3478',
-                    username: 'ef3N5RMW42DAXRQEOT',
-                    credential: 'sxNiOHPmVPa1bpH83O'
-                }
-            ]
-        }
-    };
-    
-    if (roomCode) {
-        peer = new Peer(config);
-    } else {
-        const customId = generateRoomCode();
-        peer = new Peer(customId, config);
-    }
-
-    peer.on('open', (id) => {
-        console.log('✅ Peer opened:', id);
-        sessionStorage.setItem('myPeerId', id);
-        
-        if (!roomCode) {
-            isHost = true;
-            mySymbol = '❌';
-            opponentSymbol = '⭕';
-            displayRoomCode(id);
-            createStatus.textContent = 'Waiting for player to join...';
-            createStatus.classList.remove('error');
-        }
-    });
-
-    peer.on('connection', (connection) => {
-        console.log('👑 Host received connection');
-        conn = connection;
-        sessionStorage.setItem('remotePeerId', connection.peer);
-        
-        conn.on('open', () => {
-            console.log('✅ Connection opened');
-            createStatus.textContent = 'Player joined! Starting game...';
-            setTimeout(() => startGame(), 1000);
-        });
-    });
-
-    peer.on('error', (err) => {
-        console.error('❌ Peer error:', err);
-        const errorMsg = 'Connection error. Try again.';
-        if (isHost) {
-            createStatus.textContent = errorMsg;
-            createStatus.classList.add('error');
-        } else {
-            joinStatus.textContent = errorMsg;
-            joinStatus.classList.add('error');
-        }
-    });
-}
-
 function generateRoomCode() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = '';
-    for (let i = 0; i < 4; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return code;
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let code = "";
+  for (let i = 0; i < 4; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+  return code;
 }
 
-function displayRoomCode(code) {
-    roomCodeDisplay.textContent = code;
-    roomCodeDisplay.style.display = 'block';
+function startGameSession(roomCode, isHost, mySymbol, opponentSymbol) {
+  sessionStorage.setItem('isMultiplayer', true);
+  sessionStorage.setItem('isHost', isHost.toString());
+  sessionStorage.setItem('roomCode', roomCode);
+  sessionStorage.setItem('mySymbol', mySymbol);
+  sessionStorage.setItem('opponentSymbol', opponentSymbol);
+  window.location.href = "game.html";
 }
 
 if (createRoomBtn) {
-    createRoomBtn.addEventListener('click', () => {
-        sessionStorage.clear();
-        createRoomBtn.disabled = true;
-        initPeer();
+  createRoomBtn.addEventListener('click', () => {
+    createRoomBtn.disabled = true;
+    const code = generateRoomCode();
+    roomCodeDisplay.textContent = code;
+    roomCodeDisplay.style.display = "block";
+    createStatus.textContent = "Waiting for player to join...";
+    createStatus.classList.remove("error");
+    firebase.database().ref('rooms/' + code).set({
+      hostJoined: true,
+      guestJoined: false,
+      board: Array(9).fill(null),
+      turn: "X",
+      winner: null,
+      reset: false
     });
+    // Listen for guest join
+    firebase.database().ref('rooms/' + code + '/guestJoined').on('value', snapshot => {
+      if (snapshot.val()) {
+        sessionStorage.setItem('roomCode', code);
+        startGameSession(code, true, "X", "O");
+      }
+    });
+  });
 }
 
 if (joinRoomBtn) {
-    joinRoomBtn.addEventListener('click', () => {
-        const roomCode = roomCodeInput.value.trim().toUpperCase();
-        if (!roomCode || roomCode.length !== 4) {
-            joinStatus.textContent = 'Enter 4-character code';
-            joinStatus.classList.add('error');
-            return;
-        }
+  joinRoomBtn.addEventListener('click', () => {
+    const code = roomCodeInput.value.trim().toUpperCase();
+    if (!code || code.length !== 4) {
+      joinStatus.textContent = "Enter 4-character code";
+      joinStatus.classList.add("error");
+      return;
+    }
+    joinRoomBtn.disabled = true;
+    roomCodeInput.disabled = true;
+    joinStatus.textContent = "Checking room...";
+    joinStatus.classList.remove("error");
 
-        sessionStorage.clear();
-        joinRoomBtn.disabled = true;
-        roomCodeInput.disabled = true;
-        joinStatus.textContent = 'Connecting...';
-        joinStatus.classList.remove('error');
-
-        isHost = false;
-        mySymbol = '⭕';
-        opponentSymbol = '❌';
-        sessionStorage.setItem('remotePeerId', roomCode);
-
-        initPeer(roomCode);
-
-        setTimeout(() => {
-            console.log('🔌 Connecting to:', roomCode);
-            conn = peer.connect(roomCode, { reliable: true });
-
-            conn.on('open', () => {
-                console.log('✅ Connected!');
-                joinStatus.textContent = 'Connected! Starting...';
-                setTimeout(() => startGame(), 1000);
-            });
-
-            conn.on('error', (err) => {
-                console.error('❌ Connection error:', err);
-                joinStatus.textContent = 'Failed. Check code.';
-                joinStatus.classList.add('error');
-                joinRoomBtn.disabled = false;
-                roomCodeInput.disabled = false;
-            });
-        }, 1500);
+    firebase.database().ref('rooms/' + code).once('value').then(snapshot => {
+      if (!snapshot.exists() || snapshot.val().guestJoined) {
+        joinStatus.textContent = "Room not found or already full.";
+        joinStatus.classList.add("error");
+        joinRoomBtn.disabled = false;
+        roomCodeInput.disabled = false;
+        return;
+      }
+      // Mark guest as joined
+      firebase.database().ref('rooms/' + code).update({
+        guestJoined: true
+      });
+      startGameSession(code, false, "O", "X");
     });
-}
-
-function startGame() {
-    sessionStorage.setItem('isMultiplayer', 'true');
-    sessionStorage.setItem('isHost', isHost.toString());
-    sessionStorage.setItem('mySymbol', mySymbol);
-    sessionStorage.setItem('opponentSymbol', opponentSymbol);
-    
-    console.log('🎮 Starting game - stored session data');
-    window.location.href = 'game.html';
+  });
 }

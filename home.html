@@ -1,34 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TTT - Multiplayer</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="home.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TTT - Multiplayer</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="home.css">
+  <!-- Firebase App (core), Database -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
 </head>
 <body>
-    <div class="home-container">
-        <h1>🎮 TTT Multiplayer 6</h1>
-        
-        <div class="room-section">
-            <h2>Create Room</h2>
-            <button id="createRoomBtn" class="button">Create New Room</button>
-            <div id="roomCodeDisplay" class="room-code-display" style="display: none;"></div>
-            <div id="createStatus" class="status"></div>
-        </div>
-
-        <div class="divider">OR</div>
-
-        <div class="room-section">
-            <h2>Join Room</h2>
-            <input type="text" id="roomCodeInput" placeholder="Enter 4-Digit Code" maxlength="4" style="text-transform: uppercase;">
-            <button id="joinRoomBtn" class="button">Join Room</button>
-            <div id="joinStatus" class="status"></div>
-        </div>
+  <div class="home-container">
+    <h1>TTT Multiplayer</h1>
+    <div class="room-section">
+      <h2>Create Room</h2>
+      <button id="createRoomBtn" class="button">Create New Room</button>
+      <div id="roomCodeDisplay" class="room-code-display" style="display: none;"></div>
+      <div id="createStatus" class="status"></div>
     </div>
+    <div class="divider">OR</div>
+    <div class="room-section">
+      <h2>Join Room</h2>
+      <input type="text" id="roomCodeInput" placeholder="Enter 4-Digit Code" maxlength="4" style="text-transform: uppercase;">
+      <button id="joinRoomBtn" class="button">Join Room</button>
+      <div id="joinStatus" class="status"></div>
+    </div>
+  </div>
+  <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
-    <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="multiplayer.js"></script>
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyB7CW4zuf7KmqlsWWmlNf8GIqncCVAmZlg",
+    authDomain: "tic-tac-toe-80bd7.firebaseapp.com",
+    databaseURL: "https://tic-tac-toe-80bd7-default-rtdb.firebaseio.com",
+    projectId: "tic-tac-toe-80bd7",
+    storageBucket: "tic-tac-toe-80bd7.firebasestorage.app",
+    messagingSenderId: "423174319963",
+    appId: "1:423174319963:web:c5329be46c388da0eb347e",
+    measurementId: "G-2WC5RPCT3Q"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+  <script src="multiplayer.js"></script>
 </body>
 </html>

@@ -1,8 +1,9 @@
-// Firebase config and initialization (skipped here - already called in HTML)
 const db = firebase.database();
 
-const playerOneInput = document.getElementById('playerOneInput');
-const playerTwoInput = document.getElementById('playerTwoInput');
+const player1Indicator = document.getElementById('player1-indicator');
+const player2Indicator = document.getElementById('player2-indicator');
+const player1Emoji = document.getElementById('player1-emoji');
+const player2Emoji = document.getElementById('player2-emoji');
 const cells = document.querySelectorAll('.cell');
 const result = document.getElementById('result');
 const resetButton = document.getElementById('reset');
@@ -10,38 +11,45 @@ const backToMenuBtn = document.getElementById('backToMenu');
 
 let roomCode = sessionStorage.getItem('roomCode');
 let isHost = sessionStorage.getItem('isHost') === "true";
-let mySymbol = sessionStorage.getItem('mySymbol') || "X";
-let opponentSymbol = sessionStorage.getItem('opponentSymbol') || "O";
+let mySymbol = sessionStorage.getItem('mySymbol') || "🎮";
+let opponentSymbol = sessionStorage.getItem('opponentSymbol') || "🚀";
 let isMultiplayer = sessionStorage.getItem('isMultiplayer') === "true";
 
 let gameBoard = Array(9).fill(null);
 let gameActive = false;
-let currentPlayer = "X";
-let isMyTurn = (mySymbol === "X");
+let currentPlayer = mySymbol;
+let isMyTurn = true;
 let moveCount = 0;
 
-// DEBUG LOG
-console.log("DEBUG: roomCode=" + roomCode + ", isMultiplayer=" + isMultiplayer);
+// Set player emojis in indicators
+player1Emoji.textContent = mySymbol;
+player2Emoji.textContent = opponentSymbol;
 
-// Helper to update Firebase DB with moves
+function updateTurnHighlight() {
+  if (isMyTurn) {
+    player1Indicator.classList.add('active');
+    player1Indicator.classList.remove('inactive');
+    player2Indicator.classList.remove('active');
+    player2Indicator.classList.add('inactive');
+  } else {
+    player2Indicator.classList.add('active');
+    player2Indicator.classList.remove('inactive');
+    player1Indicator.classList.remove('active');
+    player1Indicator.classList.add('inactive');
+  }
+}
+
 function updateFirebaseGame(data) {
   firebase.database().ref('rooms/' + roomCode).update(data);
 }
 
-// Listen to Firebase Board/Turn
 if (isMultiplayer && roomCode) {
-  console.log("Starting Firebase listener for room: " + roomCode);
   firebase.database().ref('rooms/' + roomCode).on('value', snapshot => {
     const data = snapshot.val();
-    console.log("Firebase data received:", data);
-    
-    // Check if data exists
     if (!data) return;
     
-    // Convert Firebase board (which might be sparse) to full array
     if (data.board) {
       gameBoard = Array(9).fill(null);
-      // Firebase stores arrays as objects with numeric keys
       Object.keys(data.board).forEach(key => {
         const index = parseInt(key);
         if (!isNaN(index) && index >= 0 && index < 9) {
@@ -49,38 +57,33 @@ if (isMultiplayer && roomCode) {
         }
       });
     } else {
-      // No board yet - initialize it
       gameBoard = Array(9).fill(null);
     }
     
-    currentPlayer = data.turn || "X";
+    currentPlayer = data.turn || mySymbol;
     moveCount = gameBoard.filter(cell => cell !== null).length;
     
-    // Turn logic
     isMyTurn = (currentPlayer === mySymbol && !data.winner);
     
-    // Sync board to UI
     cells.forEach((cell, i) => {
       cell.textContent = gameBoard[i] || "";
-      cell.style.animation = "";
     });
     
-    // Show result/winner
     if (data.winner) {
-      result.textContent = (data.winner === mySymbol) ? "You won!" : (data.winner === "draw" ? "It's a draw!" : "Opponent won!");
+      result.textContent = (data.winner === mySymbol) ? "You won! 🎉" : (data.winner === "draw" ? "It's a draw! 🤝" : "Opponent won! 😔");
       result.style.color = "#f1fa8c";
       gameActive = false;
+      player1Indicator.classList.remove('active', 'inactive');
+      player2Indicator.classList.remove('active', 'inactive');
     } else {
       result.textContent = isMyTurn ? "Your turn!" : "Opponent's turn...";
       result.style.color = isMyTurn ? "#50fa7b" : "#f1fa8c";
       gameActive = true;
+      updateTurnHighlight();
     }
     
-    // Handle reset
     if (data.reset) resetGameState(true);
   });
-} else {
-  console.log("NOT starting Firebase listener. isMultiplayer=" + isMultiplayer + ", roomCode=" + roomCode);
 }
 
 function handleCellClick(event) {
@@ -115,31 +118,25 @@ function checkWinner(board) {
 function resetGameState(fromFirebase = false) {
   gameBoard = Array(9).fill(null);
   moveCount = 0;
-  currentPlayer = "X";
-  isMyTurn = (mySymbol === "X");
+  currentPlayer = mySymbol;
+  isMyTurn = (currentPlayer === mySymbol);
   gameActive = true;
   cells.forEach(cell => {
     cell.textContent = "";
-    cell.style.animation = "";
   });
   result.textContent = isMyTurn ? "Your turn!" : "Opponent's turn...";
   result.style.color = isMyTurn ? "#50fa7b" : "#f1fa8c";
+  updateTurnHighlight();
+  
   if (!fromFirebase && isMultiplayer && roomCode) {
     updateFirebaseGame({
       board: gameBoard,
-      turn: "X",
+      turn: mySymbol,
       winner: null,
       reset: true
     });
     setTimeout(() => updateFirebaseGame({reset: false}), 100);
   }
-}
-
-if (playerOneInput && playerTwoInput) {
-  playerOneInput.value = mySymbol;
-  playerTwoInput.value = opponentSymbol;
-  playerOneInput.disabled = true;
-  playerTwoInput.disabled = true;
 }
 
 cells.forEach(cell => {
@@ -152,3 +149,6 @@ if (backToMenuBtn) backToMenuBtn.addEventListener('click', () => {
   sessionStorage.clear();
   window.location.href = "home.html";
 });
+
+// Initial turn highlight
+updateTurnHighlight();

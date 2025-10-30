@@ -9,8 +9,18 @@
 <body>
   <div id="game-container">
     <h1>Tic-Tac-Toe</h1>
-    <input type="text" id="playerOneInput" placeholder="Player 1 (e.g., X)" maxlength="5">
-    <input type="text" id="playerTwoInput" placeholder="Player 2 (e.g., O)" maxlength="5">
+    
+    <div id="player-indicators">
+      <div id="player1-indicator" class="player-indicator">
+        <span id="player1-emoji">🎮</span>
+        <span class="player-label">You</span>
+      </div>
+      <div id="player2-indicator" class="player-indicator">
+        <span id="player2-emoji">🚀</span>
+        <span class="player-label">Opponent</span>
+      </div>
+    </div>
+    
     <div id="board">
       <div class="cell" id="1"></div>
       <div class="cell" id="2"></div>
@@ -22,11 +32,11 @@
       <div class="cell" id="8"></div>
       <div class="cell" id="9"></div>
     </div>
-    <p id="result">Connecting...</p>  <!-- CHANGED THIS LINE -->
+    <p id="result">Connecting...</p>
     <button id="backToMenu" style="display: none;">Back to Menu</button>
     <button id="reset">Reset Game</button>
   </div>
-  <!-- Firebase v8 SDK -->
+  
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script>

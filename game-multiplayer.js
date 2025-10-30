@@ -20,31 +20,34 @@ let currentPlayer = "X";
 let isMyTurn = (mySymbol === "X");
 let moveCount = 0;
 
+// DEBUG LOG
+console.log("DEBUG: roomCode=" + roomCode + ", isMultiplayer=" + isMultiplayer);
+
 // Helper to update Firebase DB with moves
 function updateFirebaseGame(data) {
   firebase.database().ref('rooms/' + roomCode).update(data);
 }
 
+// **THIS IS THE CRITICAL PART YOU'RE MISSING:**
 // Listen to Firebase Board/Turn
 if (isMultiplayer && roomCode) {
+  console.log("Starting Firebase listener for room: " + roomCode);
   firebase.database().ref('rooms/' + roomCode).on('value', snapshot => {
     const data = snapshot.val();
-    if (!data || !data.board) return;  // <-- CRITICAL FIX: Check if board exists
+    console.log("Firebase data received:", data);
+    if (!data || !data.board) return;
     
     gameBoard = data.board;
     currentPlayer = data.turn;
-    moveCount = data.board.filter(cell => cell !== null).length;  // <-- Also check for null explicitly
+    moveCount = data.board.filter(cell => cell !== null).length;
     
-    // Turn logic - MUST BE CALCULATED FIRST
     isMyTurn = (currentPlayer === mySymbol && !data.winner);
     
-    // Sync board to UI
     cells.forEach((cell, i) => {
       cell.textContent = gameBoard[i] || "";
       cell.style.animation = "";
     });
     
-    // Show result/winner
     if (data.winner) {
       result.textContent = (data.winner === mySymbol) ? "You won!" : (data.winner === "draw" ? "It's a draw!" : "Opponent won!");
       result.style.color = "#f1fa8c";
@@ -55,9 +58,10 @@ if (isMultiplayer && roomCode) {
       gameActive = true;
     }
     
-    // Handle reset
     if (data.reset) resetGameState(true);
   });
+} else {
+  console.log("NOT starting Firebase listener. isMultiplayer=" + isMultiplayer + ", roomCode=" + roomCode);
 }
 
 function handleCellClick(event) {
@@ -68,7 +72,6 @@ function handleCellClick(event) {
   gameBoard[cellIndex] = mySymbol;
   moveCount++;
   
-  // Check for win/draw
   const winner = checkWinner(gameBoard);
   updateFirebaseGame({
     board: gameBoard,
@@ -113,7 +116,6 @@ function resetGameState(fromFirebase = false) {
   }
 }
 
-// Input setup (names/symbols)
 if (playerOneInput && playerTwoInput) {
   playerOneInput.value = mySymbol;
   playerTwoInput.value = opponentSymbol;
@@ -121,12 +123,10 @@ if (playerOneInput && playerTwoInput) {
   playerTwoInput.disabled = true;
 }
 
-// Cell click listeners
 cells.forEach(cell => {
   cell.addEventListener('click', handleCellClick);
 });
 
-// Reset and menu
 if (resetButton) resetButton.addEventListener('click', () => resetGameState(false));
 if (backToMenuBtn) backToMenuBtn.addEventListener('click', () => {
   if (isMultiplayer && roomCode) firebase.database().ref('rooms/' + roomCode).remove();

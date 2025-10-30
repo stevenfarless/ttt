@@ -3,25 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TTT - Multiplayer Menu</title>
+  <title>Tic Tac Toe</title>
   <link rel="stylesheet" href="home.css">
 </head>
 <body>
   <div id="menu-container">
     <h1>Tic-Tac-Toe Multiplayer</h1>
-    
+
     <div id="create-section">
       <h2>Create New Room</h2>
-      <input type="text" id="hostEmoji" placeholder="Enter emoji" maxlength="2" value="🎮">
+      <input type="text" id="hostEmoji" placeholder="Your emoji" maxlength="2" value="🎮" style="margin-bottom: 10px;">
       <button id="createRoomBtn">Create Room</button>
-      <p id="roomCodeDisplay" style="display: none;"></p>
+      <p id="roomCodeDisplay"></p>
       <p id="createStatus"></p>
     </div>
-    
+
     <div id="join-section">
       <h2>Join Room</h2>
-      <input type="text" id="roomCodeInput" placeholder="Enter room code" maxlength="4">
-      <input type="text" id="guestEmoji" placeholder="Enter emoji" maxlength="2" value="🚀">
+      <input type="text" id="roomCodeInput" placeholder="Enter Room Code">
+      <input type="text" id="guestEmoji" placeholder="Your emoji" maxlength="2" value="🚀" style="margin-bottom: 10px;">
       <button id="joinRoomBtn">Join Room</button>
       <p id="joinStatus"></p>
     </div>

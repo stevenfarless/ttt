@@ -1,3 +1,5 @@
+const DEBUG = true;
+
 const db = firebase.database();
 
 const createRoomBtn = document.getElementById('createRoomBtn');
@@ -7,7 +9,10 @@ const roomCodeDisplay = document.getElementById('roomCodeDisplay');
 const createStatus = document.getElementById('createStatus');
 const joinStatus = document.getElementById('joinStatus');
 const myEmojiInput = document.getElementById('myEmoji');
-const myEmoji2Input = document.getElementById('myEmoji2');
+
+function debug(...args) {
+  if (DEBUG) console.log(...args);
+}
 
 function generateRoomCode() {
   const chars = "ABCDEFGHJKMNPQRSTUVWXYZ123456789";
@@ -45,6 +50,10 @@ if (createRoomBtn) {
       turn: myEmoji,
       winner: null,
       reset: false
+    }).then(() => {
+      debug("Room created successfully with code:", code);
+    }).catch(err => {
+      console.error("Error creating room:", err);
     });
     
     db.ref('rooms/' + code).on('value', snapshot => {
@@ -59,7 +68,7 @@ if (createRoomBtn) {
 if (joinRoomBtn) {
   joinRoomBtn.addEventListener('click', () => {
     const code = roomCodeInput.value.trim().toUpperCase();
-    const myEmoji = myEmoji2Input.value.trim() || "🚀";
+    const myEmoji = myEmojiInput.value.trim() || "🚀";
     
     if (!code || code.length !== 4) {
       joinStatus.textContent = "Enter 4-character code";

@@ -46,6 +46,7 @@ function updateFirebaseGame(data) {
 if (isMultiplayer && roomCode) {
   firebase.database().ref('rooms/' + roomCode).on('value', snapshot => {
     const data = snapshot.val();
+    
     if (!data) return;
     
     if (data.board) {
@@ -65,8 +66,18 @@ if (isMultiplayer && roomCode) {
     
     isMyTurn = (currentPlayer === mySymbol && !data.winner);
     
+    // RENDER CELLS WITH COLOR GRADIENTS
     cells.forEach((cell, i) => {
       cell.textContent = gameBoard[i] || "";
+      
+      // Set data-player attribute for colored gradient backgrounds
+      if (gameBoard[i] === mySymbol) {
+        cell.setAttribute('data-player', 'player1');
+      } else if (gameBoard[i] === opponentSymbol) {
+        cell.setAttribute('data-player', 'player2');
+      } else {
+        cell.setAttribute('data-player', '');
+      }
     });
     
     if (data.winner) {
@@ -123,6 +134,7 @@ function resetGameState(fromFirebase = false) {
   gameActive = true;
   cells.forEach(cell => {
     cell.textContent = "";
+    cell.setAttribute('data-player', '');
   });
   result.textContent = isMyTurn ? "Your turn!" : "Opponent's turn...";
   result.style.color = isMyTurn ? "#50fa7b" : "#f1fa8c";
@@ -150,5 +162,4 @@ if (backToMenuBtn) backToMenuBtn.addEventListener('click', () => {
   window.location.href = "home.html";
 });
 
-// Initial turn highlight
 updateTurnHighlight();

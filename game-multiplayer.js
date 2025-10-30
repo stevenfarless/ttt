@@ -28,26 +28,44 @@ function updateFirebaseGame(data) {
   firebase.database().ref('rooms/' + roomCode).update(data);
 }
 
-// **THIS IS THE CRITICAL PART YOU'RE MISSING:**
 // Listen to Firebase Board/Turn
 if (isMultiplayer && roomCode) {
   console.log("Starting Firebase listener for room: " + roomCode);
   firebase.database().ref('rooms/' + roomCode).on('value', snapshot => {
     const data = snapshot.val();
     console.log("Firebase data received:", data);
-    if (!data || !data.board) return;
     
-    gameBoard = data.board;
-    currentPlayer = data.turn;
-    moveCount = data.board.filter(cell => cell !== null).length;
+    // Check if data exists
+    if (!data) return;
     
+    // Convert Firebase board (which might be sparse) to full array
+    if (data.board) {
+      gameBoard = Array(9).fill(null);
+      // Firebase stores arrays as objects with numeric keys
+      Object.keys(data.board).forEach(key => {
+        const index = parseInt(key);
+        if (!isNaN(index) && index >= 0 && index < 9) {
+          gameBoard[index] = data.board[key];
+        }
+      });
+    } else {
+      // No board yet - initialize it
+      gameBoard = Array(9).fill(null);
+    }
+    
+    currentPlayer = data.turn || "X";
+    moveCount = gameBoard.filter(cell => cell !== null).length;
+    
+    // Turn logic
     isMyTurn = (currentPlayer === mySymbol && !data.winner);
     
+    // Sync board to UI
     cells.forEach((cell, i) => {
       cell.textContent = gameBoard[i] || "";
       cell.style.animation = "";
     });
     
+    // Show result/winner
     if (data.winner) {
       result.textContent = (data.winner === mySymbol) ? "You won!" : (data.winner === "draw" ? "It's a draw!" : "Opponent won!");
       result.style.color = "#f1fa8c";
@@ -58,6 +76,7 @@ if (isMultiplayer && roomCode) {
       gameActive = true;
     }
     
+    // Handle reset
     if (data.reset) resetGameState(true);
   });
 } else {

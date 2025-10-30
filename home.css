@@ -17,210 +17,182 @@ body {
 
 #menu-container {
   background-color: #44475a;
-  padding: 40px;
-  border-radius: 8px;
+  padding: 32px 16px;
+  border-radius: 10px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  max-width: 400px;
+  max-width: 390px;
   width: 100%;
 }
 
 h1 {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   color: #f8f8f2;
-  font-size: 32px;
+  font-size: 2rem;
 }
 
 #emoji-selector {
+  background: rgba(80, 250, 123, 0.07);
+  border: 1.5px solid #50fa7b;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  padding: 10px 8px 18px 8px;
   text-align: center;
-  margin: 0 0 50px 0;
-  padding: 15px;
-  background: rgba(80, 250, 123, 0.1);
-  border-radius: 6px;
-  border: 1px solid #50fa7b;
 }
 
 #emoji-selector label {
   display: block;
-  font-size: 14px;
   color: #50fa7b;
-  margin-bottom: 8px;
   font-weight: bold;
+  margin-bottom: 7px;
+  font-size: 1rem;
 }
 
-#emoji-selector input {
-  width: 80px;
-  padding: 8px;
-  font-size: 20px;
-  text-align: center;
+#emojiPreview {
+  margin-bottom: 8px;
+}
+
+.emoji-preview {
+  border: 2px solid #50fa7b;
+  border-radius: 8px;
+  background: #232533;
+  font-size: 2.5rem;
+  display: inline-flex;
+  margin-bottom: 10px;
+  margin-top: 5px;
+  padding: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.emoji-picker {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: #393b50;
+  gap: 6px;
+  width: 100%;
+  padding: 7px 5px 10px 5px;
+  border-radius: 8px;
   margin: 0 auto;
-  display: block;
-  border: 2px solid #6272a4;
-  border-radius: 4px;
-  background-color: #44475a;
-  color: #f8f8f2;
-  transition: border-color 0.3s;
+  max-width: 280px;
 }
 
-#emoji-selector input:focus {
-  outline: none;
+.emoji-option {
+  font-size: 1.65rem;
+  padding: 6px 0;
+  background: #44475a;
+  border: 1.5px solid #6272a4;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.emoji-option:hover, .emoji-option:focus {
   border-color: #50fa7b;
-  box-shadow: 0 0 5px rgba(80, 250, 123, 0.3);
+  background: #50505a;
+  outline: none;
 }
 
 #create-section,
 #join-section {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 h2 {
   color: #bd93f9;
-  margin-bottom: 15px;
-  font-size: 18px;
+  margin-bottom: 8px;
+  font-size: 1.2rem;
 }
 
 input {
   width: 100%;
-  padding: 12px;
-  margin-bottom: 10px;
+  padding: 10px;
+  margin-bottom: 9px;
   border: 2px solid #6272a4;
   border-radius: 4px;
   background-color: #44475a;
   color: #f8f8f2;
-  font-size: 16px;
+  font-size: 1rem;
   transition: border-color 0.3s;
 }
-
 input:focus {
-  outline: none;
   border-color: #50fa7b;
-  box-shadow: 0 0 5px rgba(80, 250, 123, 0.3);
+  box-shadow: 0 0 4px rgba(80,250,123,0.2);
+  outline: none;
 }
-
 input::placeholder {
   color: #6272a4;
 }
 
 button {
   width: 100%;
-  padding: 12px;
+  padding: 14px 0;
   background-color: #50fa7b;
   color: #282a36;
   border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  font-weight: bold;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background 0.22s;
+  margin-bottom: 8px;
 }
+button:last-child { margin-bottom: 0; }
+button:hover { background: #5eff85; }
+button:active { background: #48d966; }
 
-button:hover {
-  background-color: #5eff85;
-}
-
-button:active {
-  background-color: #48d966;
-}
-
-p {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #f8f8f2;
-  text-align: center;
-  min-height: 20px;
-}
-
-p.error {
-  color: #ff5555;
-}
+p { font-size: 0.96rem; text-align: center; min-height: 22px; margin-top: 7px; color: #f8f8f2; }
+p.error { color: #ff5555; }
 
 #roomCodeDisplay {
-  font-size: 24px;
+  font-size: 1.3rem;
   color: #50fa7b;
-  font-weight: bold;
+  font-weight: 600;
   letter-spacing: 2px;
 }
 
-/* Responsive design for smaller screens */
-@media (max-width: 600px) {
+/* Responsive for small screens */
+@media (max-width: 480px) {
+  body { padding: 0; }
   #menu-container {
-    padding: 30px 20px;
+    max-width: 99vw;
+    width: 99vw;
+    border-radius: 0;
+    min-height: 100vh;
+    padding: 0 0 18px 0;
+    box-shadow: none;
   }
-
   h1 {
-    font-size: 24px;
-    margin-bottom: 15px;
+    font-size: 1.31rem;
+    margin-bottom: 12px;
+    margin-top: 12px;
   }
-
   #emoji-selector {
-    margin: 0 0 40px 0;
-    padding: 12px;
+    margin-bottom: 15px;
+    padding: 5px 2px 7px 2px;
   }
-
+  .emoji-preview {
+    font-size: 2rem;
+    padding: 6px 0;
+    margin-bottom: 5px;
+  }
+  .emoji-picker {
+    padding: 2px 2px 5px 2px;
+    gap: 3px;
+    max-width: 98vw;
+  }
+  .emoji-option {
+    font-size: 1.13rem;
+    padding: 3px 0;
+    min-width: 0;
+  }
   #create-section,
   #join-section {
-    margin-bottom: 18px;
+    margin-bottom: 9px;
   }
-}
-
-#emoji-selector {
-  text-align: center;
-  margin: 0 0 50px 0;
-  padding: 15px;
-  background: rgba(80, 250, 123, 0.1);
-  border-radius: 6px;
-  border: 1px solid #50fa7b;
-  position: relative;
-}
-
-#emoji-selector label {
-  display: block;
-  font-size: 14px;
-  color: #50fa7b;
-  margin-bottom: 10px;
-  font-weight: bold;
-}
-
-.emoji-button {
-  background-color: #44475a !important;
-  border: 2px solid #6272a4 !important;
-  border-radius: 4px !important;
-  font-size: 32px !important;
-  width: 60px !important;
-  height: 60px !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  cursor: pointer !important;
-  transition: all 0.3s !important;
-}
-
-.emoji-button:hover {
-  border-color: #50fa7b !important;
-  background-color: #50505a !important;
-}
-
-.emoji-picker {
-  display: grid !important;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-top: 12px;
-  padding: 10px;
-  background: rgba(40, 42, 54, 0.8);
-  border-radius: 4px;
-}
-
-.emoji-option {
-  background-color: #44475a !important;
-  border: 2px solid #6272a4 !important;
-  border-radius: 4px !important;
-  padding: 8px !important;
-  font-size: 24px !important;
-  cursor: pointer !important;
-  transition: all 0.2s !important;
-}
-
-.emoji-option:hover {
-  border-color: #50fa7b !important;
-  background-color: #50505a !important;
-  transform: scale(1.1);
+  button {
+    padding: 10px 0;
+    font-size: 1rem;
+    border-radius: 6px;
+    margin-bottom: 7px;
+  }
 }

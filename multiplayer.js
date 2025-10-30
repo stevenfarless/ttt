@@ -6,8 +6,8 @@ const roomCodeInput = document.getElementById('roomCodeInput');
 const roomCodeDisplay = document.getElementById('roomCodeDisplay');
 const createStatus = document.getElementById('createStatus');
 const joinStatus = document.getElementById('joinStatus');
-const hostEmojiInput = document.getElementById('hostEmoji');
-const guestEmojiInput = document.getElementById('guestEmoji');
+const myEmojiInput = document.getElementById('myEmoji');
+const myEmoji2Input = document.getElementById('myEmoji2');
 
 function generateRoomCode() {
   const chars = "ABCDEFGHJKMNPQRSTUVWXYZ123456789";
@@ -27,7 +27,7 @@ function startGameSession(roomCode, isHost, myEmoji, opponentEmoji) {
 
 if (createRoomBtn) {
   createRoomBtn.addEventListener('click', () => {
-    const hostEmoji = hostEmojiInput.value.trim() || "🎮";
+    const myEmoji = myEmojiInput.value.trim() || "🎮";
     
     createRoomBtn.disabled = true;
     const code = generateRoomCode();
@@ -39,10 +39,10 @@ if (createRoomBtn) {
     db.ref('rooms/' + code).set({
       hostJoined: true,
       guestJoined: false,
-      hostEmoji: hostEmoji,
+      hostEmoji: myEmoji,
       guestEmoji: null,
       board: [null, null, null, null, null, null, null, null, null],
-      turn: hostEmoji,
+      turn: myEmoji,
       winner: null,
       reset: false
     });
@@ -50,7 +50,7 @@ if (createRoomBtn) {
     db.ref('rooms/' + code).on('value', snapshot => {
       const data = snapshot.val();
       if (data && data.guestJoined && data.guestEmoji) {
-        startGameSession(code, true, hostEmoji, data.guestEmoji);
+        startGameSession(code, true, myEmoji, data.guestEmoji);
       }
     });
   });
@@ -59,7 +59,7 @@ if (createRoomBtn) {
 if (joinRoomBtn) {
   joinRoomBtn.addEventListener('click', () => {
     const code = roomCodeInput.value.trim().toUpperCase();
-    const guestEmoji = guestEmojiInput.value.trim() || "🚀";
+    const myEmoji = myEmoji2Input.value.trim() || "🚀";
     
     if (!code || code.length !== 4) {
       joinStatus.textContent = "Enter 4-character code";
@@ -84,10 +84,10 @@ if (joinRoomBtn) {
       
       db.ref('rooms/' + code).update({
         guestJoined: true,
-        guestEmoji: guestEmoji
+        guestEmoji: myEmoji
       });
       
-      startGameSession(code, false, guestEmoji, hostEmoji);
+      startGameSession(code, false, myEmoji, hostEmoji);
     });
   });
 }

@@ -7,7 +7,16 @@ const emojiDisplay = document.getElementById('emojiDisplay');
 const emojiPicker = document.getElementById('emojiPicker');
 const emojiOptions = document.querySelectorAll('.emoji-option');
 
+const emojis = ["🎮", "🚀", "⚡", "🔥", "💎", "👑", "🌟", "🎯", "🎨", "🎪", "🎭", "🎸"];
+
+function getRandomEmoji() {
+  return emojis[Math.floor(Math.random() * emojis.length)];
+}
+
+// Set random default emoji on page load
 if (emojiDisplay) {
+  emojiDisplay.textContent = getRandomEmoji();
+  
   emojiDisplay.addEventListener('click', () => {
     emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'grid' : 'none';
   });

@@ -2,10 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-html {
-  overflow-y: scroll;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Segoe UI Emoji', Roboto, sans-serif;
 }
 
 body {
@@ -44,7 +41,6 @@ h1 {
   max-width: fit-content;
 }
 
-
 .cell {
   width: 100px;
   height: 100px;
@@ -59,6 +55,7 @@ h1 {
   transition: all 0.2s;
   position: relative;
   overflow: hidden;
+  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
 }
 
 .cell::before {
@@ -100,6 +97,7 @@ h1 {
   font-size: 18px;
   margin: 20px 0;
   min-height: 24px;
+  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
 }
 
 button {
@@ -145,6 +143,7 @@ button:active {
 .player-indicator span {
   font-size: 2.5rem;
   margin-bottom: 5px;
+  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
 }
 
 .player-label {

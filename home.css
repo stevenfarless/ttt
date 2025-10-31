@@ -192,7 +192,7 @@ p.error {
   font-size: 1.3rem;
   color: #50fa7b;
   font-weight: 600;
-  letter-spacing: 2px;
+  letter-spacing: normal;
 }
 
 @media (max-width: 480px) {

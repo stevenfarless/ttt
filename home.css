@@ -135,7 +135,6 @@ input {
   font-size: 1rem;
   transition: border-color 0.3s;
   text-transform: uppercase;
-  font-variant-numeric: tabular-nums;
 }
 
 input:focus {
@@ -192,9 +191,10 @@ p.error {
 #roomCodeDisplay {
   font-size: 1.3rem;
   color: #50fa7b;
-  font-weight: 600;
-  letter-spacing: normal;
-  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-family: 'Fira Mono', 'Menlo', 'Consolas', 'Liberation Mono', monospace;
+  text-transform: uppercase;
 }
 
 @media (max-width: 480px) {

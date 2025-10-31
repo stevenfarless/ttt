@@ -87,6 +87,9 @@ h1 {
   align-items: center;
   justify-content: center;
   min-height: 45px;
+  height: 45px;
+  aspect-ratio: 1;
+  overflow: hidden;
 }
 
 .emoji-option:hover,

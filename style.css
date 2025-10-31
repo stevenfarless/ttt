@@ -87,6 +87,10 @@ h1 {
   position: relative;
   z-index: 2;
   font-size: 3rem;
+  color: #f8f8f2;
+  text-shadow: 0 0 10px rgba(248, 248, 242, 0.8), 0 0 20px rgba(248, 248, 242, 0.5);
+  font-weight: bold;
+  letter-spacing: -0.1em;
 }
 
 .cell:hover {

@@ -64,7 +64,6 @@ h1 {
   transition: all 0.2s;
   user-select: none;
   line-height: 1;
-  position: relative;
 }
 
 .emoji-preview::after {
@@ -72,7 +71,6 @@ h1 {
   font-size: 0.8rem;
   color: #282a36;
   transition: transform 0.3s;
-  flex-shrink: 0;
 }
 
 .emoji-preview:hover {
@@ -86,6 +84,10 @@ h1 {
 }
 
 .emoji-options {
+  display: none;
+}
+
+.emoji-options.active {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
@@ -119,18 +121,6 @@ h1 {
   transform: scale(0.95);
 }
 
-.emoji-option.selected {
-  border: 2px solid #50fa7b;
-  background: rgba(80, 250, 123, 0.2);
-}
-
-#button-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 24px;
-}
-
 button {
   padding: 14px 20px;
   font-size: 1.1rem;
@@ -141,6 +131,8 @@ button {
   transition: all 0.2s;
   color: #282a36;
   background-color: #50fa7b;
+  width: 100%;
+  margin-top: 12px;
 }
 
 button:hover {
@@ -162,6 +154,8 @@ input[type="text"] {
   background-color: #44475a;
   color: #f8f8f2;
   transition: all 0.2s;
+  width: 100%;
+  margin-top: 12px;
 }
 
 input[type="text"]::placeholder {
@@ -172,20 +166,4 @@ input[type="text"]:focus {
   outline: none;
   border-color: #50fa7b;
   box-shadow: 0 0 8px rgba(80, 250, 123, 0.3);
-}
-
-@media (max-width: 480px) {
-  #menu-container {
-    padding: 24px 12px;
-  }
-
-  .emoji-preview {
-    font-size: 2rem;
-    padding: 10px 15px;
-  }
-
-  button {
-    padding: 12px 16px;
-    font-size: 1rem;
-  }
 }

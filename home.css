@@ -179,9 +179,14 @@ p {
   min-height: 22px;
   margin-top: 7px;
   color: #f8f8f2;
-  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
   letter-spacing: normal;
   word-spacing: normal;
+}
+
+p:not(.error) {
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  letter-spacing: -0.02em;
+  word-spacing: -0.05em;
 }
 
 p.error {

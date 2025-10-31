@@ -58,7 +58,6 @@ h1 {
   font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
   letter-spacing: normal;
   word-spacing: normal;
-  font-variant-numeric: tabular-nums;
 }
 
 .cell::before {
@@ -88,7 +87,14 @@ h1 {
   position: relative;
   z-index: 2;
   font-size: 3rem;
-  font-variant-numeric: tabular-nums;
+}
+
+.cell--alphanumeric::after {
+  font-family: 'Fira Mono', 'Menlo', 'Consolas', 'Liberation Mono', monospace !important;
+  color: #fff;
+  text-shadow: 0 0 5px #fff, 0 0 10px #aaffee;
+  font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
 .cell:hover {

@@ -4,6 +4,10 @@
   box-sizing: border-box;
 }
 
+html {
+  overflow-y: scroll;
+}
+
 body {
   background-color: #282a36;
   color: #f8f8f2;
@@ -74,12 +78,6 @@ h1 {
 
 .cell[data-player="player2"]::before {
   background: radial-gradient(circle, rgba(80, 150, 255, 0.35) 0%, transparent 70%);
-}
-
-.cell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .cell::after {

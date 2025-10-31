@@ -64,6 +64,8 @@ h1 {
   transition: all 0.2s;
   line-height: 1;
   font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
+  letter-spacing: normal;
+  word-spacing: normal;
 }
 
 .emoji-preview:hover {
@@ -100,6 +102,8 @@ h1 {
   aspect-ratio: 1;
   overflow: hidden;
   font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
+  letter-spacing: normal;
+  word-spacing: normal;
 }
 
 .emoji-option:hover,
@@ -176,6 +180,8 @@ p {
   margin-top: 7px;
   color: #f8f8f2;
   font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
+  letter-spacing: normal;
+  word-spacing: normal;
 }
 
 p.error {

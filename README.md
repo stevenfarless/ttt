@@ -1,4 +1,4 @@
-# Tic-Tac-Toe Multiplayer Game
+# Custom Tic-Tac-Toe (Multiplayer)
 
 A fully functional real-time multiplayer Tic-Tac-Toe game built with vanilla JavaScript and Firebase Realtime Database. Play with friends online using simple 4-character room codes.
 

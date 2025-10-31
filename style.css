@@ -40,7 +40,10 @@ h1 {
   background-color: #282a36;
   padding: 10px;
   border-radius: 8px;
+  justify-items: start;
+  max-width: fit-content;
 }
+
 
 .cell {
   width: 100px;

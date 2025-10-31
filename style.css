@@ -56,6 +56,8 @@ h1 {
   position: relative;
   overflow: hidden;
   font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
+  letter-spacing: normal;
+  word-spacing: normal;
 }
 
 .cell::before {
@@ -98,6 +100,8 @@ h1 {
   margin: 20px 0;
   min-height: 24px;
   font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
+  letter-spacing: normal;
+  word-spacing: normal;
 }
 
 button {
@@ -121,7 +125,6 @@ button:active {
   background-color: #48d966;
 }
 
-/* Player Indicators */
 #player-indicators {
   display: flex;
   justify-content: space-around;
@@ -144,6 +147,8 @@ button:active {
   font-size: 2.5rem;
   margin-bottom: 5px;
   font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
+  letter-spacing: normal;
+  word-spacing: normal;
 }
 
 .player-label {

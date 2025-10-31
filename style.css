@@ -107,9 +107,9 @@ h1 {
   font-size: 18px;
   margin: 20px 0;
   min-height: 24px;
-  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
-  letter-spacing: normal;
-  word-spacing: normal;
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  letter-spacing: -0.02em;
+  word-spacing: -0.05em;
 }
 
 button {

@@ -1,5 +1,4 @@
 const db = firebase.database();
-
 const player1Indicator = document.getElementById('player1-indicator');
 const player2Indicator = document.getElementById('player2-indicator');
 const player1Emoji = document.getElementById('player1-emoji');
@@ -46,9 +45,8 @@ function updateFirebaseGame(data) {
 if (isMultiplayer && roomCode) {
   firebase.database().ref('rooms/' + roomCode).on('value', snapshot => {
     const data = snapshot.val();
-    
     if (!data) return;
-    
+
     if (data.board) {
       gameBoard = Array(9).fill(null);
       Object.keys(data.board).forEach(key => {
@@ -60,26 +58,25 @@ if (isMultiplayer && roomCode) {
     } else {
       gameBoard = Array(9).fill(null);
     }
-    
+
     currentPlayer = data.turn || mySymbol;
     moveCount = gameBoard.filter(cell => cell !== null).length;
-    
     isMyTurn = (currentPlayer === mySymbol && !data.winner);
-    
-    // RENDER CELLS WITH COLOR GRADIENTS
+
+    // RENDER CELLS WITH PLAYER PERSPECTIVE COLORS
     cells.forEach((cell, i) => {
       cell.textContent = gameBoard[i] || "";
       
-      // Set data-player attribute for colored gradient backgrounds
+      // Set data-player attribute from CURRENT PLAYER'S PERSPECTIVE
       if (gameBoard[i] === mySymbol) {
-        cell.setAttribute('data-player', 'player1');
+        cell.setAttribute('data-player', 'self');  // Current player sees their moves as BLUE
       } else if (gameBoard[i] === opponentSymbol) {
-        cell.setAttribute('data-player', 'player2');
+        cell.setAttribute('data-player', 'opponent');  // Current player sees opponent's moves as RED
       } else {
         cell.setAttribute('data-player', '');
       }
     });
-    
+
     if (data.winner) {
       result.textContent = (data.winner === mySymbol) ? "You won! 🎉" : (data.winner === "draw" ? "It's a draw! 🤝" : "Opponent won! 😔");
       result.style.color = "#f1fa8c";
@@ -92,7 +89,7 @@ if (isMultiplayer && roomCode) {
       gameActive = true;
       updateTurnHighlight();
     }
-    
+
     if (data.reset) resetGameState(true);
   });
 }
@@ -101,11 +98,12 @@ function handleCellClick(event) {
   if (!gameActive || !isMyTurn) return;
   const cellIndex = parseInt(event.target.id) - 1;
   if (gameBoard[cellIndex]) return;
-  
+
   gameBoard[cellIndex] = mySymbol;
   moveCount++;
-  
+
   const winner = checkWinner(gameBoard);
+
   updateFirebaseGame({
     board: gameBoard,
     turn: opponentSymbol,
@@ -132,14 +130,17 @@ function resetGameState(fromFirebase = false) {
   currentPlayer = mySymbol;
   isMyTurn = (currentPlayer === mySymbol);
   gameActive = true;
+
   cells.forEach(cell => {
     cell.textContent = "";
     cell.setAttribute('data-player', '');
   });
+
   result.textContent = isMyTurn ? "Your turn!" : "Opponent's turn...";
   result.style.color = isMyTurn ? "#50fa7b" : "#f1fa8c";
+
   updateTurnHighlight();
-  
+
   if (!fromFirebase && isMultiplayer && roomCode) {
     updateFirebaseGame({
       board: gameBoard,
@@ -156,6 +157,7 @@ cells.forEach(cell => {
 });
 
 if (resetButton) resetButton.addEventListener('click', () => resetGameState(false));
+
 if (backToMenuBtn) backToMenuBtn.addEventListener('click', () => {
   if (isMultiplayer && roomCode) firebase.database().ref('rooms/' + roomCode).remove();
   sessionStorage.clear();

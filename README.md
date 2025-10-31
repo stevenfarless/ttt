@@ -1,141 +1,168 @@
-# Custom Tic-Tac-Toe (Multiplayer)
+# 🎮 Custom Tic Tac Toe - (Multiplayer Edition)
 
-A fully functional real-time multiplayer Tic-Tac-Toe game built with vanilla JavaScript and Firebase Realtime Database. Play with friends online using simple 4-character room codes.
+**Version:** 0.3.0-alpha | **Release Date:** October 31, 2025
 
-<img height="450" alt="image" src="https://github.com/user-attachments/assets/182684e0-7fa4-4782-8d7b-80cff1afb728" />
+> ⚠️ **ALPHA RELEASE NOTICE** 
+> 
+> This is an early-stage alpha release. The project is actively under development and may experience breaking changes or unexpected behavior without notice. Features are subject to change as core functionality is refined and stabilized. We recommend using this for testing and feedback purposes only. Stability and backwards compatibility are not guaranteed at this stage.
 
-<img height="450" alt="image" src="https://github.com/user-attachments/assets/85f83128-a0d6-46a4-ba22-2049e4b9d90b" />
-
-<img height="450" alt="image" src="https://github.com/user-attachments/assets/255d73e8-ae0f-44e8-99ec-40aa9b3f27f5" />
-
-## Features
-
-✅ **Real-time Multiplayer** - Play with anyone, anywhere using Firebase  
-✅ **Room Code System** - Easy-to-share 4-character codes
-✅ **Turn-based Gameplay** - Clear indicators for whose turn it is  
-✅ **Auto-sync** - Moves sync instantly across all connected players  
-✅ **Winner Detection** - Automatic win/draw detection  
-✅ **Responsive Design** - Clean, modern UI with Dracula theme colors  
-✅ **Session Management** - Proper room cleanup and player disconnect handling
-
-## Technologies Used
-
-- **Frontend**: HTML5, CSS3, Vanilla JavaScript
-- **Backend**: Firebase Realtime Database v8
-- **Hosting**: GitHub Pages compatible
-
-## How to Play
-
-### Create a Room
-1. Open the game
-2. Click **"Create New Room"**
-3. Share the 4-character room code with your friend
-4. Wait for them to join
-5. Game starts automatically when both players are connected!
-
-### Join a Room
-1. Open the game
-2. Enter the 4-character room code
-3. Click **"Join Room"**
-4. Start playing!
-
-## Room Code Design
-
-Room codes use an optimized character set: `ABCDEFGHJKMNPQRSTUVWXYZ123456789`
-
-**Why these characters?**
-- Removed **I, L, O, 0** to prevent confusion
-- 32 characters providing over 1 million unique combinations
-- Easy to read and share verbally or via text
-
-## File Structure
-
-```
-├── index.html              # Landing page
-├── home.html               # Main menu (create/join room)
-├── game.html               # Game board page
-├── multiplayer.js          # Room creation/join logic
-├── game-multiplayer.js     # Core game logic & Firebase sync
-├── style.css               # Game board styles
-├── home.css                # Menu styles
-└── README.md               # Documentation
-```
-
-## Firebase Setup
-
-1. Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
-2. Enable **Realtime Database**
-3. Copy your Firebase config
-4. Replace the config in `game.html` and `home.html`:
-
-```
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
-```
-
-## Development
-
-### Debug Mode
-
-The game includes optional debug logging. To enable/disable:
-
-In `game-multiplayer.js` and `multiplayer.js`, set:
-```
-const DEBUG = true;  // Enable debug logs
-const DEBUG = false; // Disable debug logs
-```
-
-### Local Testing
-
-1. Clone the repository
-2. Use a local server (e.g., Live Server VS Code extension)
-3. Open `index.html`
-
-**Note:** Do not open HTML files directly - Firebase requires a proper HTTP server.
-
-## Known Limitations
-
-- Rooms are not password-protected
-- No spectator mode
-- Room codes expire when all players disconnect
-- Maximum 2 players per room
-
-## Future Enhancements
-
-- [ ] Chat functionality
-- [ ] Player statistics tracking
-- [ ] Rematch button
-- [ ] Sound effects
-- [ ] Mobile app version
-- [ ] AI opponent mode
-
-## License
-
-GPL-3.0
-
-## Credits
-
-Developed by Steven Farless  
-Firebase integration and multiplayer functionality  
-Dracula color theme for modern UI
-
-## Version History
-
-**v0.2.0-Alpha** (October 2025)
-- Fixed Firebase sparse array handling
-- Optimized room code character set
-- Added real-time game state synchronization
-- Improved turn tracking logic
-- Added debug logging system
-- Basic multiplayer functionality
-- Room creation and joining
-- Simple UI
+A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces, built with vanilla JavaScript and Firebase.
 
 ---
+
+## ✨ Features
+
+- **🎯 Classic Tic Tac Toe Gameplay** - The timeless 3x3 grid game you know and love
+- **👥 Real-Time Multiplayer** - Firebase-powered live game synchronization
+- **🎨 Custom Emoji Pieces** - Choose any emoji as your game piece (🎮, 🚀, 🌟, etc.)
+- **🏠 Room Codes** - Share a 4-character room code with your opponent to join a game
+- **🎭 Player Perspective Colors** - Each player sees their moves in BLUE and opponent's in RED (personalized per player)
+- **📱 Mobile Responsive** - Play on desktop, tablet, or mobile seamlessly
+- **⚡ Real-Time Sync** - Moves sync instantly across both players' screens
+- **🎨 Dark UI** - Dracula-inspired color scheme with smooth animations
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Modern web browser (Chrome, Firefox, Safari, Edge)
+- Internet connection
+- Firebase project (for multiplayer functionality).
+
+### Installation
+
+1. **Clone the repository**
+```
+git clone https://github.com/yourusername/tic-tac-toe.git
+cd tic-tac-toe
+```
+
+2. **Open in your browser**
+```
+# Simply open index.html in your browser
+open index.html
+```
+
+3. **Configure Firebase (Multiplayer Mode)**
+   - Go to [Firebase Console](https://console.firebase.google.com)
+   - Create a new project
+   - Enable Realtime Database
+   - Update Firebase config in `index.html` with your project credentials
+
+---
+
+## 🎮 How to Play
+
+### Single Player (Local)
+1. Open `index.html`
+2. Click "Create Room" to play locally
+3. Select your emoji piece
+4. Make moves on the board
+
+### Multiplayer
+1. **Player 1 (Host)**: Opens the game, selects emoji, clicks "Create Room"
+2. **Share room code** with Player 2 (e.g., "AB2K")
+3. **Player 2**: Enters room code, selects emoji, clicks "Join Room"
+4. **Take turns** making moves
+5. **Win** by getting three in a row (horizontal, vertical, or diagonal)
+
+---
+
+## 📁 Project Structure
+
+```
+tic-tac-toe/
+├── index.html              # Entry point
+├── home.html               # Main menu/lobby
+├── game.html               # Game board
+├── style.css               # Game styling
+├── home.css                # Menu styling
+├── multiplayer.js          # Room/lobby logic
+├── game-multiplayer.js     # Game & Firebase logic
+├── README.md               # This file
+└── LICENSE                 # GPL License
+```
+
+---
+
+## 🛠️ Technologies Used
+
+- **HTML5** - Semantic markup
+- **CSS3** - Modern styling with Flexbox & Grid
+- **Vanilla JavaScript** - No frameworks, pure JS
+- **Firebase Realtime Database** - Real-time multiplayer sync
+- **Emoji API** - Dynamic emoji rendering
+
+---
+
+## 📱 Browser Support
+
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
+
+---
+
+## 🐛 Known Issues & Limitations (Alpha Stage)
+
+- Room data may persist unexpectedly after games
+- Reconnection handling during interrupted connections is limited
+- Performance may vary on slower connections
+- Firebase free tier rate limits may apply
+- Player indicators may briefly desync during rapid moves
+- Some emoji combinations may render inconsistently on older devices
+
+---
+
+## 🗺️ Roadmap (Post-Alpha)
+
+- [ ] Leaderboard system
+- [ ] AI opponent
+- [ ] Sound effects toggle
+- [ ] Dark/Light theme selector
+- [ ] User authentication
+- [ ] Tournament mode
+
+---
+
+## 🤝 Contributing
+
+This is an alpha project, so contributions are welcome! Please feel free to:
+- Report bugs
+- Suggest features
+- Submit pull requests
+- Test on different devices
+
+---
+
+## 📄 License
+
+GPL 3 License - see LICENSE file for details
+
+---
+
+## 📞 Support & Feedback
+
+Found a bug? Have a suggestion? Please open an issue on GitHub!
+
+**GitHub Issues:** [https://github.com/yourusername/tic-tac-toe/issues](https://github.com/yourusername/tic-tac-toe/issues)
+
+---
+
+## ⚡ Development Status
+
+| Aspect | Status |
+|--------|--------|
+| Core Gameplay | ✅ Stable |
+| Multiplayer Sync | ✅ Working |
+| Mobile Responsive | ✅ Responsive |
+| UI/UX Polish | 🟡 In Progress |
+| Firebase Integration | ✅ Functional |
+| Error Handling | 🟡 In Progress |
+| Performance | 🟡 Optimizing |
+
+---
+
+**Built with ❤️ - Alpha Stage Software**

@@ -90,11 +90,19 @@ function makeMove(index) {
       board = Object.values(board || {}).length === 9 ? Object.values(board) : [null, null, null, null, null, null, null, null, null];
     }
     
+    // Check if it's actually this player's turn
+    if (room.turn !== mySymbol) {
+      console.log('[GAME] Not my turn. room.turn:', room.turn, 'mySymbol:', mySymbol);
+      return; // Abort transaction
+    }
+    
     if (board[index] !== null) return;
 
     board[index] = mySymbol;
     room.board = board;
-    room.turn = room.turn === mySymbol ? opponentSymbol : mySymbol;
+    
+    // CRITICAL FIX: Toggle to opponent's symbol correctly
+    room.turn = mySymbol === room.turn ? opponentSymbol : mySymbol;
     room.winner = checkWinner(board);
     
     return room;
@@ -124,6 +132,7 @@ function listenToGameChanges() {
       gameBoard = [null, null, null, null, null, null, null, null, null];
     }
     
+    // CRITICAL: Check turn against my symbol and opponent symbol
     isMyTurn = room.turn === mySymbol;
     
     updateBoard();

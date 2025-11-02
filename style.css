@@ -15,6 +15,11 @@
   box-sizing: border-box;
 }
 
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #1e1f29 0%, #282a36 100%);
@@ -31,8 +36,8 @@ body {
   border-radius: 12px;
   padding: 2rem;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-  max-width: 500px;
   width: 100%;
+  max-width: 400px;
 }
 
 h1 {
@@ -45,8 +50,8 @@ h1 {
 .game-info {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
   gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .player-info {
@@ -55,6 +60,7 @@ h1 {
   padding: 1rem;
   border-radius: 8px;
   text-align: center;
+  transition: all 0.3s ease;
 }
 
 .player-info.active {
@@ -63,8 +69,9 @@ h1 {
 }
 
 .player-emoji {
-  font-size: 2rem;
+  font-size: 2.5rem;
   margin-bottom: 0.5rem;
+  display: block;
 }
 
 .player-label {
@@ -72,29 +79,21 @@ h1 {
   color: var(--warning);
 }
 
-#player1-indicator,
-#player2-indicator {
-  transition: all 0.3s ease;
-}
-
 .board {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0.5rem;
-  margin-bottom: 1.5rem;
-  max-width: 300px;
+  margin: 0 auto 1.5rem;
   width: 100%;
-  aspect-ratio: 1;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 330px;
 }
 
 .cell {
-  aspect-ratio: 1;
+  aspect-ratio: 1 / 1;
   background: var(--secondary);
   border: 2px solid var(--light);
   border-radius: 8px;
-  font-size: 2.5rem;
+  font-size: 3rem;
   font-weight: bold;
   cursor: pointer;
   display: flex;
@@ -104,8 +103,9 @@ h1 {
 }
 
 .cell:hover {
-  background: #44475a;
+  background: #505560;
   transform: scale(1.05);
+  border-color: var(--info);
 }
 
 .cell:active {
@@ -114,21 +114,22 @@ h1 {
 
 /* Player Perspective Colors */
 .cell.my-move {
-  color: #3B82F6 !important; /* BLUE for your moves */
+  color: #3B82F6 !important;
   font-weight: bold;
 }
 
 .cell.opponent-move {
-  color: #EF4444 !important; /* RED for opponent moves */
+  color: #EF4444 !important;
   font-weight: bold;
 }
 
 #result {
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   margin-bottom: 1rem;
   color: var(--success);
   min-height: 1.5rem;
+  font-weight: bold;
 }
 
 .button-group {
@@ -162,28 +163,29 @@ button:active {
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  transform: none;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   .game-container {
     padding: 1.5rem;
+    max-width: 100%;
   }
 
   h1 {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
   }
 
   .cell {
-    font-size: 2rem;
+    font-size: 2.5rem;
   }
 
   button {
-    padding: 0.6rem 1rem;
-    font-size: 0.9rem;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.95rem;
   }
-  
+
   .board {
-    max-width: 250px;
+    max-width: 100%;
   }
 }

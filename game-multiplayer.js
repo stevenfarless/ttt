@@ -1,5 +1,3 @@
-import { showError, validateRoomCode } from './utils.js';
-
 const db = firebase.database();
 
 const player1Indicator = document.getElementById('player1-indicator');
@@ -15,59 +13,17 @@ let roomCode = sessionStorage.getItem('roomCode');
 let isHost = sessionStorage.getItem('isHost') === 'true';
 let mySymbol = sessionStorage.getItem('mySymbol');
 let opponentSymbol = sessionStorage.getItem('opponentSymbol');
-let gameActive = true;
-let isMyTurn = isHost; // Host goes first
-let moveLock = false;
-
 let gameBoard = Array(9).fill(null);
+let gameActive = false;
+let currentPlayer = mySymbol;
+let isMyTurn = false;
+let moveCount = 0;
 
-if (!validateRoomCode(roomCode)) {
-  showError(result, 'Invalid room code. Please return to menu.');
-}
-
+// Set player emojis in indicators
 player1Emoji.textContent = mySymbol;
 player2Emoji.textContent = opponentSymbol;
 
-// Accessibility: make cells keyboard accessible
-cells.forEach((cell, index) => {
-  cell.setAttribute('tabindex', '0');
-  cell.setAttribute('role', 'button');
-  cell.setAttribute('aria-label', `Cell ${index + 1}`);
-  cell.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleCellClick(index);
-    }
-  });
-  cell.addEventListener('click', () => handleCellClick(index));
-});
-
-function checkWinner(board) {
-  const winLines = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
-    [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
-    [0, 4, 8], [2, 4, 6]             // Diag
-  ];
-  for (const [a, b, c] of winLines) {
-    if (board[a] && board[a] === board[b] && board[b] === board[c]) {
-      return board[a];
-    }
-  }
-  if (board.every(c => c !== null)) {
-    return 'draw';
-  }
-  return null;
-}
-
-function updateUI(board) {
-  board.forEach((player, index) => {
-    cells[index].textContent = player || '';
-    cells[index].classList.toggle('occupied', !!player);
-  });
-}
-
-function setTurnIndicator(isMyTurnNow) {
-  isMyTurn = isMyTurnNow;
+function updateTurnHighlight() {
   if (isMyTurn) {
     player1Indicator.classList.add('active');
     player2Indicator.classList.remove('active');
@@ -77,74 +33,122 @@ function setTurnIndicator(isMyTurnNow) {
   }
 }
 
-function handleCellClick(index) {
-  if (!gameActive || moveLock || gameBoard[index]) {
-    return;
-  }
-  if (!isMyTurn) {
-    showError(result, 'It is not your turn');
-    return;
-  }
-  moveLock = true;
-
-  const roomRef = db.ref('rooms/' + roomCode);
-  roomRef.transaction(room => {
-    if (!room || room.winner || room.board[index] !== null) {
-      return; // Abort transaction
+// Keyboard accessibility
+cells.forEach((cell, index) => {
+  cell.setAttribute('role', 'button');
+  cell.setAttribute('tabindex', '0');
+  cell.setAttribute('aria-label', `Cell ${index + 1}`);
+  
+  cell.addEventListener('click', () => makeMove(index));
+  cell.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      makeMove(index);
     }
-    if (room.turn !== mySymbol) {
-      return; // Not player's turn
+  });
+});
+
+function checkWinner(board) {
+  const lines = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8],
+    [0, 3, 6], [1, 4, 7], [2, 5, 8],
+    [0, 4, 8], [2, 4, 6]
+  ];
+
+  for (let line of lines) {
+    const [a, b, c] = line;
+    if (board[a] && board[a] === board[b] && board[b] === board[c]) {
+      return board[a];
+    }
+  }
+
+  if (board.every(cell => cell !== null)) {
+    return 'draw';
+  }
+
+  return null;
+}
+
+function updateBoard() {
+  cells.forEach((cell, index) => {
+    cell.textContent = gameBoard[index] || '';
+  });
+}
+
+function makeMove(index) {
+  if (!gameActive || !isMyTurn || gameBoard[index]) {
+    return;
+  }
+
+  moveCount++;
+  const roomRef = db.ref('rooms/' + roomCode);
+  
+  roomRef.transaction((room) => {
+    if (!room) return;
+    
+    if (room.board[index] !== null) {
+      return; // Cell already taken
     }
 
     room.board[index] = mySymbol;
     room.turn = room.turn === mySymbol ? opponentSymbol : mySymbol;
     room.winner = checkWinner(room.board);
+    
     return room;
-  }, (error, committed, snapshot) => {
-    if (error) {
-      showError(result, 'Error submitting move.');
-    }
-    moveLock = false;
   });
 }
 
-function listenForGameUpdates() {
+function listenToGameChanges() {
   const roomRef = db.ref('rooms/' + roomCode);
-  roomRef.on('value', snapshot => {
+  
+  roomRef.on('value', (snapshot) => {
     const room = snapshot.val();
+    
     if (!room) {
-      showError(result, 'Room data lost. Returning to menu.');
+      result.textContent = 'Room not found';
       gameActive = false;
       return;
     }
+
     gameBoard = room.board || Array(9).fill(null);
-    updateUI(gameBoard);
-    gameActive = !room.winner;
+    currentPlayer = room.turn;
+    isMyTurn = room.turn === mySymbol;
     
-    if (room.winner === 'draw') {
-      result.textContent = 'Game ended in a draw!';
-    } else if (room.winner) {
-      result.textContent = room.winner === mySymbol ? 'You Win! 🎉' : 'Opponent Wins';
+    updateBoard();
+    updateTurnHighlight();
+
+    // Check game state
+    if (room.winner) {
+      gameActive = false;
+      if (room.winner === 'draw') {
+        result.textContent = "It's a draw!";
+      } else {
+        result.textContent = room.winner === mySymbol ? 'You win! 🎉' : 'You lose';
+      }
+    } else if (moveCount === 0) {
+      gameActive = true;
+      result.textContent = 'Game started!';
     } else {
-      result.textContent = 'Game in progress...';
+      gameActive = true;
+      result.textContent = isMyTurn ? 'Your turn' : "Opponent's turn";
     }
-    
-    setTurnIndicator(room.turn === mySymbol);
-  }, error => {
-    showError(result, 'Failed to sync game data.');
   });
 }
 
 resetButton.addEventListener('click', () => {
-  if (!roomCode) return;
   const roomRef = db.ref('rooms/' + roomCode);
+  const firstPlayer = isHost ? mySymbol : opponentSymbol;
+  
   roomRef.update({
     board: Array(9).fill(null),
-    turn: isHost ? mySymbol : opponentSymbol,
+    turn: firstPlayer,
     winner: null
-  }).catch(err => {
-    showError(result, 'Failed to reset game: ' + err.message);
   });
+
+  gameBoard = Array(9).fill(null);
+  moveCount = 0;
+  isMyTurn = isHost;
+  gameActive = true;
 });
 
 backToMenuBtn.addEventListener('click', () => {
@@ -152,7 +156,5 @@ backToMenuBtn.addEventListener('click', () => {
   window.location.href = 'home.html';
 });
 
-// Start listening for updates
-if (roomCode) {
-  listenForGameUpdates();
-}
+// Initialize game
+listenToGameChanges();

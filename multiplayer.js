@@ -7,7 +7,8 @@ const emojiDisplay = document.getElementById('emojiDisplay');
 const emojiPicker = document.getElementById('emojiPicker');
 const emojiOptions = document.querySelectorAll('.emoji-option');
 
-const emojis = ['👍', '👑', '🐱', '🤖', '🎉', '🔥', '⚡', '🌈', '🍕', '❤️'];
+const emojis = ['❌', '⭕', '❤️', '💲', '😀', '💀', '🤖', '👽', '🐶', '😺', '💩', '🦐', '🍕', '🍣', '🍓', '🍤', '🌙', '☀️', '⭐', '🚀'];
+
 
 function getRandomEmoji() {
   return emojis[Math.floor(Math.random() * emojis.length)];

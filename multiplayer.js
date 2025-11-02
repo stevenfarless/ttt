@@ -1,243 +1,149 @@
+const DEBUG = true;
 const db = firebase.database();
-console.log('[GAME] Script loaded');
 
-const player1Indicator = document.getElementById('player1-indicator');
-const player2Indicator = document.getElementById('player2-indicator');
-const player1Emoji = document.getElementById('player1-emoji');
-const player2Emoji = document.getElementById('player2-emoji');
-const cells = document.querySelectorAll('.cell');
-const result = document.getElementById('result');
-const resetButton = document.getElementById('reset');
-const backToMenuBtn = document.getElementById('backToMenu');
+console.log('[MULTIPLAYER] Script loaded');
 
-let roomCode = sessionStorage.getItem('roomCode');
-let isHost = sessionStorage.getItem('isHost') === 'true';
-let mySymbol = sessionStorage.getItem('mySymbol');
-let opponentSymbol = sessionStorage.getItem('opponentSymbol');
-let gameBoard = Array(9).fill(null);
-let gameActive = false;
-let currentPlayer = mySymbol;
-let isMyTurn = false;
-let moveCount = 0;
+const emojiDisplay = document.getElementById('emojiDisplay');
+const emojiPicker = document.getElementById('emojiPicker');
+const emojiOptions = document.querySelectorAll('.emoji-option');
 
-console.log('[GAME] Session data loaded:', {
-  roomCode,
-  isHost,
-  mySymbol,
-  opponentSymbol
-});
+const emojis = ['❌', '⭕', '❤️', '💲', '😀', '💀', '🤖', '👽', '🐶', '😺', '💩', '🦐', '🍕', '🍣', '🍓', '🍤', '🌙', '☀️', '⭐', '🚀'];
 
-// Set player emojis in indicators
-player1Emoji.textContent = mySymbol;
-player2Emoji.textContent = opponentSymbol;
-
-console.log('[GAME] Player indicators set:', {
-  player1: mySymbol,
-  player2: opponentSymbol
-});
-
-function updateTurnHighlight() {
-  console.log('[GAME] Updating turn highlight. isMyTurn:', isMyTurn);
-  if (isMyTurn) {
-    player1Indicator.classList.add('active');
-    player2Indicator.classList.remove('active');
-    console.log('[GAME] Set active to player 1');
-  } else {
-    player1Indicator.classList.remove('active');
-    player2Indicator.classList.add('active');
-    console.log('[GAME] Set active to player 2');
-  }
+function getRandomEmoji() {
+  return emojis[Math.floor(Math.random() * emojis.length)];
 }
 
-// Keyboard accessibility
-cells.forEach((cell, index) => {
-  cell.setAttribute('role', 'button');
-  cell.setAttribute('tabindex', '0');
-  cell.setAttribute('aria-label', `Cell ${index + 1}`);
-  
-  cell.addEventListener('click', () => {
-    console.log('[GAME] Cell clicked at index:', index);
-    makeMove(index);
+if (emojiDisplay) {
+  emojiDisplay.textContent = getRandomEmoji();
+  emojiDisplay.addEventListener('click', () => {
+    emojiPicker.style.display = emojiPicker.style.display === 'grid' ? 'none' : 'grid';
   });
-  cell.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      console.log('[GAME] Cell activated via keyboard at index:', index);
-      makeMove(index);
-    }
+}
+
+emojiOptions.forEach(option => {
+  option.addEventListener('click', (e) => {
+    emojiDisplay.textContent = e.target.getAttribute('data-emoji');
+    emojiPicker.style.display = 'none';
   });
 });
 
-function checkWinner(board) {
-  console.log('[GAME] Checking for winner on board:', board);
-  const lines = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8],
-    [0, 3, 6], [1, 4, 7], [2, 5, 8],
-    [0, 4, 8], [2, 4, 6]
-  ];
+const createRoomBtn = document.getElementById('createRoomBtn');
+const joinRoomBtn = document.getElementById('joinRoomBtn');
+const roomCodeInput = document.getElementById('roomCodeInput');
+const roomCodeDisplay = document.getElementById('roomCodeDisplay');
+const createStatus = document.getElementById('createStatus');
+const joinStatus = document.getElementById('joinStatus');
+const codeRow = document.getElementById('codeRow');
 
-  for (let line of lines) {
-    const [a, b, c] = line;
-    if (board[a] && board[a] === board[b] && board[b] === board[c]) {
-      console.log('[GAME] Winner found:', board[a], 'on line:', line);
-      return board[a];
-    }
-  }
-
-  if (board.every(cell => cell !== null)) {
-    console.log('[GAME] Board is full - draw!');
-    return 'draw';
-  }
-
-  console.log('[GAME] No winner yet');
-  return null;
-}
-
-function updateBoard() {
-  console.log('[GAME] Updating board display:', gameBoard);
-  cells.forEach((cell, index) => {
-    cell.textContent = gameBoard[index] || '';
+if (roomCodeInput) {
+  roomCodeInput.addEventListener('input', e => {
+    e.target.value = e.target.value.toUpperCase().replace(/[^A-HJ-KM-NP-Z1-9]/g, '');
   });
 }
 
-function makeMove(index) {
-  console.log('[GAME] makeMove called at index:', index, 'gameActive:', gameActive, 'isMyTurn:', isMyTurn, 'cellOccupied:', !!gameBoard[index]);
-  
-  if (!gameActive || !isMyTurn || gameBoard[index]) {
-    console.log('[GAME] Move rejected');
-    return;
-  }
-
-  moveCount++;
-  console.log('[GAME] Move accepted. Move count:', moveCount);
-  const roomRef = db.ref('rooms/' + roomCode);
-  
-  roomRef.transaction((room) => {
-    console.log('[GAME] Transaction started:', room);
-    if (!room) {
-      console.warn('[GAME] Room is null in transaction');
-      return;
-    }
+if (createRoomBtn) {
+  createRoomBtn.addEventListener('click', () => {
+    console.log('[MULTIPLAYER] Create Room clicked');
+    createRoomBtn.disabled = true;
     
-    // IMPORTANT: Ensure board exists
-    if (!room.board || !Array.isArray(room.board)) {
-      console.warn('[GAME] Board is invalid, initializing');
-      room.board = Array(9).fill(null);
-    }
-    
-    if (room.board[index] !== null) {
-      console.warn('[GAME] Cell already occupied in transaction');
-      return;
+    const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ123456789';
+    let code = '';
+    for (let i = 0; i < 4; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
     }
 
-    room.board[index] = mySymbol;
-    room.turn = room.turn === mySymbol ? opponentSymbol : mySymbol;
-    room.winner = checkWinner(room.board);
+    const selectedEmoji = emojiDisplay.textContent;
     
-    console.log('[GAME] Transaction data:', {
-      boardChange: index + ' -> ' + mySymbol,
-      nextTurn: room.turn,
-      winner: room.winner
+    const roomData = {
+      roomCode: code,
+      hostJoined: true,
+      guestJoined: false,
+      hostEmoji: selectedEmoji,
+      guestEmoji: null,
+      board: Array(9).fill(null),
+      turn: selectedEmoji,
+      winner: null
+    };
+
+    console.log('[MULTIPLAYER] Creating room:', code);
+    
+    db.ref('rooms/' + code).set(roomData).then(() => {
+      console.log('[MULTIPLAYER] Room created');
+      roomCodeDisplay.textContent = code;
+      codeRow.style.display = 'block';
+      createStatus.textContent = 'Room created. Waiting for opponent...';
+      
+      sessionStorage.setItem('roomCode', code);
+      sessionStorage.setItem('isHost', 'true');
+      sessionStorage.setItem('mySymbol', selectedEmoji);
+      
+      const roomRef = db.ref('rooms/' + code);
+      roomRef.on('value', (snapshot) => {
+        const room = snapshot.val();
+        if (room && room.guestJoined && room.guestEmoji) {
+          console.log('[MULTIPLAYER] Guest joined, navigating');
+          sessionStorage.setItem('opponentSymbol', room.guestEmoji);
+          roomRef.off('value');
+          setTimeout(() => window.location.href = 'game.html', 300);
+        }
+      });
+    }).catch(err => {
+      console.error('[MULTIPLAYER] Error creating room:', err);
+      createStatus.textContent = 'Error creating room';
+      createRoomBtn.disabled = false;
     });
-    
-    return room;
-  }, (error, committed, snapshot) => {
-    if (error) {
-      console.error('[GAME] Transaction error:', error);
-    } else {
-      console.log('[GAME] Transaction completed. Committed:', committed);
-    }
   });
 }
 
-function listenToGameChanges() {
-  console.log('[GAME] Starting game listener for room:', roomCode);
-  const roomRef = db.ref('rooms/' + roomCode);
-  
-  roomRef.on('value', (snapshot) => {
-    const room = snapshot.val();
+if (joinRoomBtn) {
+  joinRoomBtn.addEventListener('click', () => {
+    const code = roomCodeInput.value.trim().toUpperCase();
+    console.log('[MULTIPLAYER] Join Room clicked:', code);
     
-    console.log('[GAME] Game state update received:', {
-      board: room?.board,
-      turn: room?.turn,
-      winner: room?.winner,
-      guestJoined: room?.guestJoined
-    });
-    
-    if (!room) {
-      console.error('[GAME] Room not found');
-      result.textContent = 'Room not found';
-      gameActive = false;
+    if (!/^[A-HJ-KM-NP-Z1-9]{4}$/.test(code)) {
+      joinStatus.textContent = 'Invalid code';
       return;
     }
 
-    // IMPORTANT: Ensure board is always an array
-    gameBoard = (room.board && Array.isArray(room.board)) ? room.board : Array(9).fill(null);
-    currentPlayer = room.turn;
-    isMyTurn = room.turn === mySymbol;
+    joinRoomBtn.disabled = true;
+    const selectedEmoji = emojiDisplay.textContent;
     
-    console.log('[GAME] State updated:', {
-      currentPlayer,
-      isMyTurn,
-      mySymbol,
-      board: gameBoard
-    });
-    
-    updateBoard();
-    updateTurnHighlight();
-
-    // Check game state
-    if (room.winner) {
-      console.log('[GAME] Game has winner/draw:', room.winner);
-      gameActive = false;
-      if (room.winner === 'draw') {
-        result.textContent = "It's a draw!";
-      } else {
-        result.textContent = room.winner === mySymbol ? 'You win! 🎉' : 'You lose';
+    db.ref('rooms/' + code).once('value').then(snapshot => {
+      if (!snapshot.exists()) {
+        joinStatus.textContent = 'Room not found';
+        joinRoomBtn.disabled = false;
+        return;
       }
-    } else if (moveCount === 0) {
-      console.log('[GAME] Game starting');
-      gameActive = true;
-      result.textContent = 'Game started!';
-    } else {
-      gameActive = true;
-      result.textContent = isMyTurn ? 'Your turn' : "Opponent's turn";
-    }
-  }, (error) => {
-    console.error('[GAME] Listener error:', error);
+
+      const room = snapshot.val();
+      if (room.guestJoined) {
+        joinStatus.textContent = 'Room is full';
+        joinRoomBtn.disabled = false;
+        return;
+      }
+
+      console.log('[MULTIPLAYER] Joining room:', code);
+      
+      db.ref('rooms/' + code).update({
+        guestJoined: true,
+        guestEmoji: selectedEmoji,
+        board: room.board || Array(9).fill(null),
+        turn: room.turn || room.hostEmoji
+      }).then(() => {
+        console.log('[MULTIPLAYER] Joined successfully');
+        joinStatus.textContent = 'Joined! Starting game...';
+        
+        sessionStorage.setItem('roomCode', code);
+        sessionStorage.setItem('isHost', 'false');
+        sessionStorage.setItem('mySymbol', selectedEmoji);
+        sessionStorage.setItem('opponentSymbol', room.hostEmoji);
+        
+        setTimeout(() => window.location.href = 'game.html', 300);
+      }).catch(err => {
+        console.error('[MULTIPLAYER] Error joining:', err);
+        joinStatus.textContent = 'Error joining';
+        joinRoomBtn.disabled = false;
+      });
+    });
   });
 }
-
-resetButton.addEventListener('click', () => {
-  console.log('[GAME] Reset button clicked');
-  const roomRef = db.ref('rooms/' + roomCode);
-  const firstPlayer = isHost ? mySymbol : opponentSymbol;
-  
-  console.log('[GAME] Resetting game. First player:', firstPlayer);
-  
-  roomRef.update({
-    board: Array(9).fill(null),
-    turn: firstPlayer,
-    winner: null
-  });
-
-  gameBoard = Array(9).fill(null);
-  moveCount = 0;
-  isMyTurn = isHost;
-  gameActive = true;
-  
-  console.log('[GAME] Local state reset');
-});
-
-backToMenuBtn.addEventListener('click', () => {
-  console.log('[GAME] Back to menu clicked');
-  sessionStorage.clear();
-  console.log('[GAME] Session storage cleared');
-  window.location.href = 'home.html';
-});
-
-// Initialize game
-console.log('[GAME] Initializing game listener');
-listenToGameChanges();
-
-console.log('[GAME] Script initialization complete');

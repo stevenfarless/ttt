@@ -9,7 +9,6 @@ const emojiOptions = document.querySelectorAll('.emoji-option');
 
 const emojis = ['❌', '⭕', '❤️', '💲', '😀', '💀', '🤖', '👽', '🐶', '😺', '💩', '🦐', '🍕', '🍣', '🍓', '🍤', '🌙', '☀️', '⭐', '🚀'];
 
-
 function getRandomEmoji() {
   return emojis[Math.floor(Math.random() * emojis.length)];
 }
@@ -72,24 +71,44 @@ if (createRoomBtn) {
   createRoomBtn.addEventListener('click', () => {
     createRoomBtn.disabled = true;
     const code = generateRoomCode();
+    const selectedEmoji = emojiDisplay.textContent;
     const roomData = {
       roomCode: code,
       hostJoined: true,
       guestJoined: false,
+      hostEmoji: selectedEmoji,
+      guestEmoji: null,
       board: Array(9).fill(null),
-      turn: '',
-      winner: null
+      turn: 'X',
+      winner: null,
+      createdAt: new Date().getTime()
     };
+
     db.ref('rooms/' + code).set(roomData)
       .then(() => {
         if (roomCodeDisplay) roomCodeDisplay.textContent = code;
         if (codeRow) codeRow.style.display = 'block';
         if (createStatus) createStatus.textContent = 'Room created. Waiting for opponent...';
+        
+        // Store session data
+        sessionStorage.setItem('roomCode', code);
+        sessionStorage.setItem('isHost', 'true');
+        sessionStorage.setItem('mySymbol', selectedEmoji);
+        sessionStorage.setItem('opponentSymbol', '');
+        
+        // Listen for guest joining
+        const roomRef = db.ref('rooms/' + code);
+        const guestListener = roomRef.on('value', snapshot => {
+          const room = snapshot.val();
+          if (room && room.guestJoined && room.guestEmoji) {
+            sessionStorage.setItem('opponentSymbol', room.guestEmoji);
+            roomRef.off('value', guestListener);
+            window.location.href = 'game.html';
+          }
+        });
       })
       .catch(err => {
         showError(createStatus, 'Failed to create room: ' + (err.message || 'unknown error'));
-      })
-      .finally(() => {
         createRoomBtn.disabled = false;
       });
   });
@@ -103,31 +122,50 @@ if (joinRoomBtn) {
       return;
     }
     joinRoomBtn.disabled = true;
+    const selectedEmoji = emojiDisplay.textContent;
     const roomRef = db.ref('rooms/' + code);
+    
     roomRef.once('value')
       .then(snapshot => {
         if (!snapshot.exists()) {
           showError(joinStatus, 'Room not found.');
+          joinRoomBtn.disabled = false;
           return;
         }
         const room = snapshot.val();
         if (room.guestJoined) {
           showError(joinStatus, 'Room is full.');
+          joinRoomBtn.disabled = false;
           return;
         }
-        roomRef.update({ guestJoined: true })
+        
+        // Join the room
+        roomRef.update({ 
+          guestJoined: true,
+          guestEmoji: selectedEmoji,
+          turn: 'X'
+        })
           .then(() => {
             if (joinStatus) joinStatus.textContent = 'Joined room. Starting game...';
-            // TODO: Navigate to game page with session storage
+            
+            // Store session data
+            sessionStorage.setItem('roomCode', code);
+            sessionStorage.setItem('isHost', 'false');
+            sessionStorage.setItem('mySymbol', selectedEmoji);
+            sessionStorage.setItem('opponentSymbol', room.hostEmoji);
+            
+            // Navigate to game
+            setTimeout(() => {
+              window.location.href = 'game.html';
+            }, 500);
           })
           .catch(err => {
-            showError(joinStatus, 'Failed to join room.');
+            showError(joinStatus, 'Failed to join room: ' + err.message);
+            joinRoomBtn.disabled = false;
           });
       })
       .catch(err => {
-        showError(joinStatus, 'Database error occurred: ' + (err.message || 'unknown'));
-      })
-      .finally(() => {
+        showError(joinStatus, 'Database error: ' + (err.message || 'unknown'));
         joinRoomBtn.disabled = false;
       });
   });

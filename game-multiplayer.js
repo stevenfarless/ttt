@@ -15,8 +15,8 @@ let roomCode = sessionStorage.getItem('roomCode');
 let isHost = sessionStorage.getItem('isHost') === 'true';
 let mySymbol = sessionStorage.getItem('mySymbol');
 let opponentSymbol = sessionStorage.getItem('opponentSymbol');
-let gameActive = false;
-let isMyTurn = false;
+let gameActive = true;
+let isMyTurn = isHost; // Host goes first
 let moveLock = false;
 
 let gameBoard = Array(9).fill(null);
@@ -25,8 +25,8 @@ if (!validateRoomCode(roomCode)) {
   showError(result, 'Invalid room code. Please return to menu.');
 }
 
-player1Emoji.textContent = isHost ? mySymbol : opponentSymbol;
-player2Emoji.textContent = isHost ? opponentSymbol : mySymbol;
+player1Emoji.textContent = mySymbol;
+player2Emoji.textContent = opponentSymbol;
 
 // Accessibility: make cells keyboard accessible
 cells.forEach((cell, index) => {
@@ -78,7 +78,9 @@ function setTurnIndicator(isMyTurnNow) {
 }
 
 function handleCellClick(index) {
-  if (!gameActive || moveLock || gameBoard[index]) return;
+  if (!gameActive || moveLock || gameBoard[index]) {
+    return;
+  }
   if (!isMyTurn) {
     showError(result, 'It is not your turn');
     return;
@@ -95,7 +97,7 @@ function handleCellClick(index) {
     }
 
     room.board[index] = mySymbol;
-    room.turn = (mySymbol === 'X') ? 'O' : 'X';
+    room.turn = room.turn === mySymbol ? opponentSymbol : mySymbol;
     room.winner = checkWinner(room.board);
     return room;
   }, (error, committed, snapshot) => {
@@ -118,8 +120,15 @@ function listenForGameUpdates() {
     gameBoard = room.board || Array(9).fill(null);
     updateUI(gameBoard);
     gameActive = !room.winner;
-    result.textContent = room.winner === 'draw' ? 'Game ended in a draw' :
-      room.winner ? `${room.winner} wins!` : 'Game in progress...';
+    
+    if (room.winner === 'draw') {
+      result.textContent = 'Game ended in a draw!';
+    } else if (room.winner) {
+      result.textContent = room.winner === mySymbol ? 'You Win! 🎉' : 'Opponent Wins';
+    } else {
+      result.textContent = 'Game in progress...';
+    }
+    
     setTurnIndicator(room.turn === mySymbol);
   }, error => {
     showError(result, 'Failed to sync game data.');
@@ -129,12 +138,9 @@ function listenForGameUpdates() {
 resetButton.addEventListener('click', () => {
   if (!roomCode) return;
   const roomRef = db.ref('rooms/' + roomCode);
-  roomRef.set({
-    roomCode,
-    hostJoined: true,
-    guestJoined: true,
+  roomRef.update({
     board: Array(9).fill(null),
-    turn: 'X',
+    turn: isHost ? mySymbol : opponentSymbol,
     winner: null
   }).catch(err => {
     showError(result, 'Failed to reset game: ' + err.message);

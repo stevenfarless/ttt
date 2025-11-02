@@ -54,13 +54,18 @@ if (createRoomBtn) {
 
     const selectedEmoji = emojiDisplay.textContent;
     
+    // CRITICAL: Use object notation to force array storage in Firebase
     const roomData = {
       roomCode: code,
       hostJoined: true,
       guestJoined: false,
       hostEmoji: selectedEmoji,
       guestEmoji: null,
-      board: Array(9).fill(null),
+      board: {
+        0: null, 1: null, 2: null,
+        3: null, 4: null, 5: null,
+        6: null, 7: null, 8: null
+      },
       turn: selectedEmoji,
       winner: null
     };
@@ -124,12 +129,25 @@ if (joinRoomBtn) {
 
       console.log('[MULTIPLAYER] Joining room:', code);
       
-      db.ref('rooms/' + code).update({
+      // Keep existing board structure
+      const updateData = {
         guestJoined: true,
-        guestEmoji: selectedEmoji,
-        board: room.board || Array(9).fill(null),
-        turn: room.turn || room.hostEmoji
-      }).then(() => {
+        guestEmoji: selectedEmoji
+      };
+      
+      // Only set board/turn if they don't exist
+      if (!room.board) {
+        updateData.board = {
+          0: null, 1: null, 2: null,
+          3: null, 4: null, 5: null,
+          6: null, 7: null, 8: null
+        };
+      }
+      if (!room.turn) {
+        updateData.turn = room.hostEmoji;
+      }
+      
+      db.ref('rooms/' + code).update(updateData).then(() => {
         console.log('[MULTIPLAYER] Joined successfully');
         joinStatus.textContent = 'Joined! Starting game...';
         

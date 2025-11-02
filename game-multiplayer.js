@@ -69,7 +69,22 @@ function checkWinner(board) {
 
 function updateBoard() {
   cells.forEach((cell, index) => {
-    cell.textContent = gameBoard[index] || '';
+    const symbol = gameBoard[index];
+    cell.textContent = symbol || '';
+    
+    // PLAYER PERSPECTIVE COLORS
+    if (symbol === mySymbol) {
+      cell.style.color = '#3B82F6'; // BLUE for my moves
+      cell.classList.add('my-move');
+      cell.classList.remove('opponent-move');
+    } else if (symbol === opponentSymbol) {
+      cell.style.color = '#EF4444'; // RED for opponent moves
+      cell.classList.add('opponent-move');
+      cell.classList.remove('my-move');
+    } else {
+      cell.style.color = '';
+      cell.classList.remove('my-move', 'opponent-move');
+    }
   });
 }
 

@@ -54,7 +54,7 @@ emojiOptions.forEach((option, idx) => {
   });
 });
 
-// ROOM MANAGEMENT - Use a function to delay DOM access
+// ROOM MANAGEMENT
 function initializeRoomManagement() {
   const createRoomBtn = document.getElementById('createRoomBtn');
   const joinRoomBtn = document.getElementById('joinRoomBtn');
@@ -196,11 +196,14 @@ function initializeRoomManagement() {
             return;
           }
 
-          // Join room
+          // Join room - IMPORTANT: Initialize board and turn properly
           console.log('[MULTIPLAYER] Updating room with guest data...');
           roomRef.update({ 
             guestJoined: true,
-            guestEmoji: selectedEmoji
+            guestEmoji: selectedEmoji,
+            board: room.board || Array(9).fill(null),
+            turn: room.turn || selectedEmoji,
+            winner: null
           })
             .then(() => {
               console.log('[MULTIPLAYER] Successfully joined room');

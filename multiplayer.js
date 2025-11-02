@@ -7,7 +7,7 @@ const emojiDisplay = document.getElementById('emojiDisplay');
 const emojiPicker = document.getElementById('emojiPicker');
 const emojiOptions = document.querySelectorAll('.emoji-option');
 
-const emojis = ['👍', '👑', '🐱', '🤖', '🎉', '🔥', '⚡', '🌈', '🍕', '❤️']; // allowed emojis
+const emojis = ['👍', '👑', '🐱', '🤖', '🎉', '🔥', '⚡', '🌈', '🍕', '❤️'];
 
 function getRandomEmoji() {
   return emojis[Math.floor(Math.random() * emojis.length)];
@@ -20,13 +20,16 @@ if (emojiDisplay) {
   emojiDisplay.setAttribute('role', 'button');
   emojiDisplay.setAttribute('aria-label', 'Select your game piece emoji');
   emojiDisplay.addEventListener('click', () => {
-    emojiPicker.style.display = emojiPicker.style.display === 'grid' ? 'none' : 'grid';
+    const isOpen = emojiPicker.style.display === 'grid';
+    emojiPicker.style.display = isOpen ? 'none' : 'grid';
+    emojiDisplay.setAttribute('aria-expanded', !isOpen);
+    emojiPicker.setAttribute('aria-hidden', isOpen);
   });
 
   emojiDisplay.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      emojiPicker.style.display = emojiPicker.style.display === 'grid' ? 'none' : 'grid';
+      emojiDisplay.click();
     }
   });
 }
@@ -38,6 +41,8 @@ emojiOptions.forEach(option => {
     const selectedEmoji = e.target.getAttribute('data-emoji');
     emojiDisplay.textContent = sanitizeEmojiChoice(selectedEmoji, emojis);
     emojiPicker.style.display = 'none';
+    emojiDisplay.setAttribute('aria-expanded', 'false');
+    emojiPicker.setAttribute('aria-hidden', 'true');
   });
   option.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -54,6 +59,7 @@ const roomCodeInput = document.getElementById('roomCodeInput');
 const roomCodeDisplay = document.getElementById('roomCodeDisplay');
 const createStatus = document.getElementById('createStatus');
 const joinStatus = document.getElementById('joinStatus');
+const codeRow = document.getElementById('codeRow');
 
 if (roomCodeInput) {
   roomCodeInput.addEventListener('input', e => {
@@ -76,6 +82,7 @@ if (createRoomBtn) {
     db.ref('rooms/' + code).set(roomData)
       .then(() => {
         if (roomCodeDisplay) roomCodeDisplay.textContent = code;
+        if (codeRow) codeRow.style.display = 'block';
         if (createStatus) createStatus.textContent = 'Room created. Waiting for opponent...';
       })
       .catch(err => {
@@ -110,7 +117,7 @@ if (joinRoomBtn) {
         roomRef.update({ guestJoined: true })
           .then(() => {
             if (joinStatus) joinStatus.textContent = 'Joined room. Starting game...';
-            // Proceed to game page etc.
+            // TODO: Navigate to game page with session storage
           })
           .catch(err => {
             showError(joinStatus, 'Failed to join room.');

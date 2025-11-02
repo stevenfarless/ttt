@@ -43,7 +43,6 @@ cells.forEach((cell, index) => {
 });
 
 function checkWinner(board) {
-  // Check cells for win condition
   const winLines = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
     [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
@@ -143,7 +142,6 @@ resetButton.addEventListener('click', () => {
 });
 
 backToMenuBtn.addEventListener('click', () => {
-  // Clear session and navigate
   sessionStorage.clear();
   window.location.href = 'home.html';
 });

@@ -1,3 +1,5 @@
+New readme, here's the old one for reference. Tell me what changes need to be made before doing anything.
+
 # 🎮 Custom Tic Tac Toe - (Multiplayer Edition)
 
 **Version:** 0.3.0-alpha | **Release Date:** October 31, 2025
@@ -34,7 +36,7 @@ A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces, built
 
 1. **Clone the repository**
 ```
-git clone https://github.com/yourusername/tic-tac-toe.git
+git clone https://github.com/stevenfarless/tic-tac-toe.git
 cd tic-tac-toe
 ```
 
@@ -45,7 +47,7 @@ open index.html
 ```
 
 3. **Configure Firebase (Multiplayer Mode)**
-   - Go to [Firebase Console](https://console.firebase.google.com)
+   - Go to Firebase Console
    - Create a new project
    - Enable Realtime Database
    - Update Firebase config in `index.html` with your project credentials
@@ -116,7 +118,7 @@ tic-tac-toe/
 
 ---
 
-## 🗺️ Roadmap (Post-Alpha)
+## 🗺️ Roadmap
 
 - [ ] Leaderboard system
 - [ ] AI opponent
@@ -147,7 +149,7 @@ GPL 3 License - see LICENSE file for details
 
 Found a bug? Have a suggestion? Please open an issue on GitHub!
 
-**GitHub Issues:** [https://github.com/yourusername/tic-tac-toe/issues](https://github.com/yourusername/tic-tac-toe/issues)
+**GitHub Issues:** https://github.com/stevenfarless/tic-tac-toe/issues
 
 ---
 
@@ -165,4 +167,4 @@ Found a bug? Have a suggestion? Please open an issue on GitHub!
 
 ---
 
-**Built with ❤️ - Alpha Stage Software**
+**Built with ❤️ by Steven Farless**

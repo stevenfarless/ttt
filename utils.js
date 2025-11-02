@@ -7,7 +7,7 @@ export function generateRoomCode() {
   return code;
 }
 
-export function showError(element, message, timeout = 5000) {
+export function showError(element, message, timeout = 5000) {	
   element.textContent = message;
   element.classList.add('error');
   if (timeout) {

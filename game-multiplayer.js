@@ -36,6 +36,7 @@ let gameBoard = Array(9).fill(null);
 let previousBoard = Array(9).fill(null);
 let gameActive = false;
 let isMyTurn = isHost;
+let resetNotificationShown = false;
 
 console.log('[GAME] Session data loaded:', { roomCode, isHost, mySymbol, opponentSymbol });
 
@@ -201,6 +202,28 @@ function listenToGameChanges() {
         return;
       }
 
+      // Check if opponent reset the game
+      if (room.resetRequested && !resetNotificationShown) {
+        resetNotificationShown = true;
+        console.log('[GAME] Opponent requested reset');
+        
+        const confirmed = confirm('Your opponent reset the game. Return to menu?');
+        if (confirmed) {
+          sessionStorage.clear();
+          window.location.href = 'index.html';
+        } else {
+          // Reset the flag if user cancels
+          resetNotificationShown = false;
+          db.ref('rooms/' + roomCode).update({ resetRequested: false });
+        }
+        return;
+      }
+
+      // Reset the flag when game state changes back to normal
+      if (!room.resetRequested) {
+        resetNotificationShown = false;
+      }
+
       // Normalize board
       if (room.board) {
         gameBoard = Array.isArray(room.board)
@@ -211,7 +234,6 @@ function listenToGameChanges() {
       }
 
       // Detect opponent move and play animation
-      // IMPORTANT: Check for changes by comparing values, not just !== (0 is falsy!)
       for (let i = 0; i < 9; i++) {
         const changed = previousBoard[i] !== gameBoard[i];
         const isNewMove = gameBoard[i] !== null && gameBoard[i] !== undefined;
@@ -251,25 +273,42 @@ function listenToGameChanges() {
 }
 
 /**
- * Resets the game state
+ * Resets the game state and notifies opponent
  */
 function resetGame() {
   try {
-    const firstPlayer = isHost ? mySymbol : opponentSymbol;
-    const emptyBoard = Object.fromEntries(
-      Array.from({ length: 9 }, (_, i) => [i, null])
-    );
-
+    console.log('[GAME] Reset requested by player');
+    
+    // Set resetRequested flag to notify opponent
     db.ref('rooms/' + roomCode).update({
-      board: emptyBoard,
-      turn: firstPlayer,
-      winner: null
-    });
+      resetRequested: true
+    }).then(() => {
+      console.log('[GAME] Reset notification sent');
+      
+      // Reset local state
+      const firstPlayer = isHost ? mySymbol : opponentSymbol;
+      const emptyBoard = Object.fromEntries(
+        Array.from({ length: 9 }, (_, i) => [i, null])
+      );
 
-    gameBoard = Array(9).fill(null);
-    previousBoard = Array(9).fill(null);
-    isMyTurn = isHost;
-    gameActive = true;
+      // Give opponent time to see notification, then reset
+      setTimeout(() => {
+        db.ref('rooms/' + roomCode).update({
+          board: emptyBoard,
+          turn: firstPlayer,
+          winner: null,
+          resetRequested: false
+        });
+
+        gameBoard = Array(9).fill(null);
+        previousBoard = Array(9).fill(null);
+        isMyTurn = isHost;
+        gameActive = true;
+        resetNotificationShown = false;
+      }, 300);
+    }).catch(error => {
+      console.error('[GAME] Reset error:', error);
+    });
   } catch (error) {
     console.error('[GAME] Reset error:', error);
   }

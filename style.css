@@ -80,7 +80,7 @@ h1 {
   color: var(--warning);
 }
 
-/* Hover border fade in/out animation */
+/* Hover border fade animation */
 @keyframes borderFadeInOut {
   0% {
     border-color: var(--light);
@@ -133,20 +133,22 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease;
   min-height: 100px;
   outline: none;
 }
 
+/* Hover state - only applies to the hovered cell */
 .cell:hover {
-  animation: borderFadeInOut 0.6s ease-in-out forwards;
   transform: scale(1.05);
+  animation: borderFadeInOut 0.6s ease-in-out;
 }
 
 .cell:active {
   transform: scale(0.98);
 }
 
+/* Click animation - only applies to clicked cell with .clicked class */
 .cell.clicked {
   animation: borderExpand 0.6s ease-out forwards;
 }

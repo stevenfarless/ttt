@@ -36,7 +36,8 @@ let gameBoard = Array(9).fill(null);
 let previousBoard = Array(9).fill(null);
 let gameActive = false;
 let isMyTurn = isHost;
-let backToMenuNotificationShown = false;
+let roomRef = null;
+let isLeavingGame = false;
 
 console.log('[GAME] Session data loaded:', { roomCode, isHost, mySymbol, opponentSymbol });
 
@@ -136,8 +137,6 @@ function makeMove(index) {
 
   playMoveAnimation(index);
 
-  const roomRef = db.ref('rooms/' + roomCode);
-
   roomRef.transaction((room) => {
     try {
       if (!room) {
@@ -190,32 +189,43 @@ function makeMove(index) {
  * Listens to Firebase game changes and updates local state
  */
 function listenToGameChanges() {
-  const roomRef = db.ref('rooms/' + roomCode);
+  roomRef = db.ref('rooms/' + roomCode);
 
   roomRef.on('value', (snapshot) => {
     try {
+      // Skip processing if we're already leaving
+      if (isLeavingGame) {
+        return;
+      }
+
       const room = snapshot.val();
 
       if (!room) {
-        result.textContent = 'Room not found';
-        gameActive = false;
+        console.log('[GAME] Room disappeared');
+        if (!isLeavingGame) {
+          result.textContent = 'Opponent left the game';
+          setTimeout(() => {
+            isLeavingGame = true;
+            roomRef.off('value');
+            window.location.href = 'index.html';
+          }, 2000);
+        }
         return;
       }
 
       // Check if opponent wants to go back to menu
-      if (room.playerLeftRequested && !backToMenuNotificationShown) {
-        backToMenuNotificationShown = true;
+      if (room.playerLeftRequested) {
         console.log('[GAME] Opponent going back to menu');
         
-        alert('Your opponent went back to menu. You will now return to menu.');
-        sessionStorage.clear();
-        window.location.href = 'index.html';
+        if (!isLeavingGame) {
+          isLeavingGame = true;
+          roomRef.off('value'); // Stop listening to updates
+          
+          alert('Your opponent went back to menu.');
+          sessionStorage.clear();
+          window.location.href = 'index.html';
+        }
         return;
-      }
-
-      // Reset the flag when room is cleaned up
-      if (!room.playerLeftRequested) {
-        backToMenuNotificationShown = false;
       }
 
       // Normalize board
@@ -276,7 +286,7 @@ function resetGame() {
       Array.from({ length: 9 }, (_, i) => [i, null])
     );
 
-    db.ref('rooms/' + roomCode).update({
+    roomRef.update({
       board: emptyBoard,
       turn: firstPlayer,
       winner: null
@@ -297,18 +307,27 @@ function resetGame() {
 function goBackToMenu() {
   try {
     console.log('[GAME] Player going back to menu');
+    
+    // Prevent re-entrance
+    if (isLeavingGame) {
+      return;
+    }
+    isLeavingGame = true;
+
+    // Stop listening BEFORE updating Firebase
+    roomRef.off('value');
 
     // Set flag to notify opponent
-    db.ref('rooms/' + roomCode).update({
+    roomRef.update({
       playerLeftRequested: true
     }).then(() => {
       console.log('[GAME] Notified opponent');
       sessionStorage.clear();
       
-      // Give opponent time to see notification before leaving
+      // Give opponent time to see notification before we completely leave
       setTimeout(() => {
         window.location.href = 'index.html';
-      }, 300);
+      }, 500);
     }).catch(error => {
       console.error('[GAME] Error notifying opponent:', error);
       // Leave anyway if notification fails

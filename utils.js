@@ -1,4 +1,5 @@
 // utils.js
+// Firebase Configuration
 export const firebaseConfig = {
    apiKey: "AIzaSyAQO1xbKz5yjo3TAqqU1gFZYrI-qBugRNs",
   authDomain: "tic-tac-toe-80bd7.firebaseapp.com",
@@ -10,7 +11,7 @@ export const firebaseConfig = {
   measurementId: "G-2WC5RPCT3Q"
 };
 
-
+// Utility Functions
 export function generateRoomCode() {
   const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ123456789';
   let code = '';
@@ -20,7 +21,7 @@ export function generateRoomCode() {
   return code;
 }
 
-export function showError(element, message, timeout = 5000) {	
+export function showError(element, message, timeout = 5000) {
   element.textContent = message;
   element.classList.add('error');
   if (timeout) {
@@ -38,4 +39,3 @@ export function validateRoomCode(code) {
 export function sanitizeEmojiChoice(choice, allowedEmojis) {
   return allowedEmojis.includes(choice) ? choice : allowedEmojis[0];
 }
-

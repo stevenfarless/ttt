@@ -79,7 +79,9 @@ createRoomBtn.addEventListener('click', (e) => {
   
   createModule.classList.remove('hidden');
   joinModule.classList.add('hidden');
+  joinRoomBtn.disabled = false;
   joinStatus.textContent = '';
+  roomCodeInput.value = '';
 });
 
 joinRoomBtn.addEventListener('click', (e) => {
@@ -87,7 +89,9 @@ joinRoomBtn.addEventListener('click', (e) => {
   
   joinModule.classList.remove('hidden');
   createModule.classList.add('hidden');
+  createRoomBtn.disabled = false;
   createStatus.textContent = '';
+  roomCodeDisplay.textContent = 'XXXX';
 });
 
 // Room code input validation and button text update

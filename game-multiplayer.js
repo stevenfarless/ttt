@@ -36,7 +36,7 @@ let gameBoard = Array(9).fill(null);
 let previousBoard = Array(9).fill(null);
 let gameActive = false;
 let isMyTurn = isHost;
-let resetNotificationShown = false;
+let backToMenuNotificationShown = false;
 
 console.log('[GAME] Session data loaded:', { roomCode, isHost, mySymbol, opponentSymbol });
 
@@ -202,26 +202,20 @@ function listenToGameChanges() {
         return;
       }
 
-      // Check if opponent reset the game
-      if (room.resetRequested && !resetNotificationShown) {
-        resetNotificationShown = true;
-        console.log('[GAME] Opponent requested reset');
+      // Check if opponent wants to go back to menu
+      if (room.playerLeftRequested && !backToMenuNotificationShown) {
+        backToMenuNotificationShown = true;
+        console.log('[GAME] Opponent going back to menu');
         
-        const confirmed = confirm('Your opponent reset the game. Return to menu?');
-        if (confirmed) {
-          sessionStorage.clear();
-          window.location.href = 'index.html';
-        } else {
-          // Reset the flag if user cancels
-          resetNotificationShown = false;
-          db.ref('rooms/' + roomCode).update({ resetRequested: false });
-        }
+        alert('Your opponent went back to menu. You will now return to menu.');
+        sessionStorage.clear();
+        window.location.href = 'index.html';
         return;
       }
 
-      // Reset the flag when game state changes back to normal
-      if (!room.resetRequested) {
-        resetNotificationShown = false;
+      // Reset the flag when room is cleaned up
+      if (!room.playerLeftRequested) {
+        backToMenuNotificationShown = false;
       }
 
       // Normalize board
@@ -273,56 +267,58 @@ function listenToGameChanges() {
 }
 
 /**
- * Resets the game state and notifies opponent
+ * Resets the game state
  */
 function resetGame() {
   try {
-    console.log('[GAME] Reset requested by player');
-    
-    // Set resetRequested flag to notify opponent
+    const firstPlayer = isHost ? mySymbol : opponentSymbol;
+    const emptyBoard = Object.fromEntries(
+      Array.from({ length: 9 }, (_, i) => [i, null])
+    );
+
     db.ref('rooms/' + roomCode).update({
-      resetRequested: true
-    }).then(() => {
-      console.log('[GAME] Reset notification sent');
-      
-      // Reset local state
-      const firstPlayer = isHost ? mySymbol : opponentSymbol;
-      const emptyBoard = Object.fromEntries(
-        Array.from({ length: 9 }, (_, i) => [i, null])
-      );
-
-      // Give opponent time to see notification, then reset
-      setTimeout(() => {
-        db.ref('rooms/' + roomCode).update({
-          board: emptyBoard,
-          turn: firstPlayer,
-          winner: null,
-          resetRequested: false
-        });
-
-        gameBoard = Array(9).fill(null);
-        previousBoard = Array(9).fill(null);
-        isMyTurn = isHost;
-        gameActive = true;
-        resetNotificationShown = false;
-      }, 300);
-    }).catch(error => {
-      console.error('[GAME] Reset error:', error);
+      board: emptyBoard,
+      turn: firstPlayer,
+      winner: null
     });
+
+    gameBoard = Array(9).fill(null);
+    previousBoard = Array(9).fill(null);
+    isMyTurn = isHost;
+    gameActive = true;
   } catch (error) {
     console.error('[GAME] Reset error:', error);
   }
 }
 
 /**
- * Navigates back to home
+ * Navigates back to menu and notifies opponent
  */
 function goBackToMenu() {
   try {
-    sessionStorage.clear();
-    window.location.href = 'index.html';
+    console.log('[GAME] Player going back to menu');
+
+    // Set flag to notify opponent
+    db.ref('rooms/' + roomCode).update({
+      playerLeftRequested: true
+    }).then(() => {
+      console.log('[GAME] Notified opponent');
+      sessionStorage.clear();
+      
+      // Give opponent time to see notification before leaving
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 300);
+    }).catch(error => {
+      console.error('[GAME] Error notifying opponent:', error);
+      // Leave anyway if notification fails
+      sessionStorage.clear();
+      window.location.href = 'index.html';
+    });
   } catch (error) {
     console.error('[GAME] Navigation error:', error);
+    sessionStorage.clear();
+    window.location.href = 'index.html';
   }
 }
 

@@ -20,11 +20,12 @@ const closeEmojiModal = document.getElementById('closeEmojiModal');
 const emojiPicker = document.getElementById('emojiPicker');
 const createRoomBtn = document.getElementById('createRoomBtn');
 const joinRoomBtn = document.getElementById('joinRoomBtn');
+const createModule = document.getElementById('createModule');
+const joinModule = document.getElementById('joinModule');
 const roomCodeInput = document.getElementById('roomCodeInput');
 const roomCodeDisplay = document.getElementById('roomCodeDisplay');
 const createStatus = document.getElementById('createStatus');
 const joinStatus = document.getElementById('joinStatus');
-const codeRow = document.getElementById('codeRow');
 const copyCodeBtn = document.getElementById('copyCodeBtn');
 const pasteCodeBtn = document.getElementById('pasteCodeBtn');
 
@@ -70,6 +71,21 @@ emojiModal.addEventListener('click', (e) => {
   if (e.target === emojiModal) {
     emojiModal.classList.add('hidden');
   }
+});
+
+// Toggle modules when buttons clicked
+createRoomBtn.addEventListener('click', (e) => {
+  if (!createModule.classList.contains('hidden')) return; // Already showing create module
+  
+  createModule.classList.remove('hidden');
+  joinModule.classList.add('hidden');
+});
+
+joinRoomBtn.addEventListener('click', (e) => {
+  if (!joinModule.classList.contains('hidden')) return; // Already showing join module
+  
+  joinModule.classList.remove('hidden');
+  createModule.classList.add('hidden');
 });
 
 // Room code input validation
@@ -138,7 +154,6 @@ createRoomBtn.addEventListener('click', () => {
   db.ref('rooms/' + code).set(roomData).then(() => {
     console.log('[MULTIPLAYER] Room created');
     roomCodeDisplay.textContent = code;
-    codeRow.classList.remove('hidden');
     createStatus.textContent = 'Waiting for opponent...';
     createStatus.style.color = 'var(--warning)';
     sessionStorage.setItem('roomCode', code);

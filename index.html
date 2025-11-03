@@ -34,30 +34,34 @@
     <!-- Create Room Section -->
     <div class="section">
       <button id="createRoomBtn" class="btn btn-primary">Create Room</button>
-      <div id="codeRow" class="code-display hidden">
-        <div class="code-container">
-          <span class="label">Your Code:</span>
-          <span id="roomCodeDisplay" class="room-code">XXXX</span>
-          <button id="copyCodeBtn" class="copy-btn" title="Copy to clipboard">📋</button>
+      <div id="createModule" class="room-module hidden">
+        <div class="code-display">
+          <div class="code-container">
+            <span class="label">Your Code:</span>
+            <span id="roomCodeDisplay" class="room-code">XXXX</span>
+            <button id="copyCodeBtn" class="copy-btn" title="Copy to clipboard">📋</button>
+          </div>
         </div>
+        <p id="createStatus" class="status-text"></p>
       </div>
-      <p id="createStatus" class="status-text"></p>
     </div>
 
     <!-- Join Room Section -->
     <div class="section">
-      <div class="input-group">
-        <input 
-          id="roomCodeInput" 
-          type="text" 
-          placeholder="Enter Room Code"
-          maxlength="4"
-          class="room-code-input"
-        >
-        <button id="pasteCodeBtn" class="paste-btn" title="Paste from clipboard">📌</button>
-      </div>
       <button id="joinRoomBtn" class="btn btn-primary">Join Room</button>
-      <p id="joinStatus" class="status-text"></p>
+      <div id="joinModule" class="room-module hidden">
+        <div class="input-group">
+          <input 
+            id="roomCodeInput" 
+            type="text" 
+            placeholder="Enter Room Code"
+            maxlength="4"
+            class="room-code-input"
+          >
+          <button id="pasteCodeBtn" class="paste-btn" title="Paste from clipboard">📋</button>
+        </div>
+        <p id="joinStatus" class="status-text"></p>
+      </div>
     </div>
   </div>
 

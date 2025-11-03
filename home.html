@@ -1,75 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tic Tac Toe</title>
-  <link rel="stylesheet" href="home.css" />
-
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <script>
-    var firebaseConfig = {
-      apiKey: "AIzaSyB7CW4zuf7KmqlsWWmlNf8GIqncCVAmZlg",
-      authDomain: "tic-tac-toe-80bd7.firebaseapp.com",
-      databaseURL: "https://tic-tac-toe-80bd7-default-rtdb.firebaseio.com",
-      projectId: "tic-tac-toe-80bd7",
-      storageBucket: "tic-tac-toe-80bd7.firebasestorage.app",
-      messagingSenderId: "423174319963",
-      appId: "1:423174319963:web:c5329be46c388da0eb347e",
-      measurementId: "G-2WC5RPCT3Q"
-    };
-    firebase.initializeApp(firebaseConfig);
-  </script>
-  <script defer src="multiplayer.js"></script>
-
+  <link rel="stylesheet" href="home.css">
 </head>
 <body>
-  <div id="menu-container" role="main" aria-label="Tic Tac Toe Main Menu">
-    <h1 tabindex="0">Tic Tac Toe</h1>
-    <div id="emoji-selector" aria-label="Select your game piece">
-      <label for="emojiDisplay" aria-live="polite" role="alert" aria-atomic="true" style="display: block; margin-bottom: 8px;">
-        Select your game piece
-      </label>
-      <button id="emojiDisplay" class="emoji-button emoji-preview" aria-haspopup="grid" aria-expanded="false" aria-label="Select your emoji game piece"></button>
-      <div id="emojiPicker" class="emoji-picker" role="grid" aria-hidden="true" style="display: none;">
-        <button class="emoji-option" data-emoji="❌" role="gridcell" aria-label="X mark emoji" tabindex="-1">❌</button>
-        <button class="emoji-option" data-emoji="⭕" role="gridcell" aria-label="O mark emoji" tabindex="-1">⭕</button>
-        <button class="emoji-option" data-emoji="❤️" role="gridcell" aria-label="Heart emoji" tabindex="-1">❤️</button>
-        <button class="emoji-option" data-emoji="💲" role="gridcell" aria-label="Money emoji" tabindex="-1">💲</button>
-        <button class="emoji-option" data-emoji="😀" role="gridcell" aria-label="Smile emoji" tabindex="-1">😀</button>
-        <button class="emoji-option" data-emoji="💀" role="gridcell" aria-label="Skull emoji" tabindex="-1">💀</button>
-        <button class="emoji-option" data-emoji="🤖" role="gridcell" aria-label="Robot emoji" tabindex="-1">🤖</button>
-        <button class="emoji-option" data-emoji="👽" role="gridcell" aria-label="Alien emoji" tabindex="-1">👽</button>
-        <button class="emoji-option" data-emoji="🐶" role="gridcell" aria-label="Dog emoji" tabindex="-1">🐶</button>
-        <button class="emoji-option" data-emoji="😺" role="gridcell" aria-label="Cat emoji" tabindex="-1">😺</button>
-        <button class="emoji-option" data-emoji="💩" role="gridcell" aria-label="Poop emoji" tabindex="-1">💩</button>
-        <button class="emoji-option" data-emoji="🦐" role="gridcell" aria-label="Shrimp emoji" tabindex="-1">🦐</button>
-        <button class="emoji-option" data-emoji="🍕" role="gridcell" aria-label="Pizza emoji" tabindex="-1">🍕</button>
-        <button class="emoji-option" data-emoji="🍣" role="gridcell" aria-label="Sushi emoji" tabindex="-1">🍣</button>
-        <button class="emoji-option" data-emoji="🍓" role="gridcell" aria-label="Strawberry emoji" tabindex="-1">🍓</button>
-        <button class="emoji-option" data-emoji="🍤" role="gridcell" aria-label="Shrimp food emoji" tabindex="-1">🍤</button>
-        <button class="emoji-option" data-emoji="🌙" role="gridcell" aria-label="Moon emoji" tabindex="-1">🌙</button>
-        <button class="emoji-option" data-emoji="☀️" role="gridcell" aria-label="Sun emoji" tabindex="-1">☀️</button>
-        <button class="emoji-option" data-emoji="⭐" role="gridcell" aria-label="Star emoji" tabindex="-1">⭐</button>
-        <button class="emoji-option" data-emoji="🚀" role="gridcell" aria-label="Rocket emoji" tabindex="-1">🚀</button>
+  <div id="menu-container">
+    <h1>Tic Tac Toe</h1>
+    
+    <div id="emoji-selector">
+      <label for="emojiDisplay">Select your game piece</label>
+      <button id="emojiDisplay" class="emoji-button">😀</button>
+      <div id="emojiPicker" class="emoji-picker" style="display: none;">
+        <button class="emoji-option" data-emoji="❌">❌</button>
+        <button class="emoji-option" data-emoji="⭕">⭕</button>
+        <button class="emoji-option" data-emoji="❤️">❤️</button>
+        <button class="emoji-option" data-emoji="💲">💲</button>
+        <button class="emoji-option" data-emoji="😀">😀</button>
+        <button class="emoji-option" data-emoji="💀">💀</button>
+        <button class="emoji-option" data-emoji="🤖">🤖</button>
+        <button class="emoji-option" data-emoji="👽">👽</button>
+        <button class="emoji-option" data-emoji="🐶">🐶</button>
+        <button class="emoji-option" data-emoji="😺">😺</button>
+        <button class="emoji-option" data-emoji="💩">💩</button>
+        <button class="emoji-option" data-emoji="🦐">🦐</button>
+        <button class="emoji-option" data-emoji="🍕">🍕</button>
+        <button class="emoji-option" data-emoji="🍣">🍣</button>
+        <button class="emoji-option" data-emoji="🍓">🍓</button>
+        <button class="emoji-option" data-emoji="🍤">🍤</button>
+        <button class="emoji-option" data-emoji="🌙">🌙</button>
+        <button class="emoji-option" data-emoji="☀️">☀️</button>
+        <button class="emoji-option" data-emoji="⭐">⭐</button>
+        <button class="emoji-option" data-emoji="🚀">🚀</button>
       </div>
     </div>
 
-    <section id="create-section" aria-label="Create a new game room">
-      <button id="createRoomBtn" aria-describedby="createStatus">Create Room</button>
-      <p id="createStatus" role="status" aria-live="polite"></p>
-      <div id="codeRow" style="display:none;">
-        <p>Room Code: <span id="roomCodeDisplay" aria-live="polite" aria-atomic="true"></span></p>
+    <div id="create-section">
+      <button id="createRoomBtn">Create Room</button>
+      <p id="createStatus"></p>
+      <div id="codeRow" style="display: none;">
+        <label>Room Code: <strong id="roomCodeDisplay"></strong></label>
       </div>
-    </section>
+    </div>
 
-    <section id="join-section" aria-label="Join an existing game room">
-      <label for="roomCodeInput">Room Code</label>
-      <input id="roomCodeInput" type="text" maxlength="4" aria-describedby="joinStatus" aria-label="Enter 4 character room code" autocomplete="off" autofocus />
-      <button id="joinRoomBtn" aria-describedby="joinStatus">Join Room</button>
-      <p id="joinStatus" role="status" aria-live="polite"></p>
-    </section>
+    <div id="join-section">
+      <input type="text" id="roomCodeInput" placeholder="Room Code" maxlength="4">
+      <button id="joinRoomBtn">Join Room</button>
+      <p id="joinStatus"></p>
+    </div>
   </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script type="module" src="multiplayer.js"></script>
 </body>
 </html>

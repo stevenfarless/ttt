@@ -1,5 +1,4 @@
 const db = firebase.database();
-
 const player1Indicator = document.getElementById('player1-indicator');
 const player2Indicator = document.getElementById('player2-indicator');
 const player1Emoji = document.getElementById('player1-emoji');
@@ -21,6 +20,7 @@ let currentPlayer = mySymbol;
 let isMyTurn = true;
 let moveCount = 0;
 
+// Set player emojis in indicators
 player1Emoji.textContent = mySymbol;
 player2Emoji.textContent = opponentSymbol;
 
@@ -39,11 +39,11 @@ function updateTurnHighlight() {
 }
 
 function updateFirebaseGame(data) {
-  db.ref('rooms/' + roomCode).update(data);
+  firebase.database().ref('rooms/' + roomCode).update(data);
 }
 
 if (isMultiplayer && roomCode) {
-  db.ref('rooms/' + roomCode).on('value', snapshot => {
+  firebase.database().ref('rooms/' + roomCode).on('value', snapshot => {
     const data = snapshot.val();
     if (!data) return;
 
@@ -63,12 +63,15 @@ if (isMultiplayer && roomCode) {
     moveCount = gameBoard.filter(cell => cell !== null).length;
     isMyTurn = (currentPlayer === mySymbol && !data.winner);
 
+    // RENDER CELLS WITH PLAYER PERSPECTIVE COLORS
     cells.forEach((cell, i) => {
       cell.textContent = gameBoard[i] || "";
+      
+      // Set data-player attribute from CURRENT PLAYER'S PERSPECTIVE
       if (gameBoard[i] === mySymbol) {
-        cell.setAttribute('data-player', 'self');
+        cell.setAttribute('data-player', 'self');  // Current player sees their moves as BLUE
       } else if (gameBoard[i] === opponentSymbol) {
-        cell.setAttribute('data-player', 'opponent');
+        cell.setAttribute('data-player', 'opponent');  // Current player sees opponent's moves as RED
       } else {
         cell.setAttribute('data-player', '');
       }
@@ -100,6 +103,7 @@ function handleCellClick(event) {
   moveCount++;
 
   const winner = checkWinner(gameBoard);
+
   updateFirebaseGame({
     board: gameBoard,
     turn: opponentSymbol,
@@ -134,6 +138,7 @@ function resetGameState(fromFirebase = false) {
 
   result.textContent = isMyTurn ? "Your turn!" : "Opponent's turn...";
   result.style.color = isMyTurn ? "#50fa7b" : "#f1fa8c";
+
   updateTurnHighlight();
 
   if (!fromFirebase && isMultiplayer && roomCode) {
@@ -152,8 +157,9 @@ cells.forEach(cell => {
 });
 
 if (resetButton) resetButton.addEventListener('click', () => resetGameState(false));
+
 if (backToMenuBtn) backToMenuBtn.addEventListener('click', () => {
-  if (isMultiplayer && roomCode) db.ref('rooms/' + roomCode).remove();
+  if (isMultiplayer && roomCode) firebase.database().ref('rooms/' + roomCode).remove();
   sessionStorage.clear();
   window.location.href = "home.html";
 });

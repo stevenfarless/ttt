@@ -80,6 +80,38 @@ h1 {
   color: var(--warning);
 }
 
+/* Hover border fade in/out animation */
+@keyframes borderFadeInOut {
+  0% {
+    border-color: var(--light);
+    box-shadow: none;
+  }
+  50% {
+    border-color: var(--success);
+    box-shadow: 0 0 15px rgba(80, 250, 123, 0.5);
+  }
+  100% {
+    border-color: var(--light);
+    box-shadow: none;
+  }
+}
+
+/* Click expansion animation */
+@keyframes borderExpand {
+  0% {
+    outline: 2px solid var(--success);
+    outline-offset: 0;
+  }
+  50% {
+    outline: 3px solid rgba(80, 250, 123, 0.6);
+    outline-offset: 4px;
+  }
+  100% {
+    outline: 2px solid rgba(80, 250, 123, 0);
+    outline-offset: 8px;
+  }
+}
+
 #board {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -107,13 +139,16 @@ h1 {
 }
 
 .cell:hover {
-  background: #505560;
+  animation: borderFadeInOut 0.6s ease-in-out forwards;
   transform: scale(1.05);
-  border-color: var(--info);
 }
 
 .cell:active {
   transform: scale(0.98);
+}
+
+.cell.clicked {
+  animation: borderExpand 0.6s ease-out forwards;
 }
 
 .cell.my-move {

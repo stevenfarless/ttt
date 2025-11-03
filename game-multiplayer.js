@@ -1,217 +1,228 @@
-:root {
-  --primary: #282a36;
-  --secondary: #44475a;
-  --success: #50fa7b;
-  --danger: #ff5555;
-  --warning: #f1fa8c;
-  --info: #8be9fd;
-  --light: #f8f8f2;
-  --dark: #1e1f29;
+import { firebaseConfig } from './utils.js';
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+const db = firebase.database();
 
-html, body {
-  width: 100%;
-  height: 100%;
-}
+console.log('[GAME] Script loaded');
 
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #1e1f29 0%, #282a36 100%);
-  color: var(--light);
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 1rem;
-}
+const player1Indicator = document.querySelector('.player-indicator:nth-child(1)');
+const player2Indicator = document.querySelector('.player-indicator:nth-child(2)');
+const player1Emoji = document.getElementById('player1-emoji');
+const player2Emoji = document.getElementById('player2-emoji');
+const cells = document.querySelectorAll('.cell');
+const result = document.getElementById('result');
+const resetButton = document.getElementById('reset');
+const backToMenuBtn = document.getElementById('backToMenu');
 
-#game-container {
-  background: var(--primary);
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-  width: 100%;
-  max-width: 400px;
-}
+let roomCode = sessionStorage.getItem('roomCode');
+let isHost = sessionStorage.getItem('isHost') === 'true';
+let mySymbol = sessionStorage.getItem('mySymbol');
+let opponentSymbol = sessionStorage.getItem('opponentSymbol');
 
-h1 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  color: var(--info);
-  font-size: 2rem;
-}
+let gameBoard = [null, null, null, null, null, null, null, null, null];
+let gameActive = false;
+let isMyTurn = isHost;
+let moveCount = 0;
 
-#player-indicators {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
+console.log('[GAME] Session data loaded:', { roomCode, isHost, mySymbol, opponentSymbol });
 
-.player-indicator {
-  flex: 1;
-  background: var(--secondary);
-  padding: 1rem;
-  border-radius: 8px;
-  text-align: center;
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
-}
+if (player1Emoji) player1Emoji.textContent = mySymbol;
+if (player2Emoji) player2Emoji.textContent = opponentSymbol;
 
-.player-indicator.active {
-  border: 2px solid var(--success);
-  filter: drop-shadow(0 0 8px rgba(80, 250, 123, 0.4));
-}
-
-.player-indicator span:first-child {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
-  display: block;
-}
-
-.player-label {
-  font-size: 0.85rem;
-  color: var(--warning);
-}
-
-/* Border Expansion Animation */
-@keyframes borderExpand {
-  0% {
-    outline: 2px solid var(--success);
-    outline-offset: 0;
-  }
-  50% {
-    outline: 3px solid rgba(80, 250, 123, 0.6);
-    outline-offset: 4px;
-  }
-  100% {
-    outline: 2px solid rgba(80, 250, 123, 0);
-    outline-offset: 8px;
+function updateTurnHighlight() {
+  if (isMyTurn) {
+    player1Indicator.classList.add('active');
+    player2Indicator.classList.remove('active');
+  } else {
+    player1Indicator.classList.remove('active');
+    player2Indicator.classList.add('active');
   }
 }
 
-#board {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  gap: 0.5rem;
-  margin: 0 auto 1.5rem;
-  width: 100%;
-  max-width: 330px;
+cells.forEach((cell, index) => {
+  cell.setAttribute('role', 'button');
+  cell.setAttribute('tabindex', '0');
+  cell.addEventListener('click', () => makeMove(index));
+  cell.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      makeMove(index);
+    }
+  });
+});
+
+function checkWinner(board) {
+  const lines = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8],
+    [0, 3, 6], [1, 4, 7], [2, 5, 8],
+    [0, 4, 8], [2, 4, 6]
+  ];
+  
+  for (let line of lines) {
+    const [a, b, c] = line;
+    if (board[a] && board[a] === board[b] && board[b] === board[c]) {
+      return board[a];
+    }
+  }
+  
+  if (board.every(cell => cell !== null)) {
+    return 'draw';
+  }
+  
+  return null;
 }
 
-.cell {
-  aspect-ratio: 1 / 1;
-  background: var(--secondary);
-  border: 2px solid var(--light);
-  border-radius: 8px;
-  font-size: 3rem;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.2s ease;
-  min-height: 100px;
-  outline: none;
+function updateBoard() {
+  cells.forEach((cell, index) => {
+    const symbol = gameBoard[index];
+    cell.textContent = symbol || '';
+    
+    if (symbol === mySymbol) {
+      cell.style.color = '#3B82F6';
+      cell.classList.add('my-move');
+      cell.classList.remove('opponent-move');
+    } else if (symbol === opponentSymbol) {
+      cell.style.color = '#EF4444';
+      cell.classList.add('opponent-move');
+      cell.classList.remove('my-move');
+    } else {
+      cell.style.color = '';
+      cell.classList.remove('my-move', 'opponent-move');
+    }
+  });
 }
 
-.cell:hover {
-  background: #505560;
-  transform: scale(1.05);
-  border-color: var(--info);
+function playMoveAnimation(index) {
+  const cell = cells[index];
+  cell.classList.add('clicked');
+  setTimeout(() => {
+    cell.classList.remove('clicked');
+  }, 600);
 }
 
-.cell:active {
-  transform: scale(0.98);
-}
-
-/* IMPORTANT: Only apply animation to cells with the .clicked class */
-.cell.clicked {
-  animation: borderExpand 0.6s ease-out forwards;
-}
-
-/* Player Perspective Colors */
-.cell.my-move {
-  color: #3B82F6 !important;
-  font-weight: bold;
-}
-
-.cell.opponent-move {
-  color: #EF4444 !important;
-  font-weight: bold;
-}
-
-#result {
-  text-align: center;
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
-  color: var(--success);
-  min-height: 1.5rem;
-  font-weight: bold;
-}
-
-#button-container {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-button {
-  background: linear-gradient(135deg, var(--info), #44b4d6);
-  color: var(--dark);
-  border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 1rem;
-}
-
-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(139, 233, 253, 0.3);
-}
-
-button:active {
-  transform: translateY(0);
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-@media (max-width: 600px) {
-  #game-container {
-    padding: 1.5rem;
-    max-width: 100%;
+function makeMove(index) {
+  if (!gameActive || !isMyTurn || gameBoard[index]) {
+    return;
   }
 
-  h1 {
-    font-size: 1.75rem;
-    margin-bottom: 1rem;
-  }
+  moveCount++;
+  playMoveAnimation(index);
 
-  .cell {
-    font-size: 2.5rem;
-    min-height: 80px;
-  }
-
-  button {
-    padding: 0.6rem 1.2rem;
-    font-size: 0.95rem;
-  }
-
-  #board {
-    max-width: 100%;
-  }
+  const roomRef = db.ref('rooms/' + roomCode);
+  
+  roomRef.transaction((room) => {
+    if (!room) return;
+    
+    if (room.turn !== mySymbol) {
+      console.log('[GAME] Transaction aborted: not my turn');
+      return;
+    }
+    
+    let board = [];
+    if (room.board) {
+      for (let i = 0; i < 9; i++) {
+        board[i] = room.board[i] || null;
+      }
+    } else {
+      board = [null, null, null, null, null, null, null, null, null];
+    }
+    
+    if (board[index] !== null) {
+      console.log('[GAME] Cell occupied, aborting');
+      return;
+    }
+    
+    board[index] = mySymbol;
+    
+    const boardObj = {};
+    for (let i = 0; i < 9; i++) {
+      boardObj[i] = board[i];
+    }
+    
+    room.board = boardObj;
+    room.turn = opponentSymbol;
+    room.winner = checkWinner(board);
+    
+    return room;
+  });
 }
+
+function listenToGameChanges() {
+  const roomRef = db.ref('rooms/' + roomCode);
+  let previousBoard = [null, null, null, null, null, null, null, null, null];
+  
+  roomRef.on('value', (snapshot) => {
+    const room = snapshot.val();
+    
+    if (!room) {
+      result.textContent = 'Room not found';
+      gameActive = false;
+      return;
+    }
+    
+    if (room.board) {
+      if (Array.isArray(room.board)) {
+        gameBoard = room.board;
+      } else {
+        gameBoard = [];
+        for (let i = 0; i < 9; i++) {
+          gameBoard[i] = room.board[i] || null;
+        }
+      }
+    } else {
+      gameBoard = [null, null, null, null, null, null, null, null, null];
+    }
+    
+    for (let i = 0; i < 9; i++) {
+      if (previousBoard[i] !== gameBoard[i] && gameBoard[i] !== null) {
+        playMoveAnimation(i);
+      }
+    }
+    previousBoard = [...gameBoard];
+    
+    isMyTurn = room.turn === mySymbol;
+    
+    updateBoard();
+    updateTurnHighlight();
+    
+    if (room.winner) {
+      gameActive = false;
+      if (room.winner === 'draw') {
+        result.textContent = "It's a draw!";
+      } else {
+        result.textContent = room.winner === mySymbol ? 'You win! 🎉' : 'You lose';
+      }
+    } else {
+      gameActive = true;
+      result.textContent = isMyTurn ? 'Your turn' : "Opponent's turn";
+    }
+  });
+}
+
+resetButton.addEventListener('click', () => {
+  const roomRef = db.ref('rooms/' + roomCode);
+  const firstPlayer = isHost ? mySymbol : opponentSymbol;
+  
+  roomRef.update({
+    board: { 0: null, 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null },
+    turn: firstPlayer,
+    winner: null
+  });
+  
+  gameBoard = [null, null, null, null, null, null, null, null, null];
+  moveCount = 0;
+  isMyTurn = isHost;
+  gameActive = true;
+});
+
+backToMenuBtn.addEventListener('click', () => {
+  sessionStorage.clear();
+  window.location.href = 'home.html';
+});
+
+listenToGameChanges();
+
+console.log('[GAME] Script initialization complete');

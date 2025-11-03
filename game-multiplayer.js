@@ -11,7 +11,7 @@ const opponentSymbol = sessionStorage.getItem('opponentSymbol');
 
 if (!roomCode || !mySymbol || !opponentSymbol) {
   console.error('[GAME] Missing session data');
-  window.location.href = 'home.html';
+  window.location.href = 'index.html';
 }
 
 if (!firebase.apps.length) {
@@ -71,14 +71,14 @@ function checkWinner(board) {
     [0, 3, 6], [1, 4, 7], [2, 5, 8],
     [0, 4, 8], [2, 4, 6]
   ];
-  
+
   for (let line of lines) {
     const [a, b, c] = line;
     if (board[a] && board[a] === board[b] && board[b] === board[c]) {
       return board[a];
     }
   }
-  
+
   return board.every(cell => cell !== null) ? 'draw' : null;
 }
 
@@ -90,10 +90,10 @@ function updateBoard() {
     cells.forEach((cell, index) => {
       const symbol = gameBoard[index];
       cell.textContent = symbol || '';
-      
+
       cell.classList.remove('my-move', 'opponent-move');
       cell.style.color = '';
-      
+
       if (symbol === mySymbol) {
         cell.style.color = '#3B82F6';
         cell.classList.add('my-move');
@@ -115,7 +115,7 @@ function playMoveAnimation(index) {
   try {
     const cell = cells[index];
     cell.classList.add('clicked');
-    
+
     setTimeout(() => {
       cell.classList.remove('clicked');
     }, ANIMATION_DURATION);
@@ -136,19 +136,19 @@ function makeMove(index) {
   playMoveAnimation(index);
 
   const roomRef = db.ref('rooms/' + roomCode);
-  
+
   roomRef.transaction((room) => {
     try {
       if (!room) {
         console.log('[GAME] Room not found');
         return;
       }
-      
+
       if (room.turn !== mySymbol) {
         console.log('[GAME] Transaction aborted: not my turn');
         return;
       }
-      
+
       // Normalize board from Firebase
       let board = [];
       if (room.board) {
@@ -158,20 +158,20 @@ function makeMove(index) {
       } else {
         board = Array(9).fill(null);
       }
-      
+
       if (board[index] !== null) {
         console.log('[GAME] Cell occupied');
         return;
       }
-      
+
       // Make move
       board[index] = mySymbol;
-      
+
       // Convert back to Firebase format
       room.board = Object.fromEntries(board.map((val, i) => [i, val]));
       room.turn = opponentSymbol;
       room.winner = checkWinner(board);
-      
+
       console.log('[GAME] Move made at index', index);
       return room;
     } catch (error) {
@@ -190,46 +190,46 @@ function makeMove(index) {
  */
 function listenToGameChanges() {
   const roomRef = db.ref('rooms/' + roomCode);
-  
+
   roomRef.on('value', (snapshot) => {
     try {
       const room = snapshot.val();
-      
+
       if (!room) {
         result.textContent = 'Room not found';
         gameActive = false;
         return;
       }
-      
+
       // Normalize board
       if (room.board) {
-        gameBoard = Array.isArray(room.board) 
-          ? room.board 
+        gameBoard = Array.isArray(room.board)
+          ? room.board
           : Array.from({ length: 9 }, (_, i) => room.board[i] || null);
       } else {
         gameBoard = Array(9).fill(null);
       }
-      
+
       // Detect opponent move and play animation
       // IMPORTANT: Check for changes by comparing values, not just !== (0 is falsy!)
       for (let i = 0; i < 9; i++) {
         const changed = previousBoard[i] !== gameBoard[i];
         const isNewMove = gameBoard[i] !== null && gameBoard[i] !== undefined;
-        
+
         if (changed && isNewMove) {
           console.log(`[GAME] Opponent move detected at index ${i}: ${previousBoard[i]} -> ${gameBoard[i]}`);
           playMoveAnimation(i);
         }
       }
-      
+
       // Update previousBoard for next comparison
       previousBoard = gameBoard.map(cell => cell);
-      
+
       // Update game state
       isMyTurn = room.turn === mySymbol;
       updateBoard();
       updateTurnHighlight();
-      
+
       // Check for winner
       if (room.winner) {
         gameActive = false;
@@ -259,13 +259,13 @@ function resetGame() {
     const emptyBoard = Object.fromEntries(
       Array.from({ length: 9 }, (_, i) => [i, null])
     );
-    
+
     db.ref('rooms/' + roomCode).update({
       board: emptyBoard,
       turn: firstPlayer,
       winner: null
     });
-    
+
     gameBoard = Array(9).fill(null);
     previousBoard = Array(9).fill(null);
     isMyTurn = isHost;
@@ -308,4 +308,3 @@ listenToGameChanges();
 updateTurnHighlight();
 
 console.log('[GAME] Script initialization complete');
-

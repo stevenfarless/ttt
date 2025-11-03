@@ -101,8 +101,18 @@ function makeMove(index) {
   if (!gameActive || !isMyTurn || gameBoard[index]) {
     return;
   }
-  
+
   moveCount++;
+  const cell = cells[index];
+  
+  // Add animation class
+  cell.classList.add('clicked');
+  
+  // Remove animation class after animation completes (600ms)
+  setTimeout(() => {
+    cell.classList.remove('clicked');
+  }, 600);
+
   const roomRef = db.ref('rooms/' + roomCode);
   
   roomRef.transaction((room) => {

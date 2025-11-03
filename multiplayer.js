@@ -1,3 +1,10 @@
+import { firebaseConfig } from './utils.js';
+
+// Initialize Firebase
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
 const DEBUG = true;
 const db = firebase.database();
 
@@ -6,7 +13,6 @@ console.log('[MULTIPLAYER] Script loaded');
 const emojiDisplay = document.getElementById('emojiDisplay');
 const emojiPicker = document.getElementById('emojiPicker');
 const emojiOptions = document.querySelectorAll('.emoji-option');
-
 const emojis = ['❌', '⭕', '❤️', '💲', '😀', '💀', '🤖', '👽', '🐶', '😺', '💩', '🦐', '🍕', '🍣', '🍓', '🍤', '🌙', '☀️', '⭐', '🚀'];
 
 function getRandomEmoji() {
@@ -51,7 +57,7 @@ if (createRoomBtn) {
     for (let i = 0; i < 4; i++) {
       code += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-
+    
     const selectedEmoji = emojiDisplay.textContent;
     
     // CRITICAL: Use object notation to force array storage in Firebase
@@ -69,7 +75,7 @@ if (createRoomBtn) {
       turn: selectedEmoji,
       winner: null
     };
-
+    
     console.log('[MULTIPLAYER] Creating room:', code);
     
     db.ref('rooms/' + code).set(roomData).then(() => {
@@ -109,7 +115,7 @@ if (joinRoomBtn) {
       joinStatus.textContent = 'Invalid code';
       return;
     }
-
+    
     joinRoomBtn.disabled = true;
     const selectedEmoji = emojiDisplay.textContent;
     
@@ -119,14 +125,14 @@ if (joinRoomBtn) {
         joinRoomBtn.disabled = false;
         return;
       }
-
+      
       const room = snapshot.val();
       if (room.guestJoined) {
         joinStatus.textContent = 'Room is full';
         joinRoomBtn.disabled = false;
         return;
       }
-
+      
       console.log('[MULTIPLAYER] Joining room:', code);
       
       // Keep existing board structure
@@ -143,6 +149,7 @@ if (joinRoomBtn) {
           6: null, 7: null, 8: null
         };
       }
+      
       if (!room.turn) {
         updateData.turn = room.hostEmoji;
       }

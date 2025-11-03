@@ -1,4 +1,4 @@
-# 🎮 Custom Tic Tac Toe - Multiplayer Edition
+# 🎮 Custom Tic Tac Toe - Multiplayer
 
 **Version:** 0.3.1-alpha | **Release Date:** October 31, 2025
 

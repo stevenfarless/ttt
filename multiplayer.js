@@ -75,14 +75,14 @@ emojiModal.addEventListener('click', (e) => {
 
 // Toggle modules when buttons clicked
 createRoomBtn.addEventListener('click', (e) => {
-  if (!createModule.classList.contains('hidden')) return; // Already showing create module
+  if (!createModule.classList.contains('hidden')) return;
   
   createModule.classList.remove('hidden');
   joinModule.classList.add('hidden');
 });
 
 joinRoomBtn.addEventListener('click', (e) => {
-  if (!joinModule.classList.contains('hidden')) return; // Already showing join module
+  if (!joinModule.classList.contains('hidden')) return;
   
   joinModule.classList.remove('hidden');
   createModule.classList.add('hidden');
@@ -90,7 +90,7 @@ joinRoomBtn.addEventListener('click', (e) => {
 
 // Room code input validation and button text update
 roomCodeInput.addEventListener('input', (e) => {
-  e.target.value = e.target.value.toUpperCase().replace(/[^A-HJ-KM-NP-Z1-9]/g, '');
+  e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
   
   // Update button text based on input length
   if (e.target.value.length === 4) {
@@ -123,7 +123,7 @@ copyCodeBtn?.addEventListener('click', async () => {
 pasteCodeBtn?.addEventListener('click', async () => {
   try {
     const text = await navigator.clipboard.readText();
-    roomCodeInput.value = text.toUpperCase().substring(0, 4);
+    roomCodeInput.value = text.toUpperCase().substring(0, 4).replace(/[^A-Z0-9]/g, '');
     
     // Trigger input event to update button text
     roomCodeInput.dispatchEvent(new Event('input'));
@@ -193,8 +193,8 @@ joinRoomBtn.addEventListener('click', () => {
   const code = roomCodeInput.value.trim().toUpperCase();
   console.log('[MULTIPLAYER] Join Room clicked:', code);
 
-  if (!/^[A-HJ-KM-NP-Z1-9]{4}$/.test(code)) {
-    joinStatus.textContent = 'Invalid code format';
+  if (code.length !== 4) {
+    joinStatus.textContent = 'Enter 4 characters';
     joinStatus.style.color = 'var(--danger)';
     return;
   }

@@ -2,10 +2,6 @@ import { firebaseConfig } from './utils.js';
 
 // Constants
 const ANIMATION_DURATION = 600;
-const ANIMATION_FRAMES = {
-  EXPAND: 'borderExpand',
-  FADEOUT: 'borderFadeInOut'
-};
 
 // Validate session and initialize Firebase
 const roomCode = sessionStorage.getItem('roomCode');
@@ -37,6 +33,7 @@ const backToMenuBtn = document.getElementById('backToMenu');
 
 // Game State
 let gameBoard = Array(9).fill(null);
+let previousBoard = Array(9).fill(null);
 let gameActive = false;
 let isMyTurn = isHost;
 
@@ -193,7 +190,6 @@ function makeMove(index) {
  */
 function listenToGameChanges() {
   const roomRef = db.ref('rooms/' + roomCode);
-  let previousBoard = Array(9).fill(null);
   
   roomRef.on('value', (snapshot) => {
     try {
@@ -215,12 +211,19 @@ function listenToGameChanges() {
       }
       
       // Detect opponent move and play animation
+      // IMPORTANT: Check for changes by comparing values, not just !== (0 is falsy!)
       for (let i = 0; i < 9; i++) {
-        if (previousBoard[i] !== gameBoard[i] && gameBoard[i] !== null) {
+        const changed = previousBoard[i] !== gameBoard[i];
+        const isNewMove = gameBoard[i] !== null && gameBoard[i] !== undefined;
+        
+        if (changed && isNewMove) {
+          console.log(`[GAME] Opponent move detected at index ${i}: ${previousBoard[i]} -> ${gameBoard[i]}`);
           playMoveAnimation(i);
         }
       }
-      previousBoard = [...gameBoard];
+      
+      // Update previousBoard for next comparison
+      previousBoard = gameBoard.map(cell => cell);
       
       // Update game state
       isMyTurn = room.turn === mySymbol;
@@ -264,6 +267,7 @@ function resetGame() {
     });
     
     gameBoard = Array(9).fill(null);
+    previousBoard = Array(9).fill(null);
     isMyTurn = isHost;
     gameActive = true;
   } catch (error) {

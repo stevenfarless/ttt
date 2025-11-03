@@ -235,7 +235,7 @@ h1 {
   margin-bottom: 0;
 }
 
-/* Code Container - For Display (Create) */
+/* Code Container - EXACT SAME FOR BOTH */
 .code-container {
   display: flex;
   align-items: center;
@@ -258,13 +258,6 @@ h1 {
   letter-spacing: 2px;
   flex: 1;
   text-align: center;
-}
-
-/* Input Group - For Entry (Join) */
-.input-group {
-  display: flex;
-  gap: 8px;
-  align-items: center;
 }
 
 .room-code-input {
@@ -292,7 +285,7 @@ h1 {
   opacity: 0.5;
 }
 
-/* Buttons */
+/* Buttons - EXACT SAME FOR BOTH */
 .copy-btn,
 .paste-btn {
   background: var(--info);

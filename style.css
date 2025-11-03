@@ -80,7 +80,6 @@ h1 {
   color: var(--warning);
 }
 
-/* Border Expansion Animation - Using outline instead of box-shadow */
 @keyframes borderExpand {
   0% {
     outline: 2px solid var(--success);
@@ -132,12 +131,10 @@ h1 {
   transform: scale(0.98);
 }
 
-/* Green border animation on cell click */
 .cell.clicked {
-  animation: borderExpand 0.6s ease-out;
+  animation: borderExpand 0.6s ease-out forwards;
 }
 
-/* Player Perspective Colors */
 .cell.my-move {
   color: #3B82F6 !important;
   font-weight: bold;

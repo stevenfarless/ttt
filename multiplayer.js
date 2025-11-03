@@ -1,5 +1,4 @@
-// Firebase initialized in utils.js
-// database is available globally
+console.log('✅ multiplayer.js loaded');
 
 // DOM Elements
 const emojiToggleBtn = document.getElementById('emojiToggleBtn');
@@ -21,6 +20,8 @@ const pasteBtn = document.getElementById('pasteBtn');
 const createStatus = document.getElementById('createStatus');
 const joinStatus = document.getElementById('joinStatus');
 
+console.log('✅ DOM elements grabbed');
+
 // Emojis
 const emojis = ['😀', '😂', '😍', '🤔', '😎', '🤗', '😴', '😤', '🚀', '⭐', '🎮', '🎯', '🍕', '🌙', '💎', '🔥'];
 
@@ -30,11 +31,6 @@ let isCreatingGame = false;
 let isJoiningGame = false;
 let gameStartWatcher = null;
 let validJoinCode = null;
-
-function init() {
-  populateEmojiPicker();
-  setupEventListeners();
-}
 
 function populateEmojiPicker() {
   emojiPicker.innerHTML = '';
@@ -53,8 +49,17 @@ function selectEmoji(emoji) {
   closeEmojiModal.click();
 }
 
+function init() {
+  console.log('🔧 Initializing multiplayer...');
+  populateEmojiPicker();
+  setupEventListeners();
+}
+
 function setupEventListeners() {
+  console.log('🔧 Setting up event listeners...');
+  
   emojiToggleBtn.addEventListener('click', () => {
+    console.log('📌 Emoji toggle clicked');
     emojiModal.classList.remove('hidden');
   });
 
@@ -68,14 +73,25 @@ function setupEventListeners() {
     }
   });
 
-  createGameBtn.addEventListener('click', toggleCreateGame);
-  joinGameBtn.addEventListener('click', handleJoinButtonClick);
-  copyBtn.addEventListener('click', copyRoomCode);
-  pasteBtn.addEventListener('click', pasteRoomCode);
+  createGameBtn.addEventListener('click', () => {
+    console.log('✨ Create Game clicked');
+    toggleCreateGame();
+  });
+  
+  joinGameBtn.addEventListener('click', () => {
+    console.log('🎯 Join Game clicked - isJoiningGame:', isJoiningGame, 'validJoinCode:', validJoinCode);
+    handleJoinButtonClick();
+  });
+  
+  copyBtn.addEventListener('click', () => {
+    console.log('📋 Copy clicked');
+    copyRoomCode();
+  });
 
   roomCodeInput.addEventListener('input', (e) => {
     roomCodeInput.value = roomCodeInput.value.toUpperCase().substring(0, 4);
     if (roomCodeInput.value.length === 4) {
+      console.log('🔍 Code entered:', roomCodeInput.value);
       validateJoinCode(roomCodeInput.value);
     }
   });
@@ -85,6 +101,8 @@ function setupEventListeners() {
       startJoiningGame();
     }
   });
+  
+  console.log('✅ Event listeners set up complete');
 }
 
 function toggleCreateGame() {
@@ -237,17 +255,5 @@ function copyRoomCode() {
   }
 }
 
-function pasteRoomCode() {
-  navigator.clipboard.readText().then(text => {
-    const code = text.toUpperCase().substring(0, 4);
-    roomCodeInput.value = code;
-    if (code.length === 4) {
-      validateJoinCode(code);
-    }
-  }).catch(err => {
-    joinStatus.textContent = '❌ Cannot access clipboard';
-  });
-}
-
-// START THE APP
-init();
+// Wait for DOM to be ready, then init
+document.addEventListener('DOMContentLoaded', init);

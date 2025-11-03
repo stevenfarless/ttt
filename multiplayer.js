@@ -79,6 +79,7 @@ createRoomBtn.addEventListener('click', (e) => {
   
   createModule.classList.remove('hidden');
   joinModule.classList.add('hidden');
+  joinStatus.textContent = '';
 });
 
 joinRoomBtn.addEventListener('click', (e) => {
@@ -86,6 +87,7 @@ joinRoomBtn.addEventListener('click', (e) => {
   
   joinModule.classList.remove('hidden');
   createModule.classList.add('hidden');
+  createStatus.textContent = '';
 });
 
 // Room code input validation and button text update
@@ -98,6 +100,9 @@ roomCodeInput.addEventListener('input', (e) => {
   } else {
     joinRoomBtn.textContent = 'Join Room';
   }
+  
+  // Clear status when user is typing
+  joinStatus.textContent = '';
 });
 
 // Copy room code
@@ -194,8 +199,6 @@ joinRoomBtn.addEventListener('click', () => {
   console.log('[MULTIPLAYER] Join Room clicked:', code);
 
   if (code.length !== 4) {
-    joinStatus.textContent = 'Enter 4 characters';
-    joinStatus.style.color = 'var(--danger)';
     return;
   }
 

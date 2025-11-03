@@ -207,7 +207,7 @@ h1 {
 
 /* Room Module - Collapsible Container */
 .room-module {
-  margin-top: 12px;
+  margin-bottom: 12px;
   animation: slideDown 0.3s ease;
 }
 
@@ -269,15 +269,16 @@ h1 {
 
 .room-code-input {
   flex: 1;
-  padding: 12px 16px;
+  padding: 8px 12px;
   border: none;
   border-radius: 6px;
   background: var(--secondary);
-  color: var(--light);
-  font-size: 1rem;
-  font-weight: 600;
+  color: var(--success);
+  font-size: 1.3rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
+  text-align: center;
   transition: all 0.3s ease;
 }
 
@@ -288,6 +289,7 @@ h1 {
 
 .room-code-input::placeholder {
   color: var(--primary);
+  opacity: 0.5;
 }
 
 /* Buttons */
@@ -325,14 +327,7 @@ h1 {
   font-size: 0.85rem;
   text-align: center;
   font-weight: 500;
-}
-
-.status-text.error {
-  color: var(--danger);
-}
-
-.status-text.success {
-  color: var(--success);
+  min-height: 1.2em;
 }
 
 /* Responsive */
@@ -362,7 +357,8 @@ h1 {
     font-size: 0.9rem;
   }
 
-  .room-code {
+  .room-code,
+  .room-code-input {
     font-size: 1.1rem;
   }
 }

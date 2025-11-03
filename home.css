@@ -205,9 +205,15 @@ h1 {
   transform: translateY(0);
 }
 
-/* Input */
+/* Input Group */
+.input-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
 .room-code-input {
-  width: 100%;
+  flex: 1;
   padding: 12px 16px;
   border: 2px solid var(--info);
   border-radius: 12px;
@@ -217,7 +223,6 @@ h1 {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
-  margin-bottom: 12px;
   transition: all 0.3s ease;
 }
 
@@ -231,12 +236,98 @@ h1 {
   color: var(--secondary);
 }
 
-/* Status */
+/* Code Display */
+.code-display {
+  background: var(--primary);
+  border-left: 4px solid var(--success);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  animation: slideIn 0.3s ease;
+}
+
+.code-display.hidden {
+  display: none;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.code-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.code-container .label {
+  color: var(--info);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.room-code {
+  background: var(--secondary);
+  color: var(--success);
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: 6px;
+  letter-spacing: 2px;
+  flex: 1;
+  text-align: center;
+}
+
+.copy-btn,
+.paste-btn {
+  background: var(--info);
+  border: none;
+  color: var(--dark);
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.copy-btn:hover,
+.paste-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(139, 233, 253, 0.3);
+}
+
+.copy-btn:active,
+.paste-btn:active {
+  transform: scale(0.95);
+}
+
+/* Status Messages */
 .status-text {
   color: var(--warning);
   font-size: 0.85rem;
   margin-top: 8px;
   text-align: center;
+  font-weight: 500;
+}
+
+.status-text.error {
+  color: var(--danger);
+}
+
+.status-text.success {
+  color: var(--success);
 }
 
 /* Responsive */
@@ -264,5 +355,9 @@ h1 {
   .btn {
     padding: 12px 16px;
     font-size: 0.9rem;
+  }
+
+  .room-code {
+    font-size: 1.1rem;
   }
 }

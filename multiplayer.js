@@ -21,8 +21,12 @@ const emojiPicker = document.getElementById('emojiPicker');
 const createRoomBtn = document.getElementById('createRoomBtn');
 const joinRoomBtn = document.getElementById('joinRoomBtn');
 const roomCodeInput = document.getElementById('roomCodeInput');
+const roomCodeDisplay = document.getElementById('roomCodeDisplay');
 const createStatus = document.getElementById('createStatus');
 const joinStatus = document.getElementById('joinStatus');
+const codeRow = document.getElementById('codeRow');
+const copyCodeBtn = document.getElementById('copyCodeBtn');
+const pasteCodeBtn = document.getElementById('pasteCodeBtn');
 
 // Initialize emoji picker
 function initEmojiPicker() {
@@ -73,6 +77,35 @@ roomCodeInput.addEventListener('input', (e) => {
   e.target.value = e.target.value.toUpperCase().replace(/[^A-HJ-KM-NP-Z1-9]/g, '');
 });
 
+// Copy room code
+copyCodeBtn?.addEventListener('click', async () => {
+  try {
+    const code = roomCodeDisplay.textContent;
+    await navigator.clipboard.writeText(code);
+    
+    const originalText = copyCodeBtn.textContent;
+    copyCodeBtn.textContent = '✓';
+    copyCodeBtn.style.background = 'var(--success)';
+    
+    setTimeout(() => {
+      copyCodeBtn.textContent = originalText;
+      copyCodeBtn.style.background = '';
+    }, 1500);
+  } catch (error) {
+    console.error('[MULTIPLAYER] Copy failed:', error);
+  }
+});
+
+// Paste room code
+pasteCodeBtn?.addEventListener('click', async () => {
+  try {
+    const text = await navigator.clipboard.readText();
+    roomCodeInput.value = text.toUpperCase().substring(0, 4);
+  } catch (error) {
+    console.error('[MULTIPLAYER] Paste failed:', error);
+  }
+});
+
 // Create room
 createRoomBtn.addEventListener('click', () => {
   console.log('[MULTIPLAYER] Create Room clicked');
@@ -104,6 +137,8 @@ createRoomBtn.addEventListener('click', () => {
   console.log('[MULTIPLAYER] Creating room:', code);
   db.ref('rooms/' + code).set(roomData).then(() => {
     console.log('[MULTIPLAYER] Room created');
+    roomCodeDisplay.textContent = code;
+    codeRow.classList.remove('hidden');
     createStatus.textContent = 'Waiting for opponent...';
     createStatus.style.color = 'var(--warning)';
     sessionStorage.setItem('roomCode', code);

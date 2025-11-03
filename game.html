@@ -35,8 +35,12 @@
     </div>
   </div>
 
+  <!-- Firebase SDK (MUST load FIRST) -->
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+  <!-- Shared config (SECOND) -->
+  <script src="utils.js"></script>
+  <!-- Game logic (THIRD) -->
   <script src="game-multiplayer.js"></script>
 </body>
 </html>

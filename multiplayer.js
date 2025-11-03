@@ -1,16 +1,5 @@
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyBfJzZ52dh9lKJ8Eo9CvYZd9RK9WwQwx-U",
-  authDomain: "tic-tac-toe-multiplayer-7e3ea.firebaseapp.com",
-  projectId: "tic-tac-toe-multiplayer-7e3ea",
-  storageBucket: "tic-tac-toe-multiplayer-7e3ea.appspot.com",
-  messagingSenderId: "816848127676",
-  appId: "1:816848127676:web:b35d0a4f8c9e3d6f7c2a1b",
-  databaseURL: "https://tic-tac-toe-multiplayer-7e3ea-default-rtdb.firebaseio.com"
-};
-
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
+// Firebase initialized in utils.js
+// database is available globally
 
 // DOM Elements
 const emojiToggleBtn = document.getElementById('emojiToggleBtn');
@@ -42,7 +31,6 @@ let isJoiningGame = false;
 let gameStartWatcher = null;
 let validJoinCode = null;
 
-// Initialize
 function init() {
   populateEmojiPicker();
   setupEventListeners();
@@ -66,7 +54,6 @@ function selectEmoji(emoji) {
 }
 
 function setupEventListeners() {
-  // Emoji modal
   emojiToggleBtn.addEventListener('click', () => {
     emojiModal.classList.remove('hidden');
   });
@@ -81,22 +68,16 @@ function setupEventListeners() {
     }
   });
 
-  // Create Game Button
   createGameBtn.addEventListener('click', toggleCreateGame);
-
-  // Join Game Button - handles both toggle and start game
   joinGameBtn.addEventListener('click', handleJoinButtonClick);
-
-  // Copy button
   copyBtn.addEventListener('click', copyRoomCode);
-
-  // Paste button
   pasteBtn.addEventListener('click', pasteRoomCode);
 
-  // Room code input - validates code as user types
   roomCodeInput.addEventListener('input', (e) => {
     roomCodeInput.value = roomCodeInput.value.toUpperCase().substring(0, 4);
-    validateJoinCode(roomCodeInput.value);
+    if (roomCodeInput.value.length === 4) {
+      validateJoinCode(roomCodeInput.value);
+    }
   });
 
   roomCodeInput.addEventListener('keypress', (e) => {
@@ -108,7 +89,6 @@ function setupEventListeners() {
 
 function toggleCreateGame() {
   if (isJoiningGame) {
-    // Close join module first
     joinModule.classList.add('hidden');
     joinStatus.textContent = '';
     isJoiningGame = false;
@@ -134,29 +114,32 @@ function toggleCreateGame() {
 
 function handleJoinButtonClick() {
   if (!isJoiningGame) {
-    // First click - toggle join module
-    toggleJoinGame();
+    toggleJoinGameModule();
   } else if (validJoinCode) {
-    // Code is valid - start joining
     startJoiningGame();
   }
 }
 
-function toggleJoinGame() {
+function toggleJoinGameModule() {
   if (isCreatingGame) {
-    // Close create module first
     createModule.classList.add('hidden');
     createStatus.textContent = '';
     isCreatingGame = false;
   }
 
-  isJoiningGame = true;
-  joinModule.classList.remove('hidden');
-  roomCodeInput.value = '';
-  roomCodeInput.focus();
-  joinStatus.textContent = 'Enter a 4-digit code';
-  validJoinCode = null;
-  joinGameBtn.textContent = 'Join Game';
+  isJoiningGame = !isJoiningGame;
+  
+  if (isJoiningGame) {
+    joinModule.classList.remove('hidden');
+    roomCodeInput.value = '';
+    roomCodeInput.focus();
+    joinStatus.textContent = 'Enter a 4-digit code';
+    joinGameBtn.textContent = 'Join Game';
+  } else {
+    joinModule.classList.add('hidden');
+    joinStatus.textContent = '';
+    validJoinCode = null;
+  }
 }
 
 function validateJoinCode(code) {
@@ -167,7 +150,6 @@ function validateJoinCode(code) {
     return;
   }
 
-  // Check if room exists
   const roomRef = database.ref(`rooms/${code}`);
   roomRef.once('value', (snapshot) => {
     if (snapshot.exists()) {
@@ -193,15 +175,12 @@ function startJoiningGame() {
   if (!validJoinCode) return;
 
   joinStatus.textContent = 'Joining...';
-  joinGameBtn.textContent = 'Join Game';
 
-  // Add player2 to the room
   database.ref(`rooms/${validJoinCode}`).update({
     player2: selectedEmoji,
     status: 'ready'
   });
 
-  // Store session and navigate
   sessionStorage.setItem('roomCode', validJoinCode);
   sessionStorage.setItem('playerEmoji', selectedEmoji);
   sessionStorage.setItem('isHost', 'false');
@@ -217,13 +196,11 @@ function generateNewRoomCode() {
   roomCodeDisplay.textContent = code;
   createStatus.textContent = '🎮 Waiting for opponent...';
   
-  // Store in Firebase
   database.ref(`rooms/${code}`).set({
     player1: selectedEmoji,
     status: 'waiting'
   });
 
-  // Watch for opponent
   watchForGameStart(code);
 }
 

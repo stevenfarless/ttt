@@ -97,11 +97,31 @@ function updateBoard() {
 
 function playMoveAnimation(index) {
   const cell = cells[index];
-  cell.classList.add('clicked');
+  
+  // Apply animation using inline style
+  const keyframes = `
+    @keyframes expandBorder {
+      0% { outline: 2px solid #50fa7b; outline-offset: 0; }
+      50% { outline: 3px solid rgba(80, 250, 123, 0.6); outline-offset: 4px; }
+      100% { outline: 2px solid rgba(80, 250, 123, 0); outline-offset: 8px; }
+    }
+  `;
+  
+  // Inject keyframes if not already present
+  if (!document.getElementById('cellAnimationKeyframes')) {
+    const style = document.createElement('style');
+    style.id = 'cellAnimationKeyframes';
+    style.textContent = keyframes;
+    document.head.appendChild(style);
+  }
+  
+  cell.style.animation = 'expandBorder 0.6s ease-out forwards';
+  
   setTimeout(() => {
-    cell.classList.remove('clicked');
+    cell.style.animation = '';
   }, 600);
 }
+
 
 function makeMove(index) {
   if (!gameActive || !isMyTurn || gameBoard[index]) {
@@ -226,3 +246,4 @@ backToMenuBtn.addEventListener('click', () => {
 listenToGameChanges();
 
 console.log('[GAME] Script initialization complete');
+

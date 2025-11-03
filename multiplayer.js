@@ -88,9 +88,16 @@ joinRoomBtn.addEventListener('click', (e) => {
   createModule.classList.add('hidden');
 });
 
-// Room code input validation
+// Room code input validation and button text update
 roomCodeInput.addEventListener('input', (e) => {
   e.target.value = e.target.value.toUpperCase().replace(/[^A-HJ-KM-NP-Z1-9]/g, '');
+  
+  // Update button text based on input length
+  if (e.target.value.length === 4) {
+    joinRoomBtn.textContent = 'START GAME';
+  } else {
+    joinRoomBtn.textContent = 'Join Room';
+  }
 });
 
 // Copy room code
@@ -117,6 +124,9 @@ pasteCodeBtn?.addEventListener('click', async () => {
   try {
     const text = await navigator.clipboard.readText();
     roomCodeInput.value = text.toUpperCase().substring(0, 4);
+    
+    // Trigger input event to update button text
+    roomCodeInput.dispatchEvent(new Event('input'));
   } catch (error) {
     console.error('[MULTIPLAYER] Paste failed:', error);
   }

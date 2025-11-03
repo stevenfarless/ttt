@@ -42,6 +42,7 @@ let selectedEmoji = '😀';
 let currentRoomCode = null;
 let isCreatingGame = false;
 let isJoiningGame = false;
+let gameStartWatcher = null;
 
 // Initialize
 function init() {
@@ -93,6 +94,20 @@ function setupEventListeners() {
 
   // Paste button
   pasteBtn.addEventListener('click', pasteRoomCode);
+
+  // Room code input - auto-join when 4 characters
+  roomCodeInput.addEventListener('input', (e) => {
+    roomCodeInput.value = roomCodeInput.value.toUpperCase().substring(0, 4);
+    if (roomCodeInput.value.length === 4) {
+      joinWithCode(roomCodeInput.value);
+    }
+  });
+
+  roomCodeInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && roomCodeInput.value.length === 4) {
+      joinWithCode(roomCodeInput.value);
+    }
+  });
 }
 
 function toggleCreateGame() {
@@ -113,6 +128,9 @@ function toggleCreateGame() {
   } else {
     createModule.classList.add('hidden');
     createStatus.textContent = '';
+    if (gameStartWatcher) {
+      gameStartWatcher();
+    }
   }
 }
 
@@ -128,7 +146,9 @@ function toggleJoinGame() {
 
   if (isJoiningGame) {
     joinModule.classList.remove('hidden');
+    roomCodeInput.value = '';
     roomCodeInput.focus();
+    joinStatus.textContent = 'Enter a 4-digit code';
   } else {
     joinModule.classList.add('hidden');
     joinStatus.textContent = '';
@@ -148,6 +168,27 @@ function generateNewRoomCode() {
     player1: selectedEmoji,
     status: 'waiting'
   });
+
+  // Watch for opponent
+  watchForGameStart(code);
+}
+
+function watchForGameStart(code) {
+  const roomRef = ref(database, `rooms/${code}`);
+  gameStartWatcher = onValue(roomRef, (snapshot) => {
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      if (data.player2) {
+        createStatus.textContent = '✓ Opponent found! Starting...';
+        sessionStorage.setItem('roomCode', code);
+        sessionStorage.setItem('playerEmoji', selectedEmoji);
+        sessionStorage.setItem('isHost', 'true');
+        setTimeout(() => {
+          window.location.href = 'game.html';
+        }, 500);
+      }
+    }
+  });
 }
 
 function copyRoomCode() {
@@ -163,73 +204,52 @@ function copyRoomCode() {
 
 function pasteRoomCode() {
   navigator.clipboard.readText().then(text => {
-    roomCodeInput.value = text.toUpperCase().substring(0, 4);
-    checkJoinCode();
+    const code = text.toUpperCase().substring(0, 4);
+    roomCodeInput.value = code;
+    if (code.length === 4) {
+      joinWithCode(code);
+    }
   }).catch(err => {
     joinStatus.textContent = '❌ Cannot access clipboard';
   });
 }
 
-function checkJoinCode() {
-  const code = roomCodeInput.value.toUpperCase();
-  if (code.length === 4) {
-    const roomRef = ref(database, `rooms/${code}`);
-    onValue(roomRef, (snapshot) => {
-      if (snapshot.exists()) {
-        joinStatus.textContent = '✓ Game found! Connecting...';
-        // Navigate to game page with room code and emoji
+function joinWithCode(code) {
+  if (code.length !== 4) {
+    joinStatus.textContent = '❌ Invalid code (must be 4 characters)';
+    return;
+  }
+
+  joinStatus.textContent = 'Checking room...';
+  
+  const roomRef = ref(database, `rooms/${code}`);
+  onValue(roomRef, (snapshot) => {
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      if (data.player1) {
+        joinStatus.textContent = '✓ Room found! Joining...';
+        
+        // Add player2 to the room
+        update(ref(database, `rooms/${code}`), {
+          player2: selectedEmoji,
+          status: 'ready'
+        });
+        
+        // Store session and navigate
         sessionStorage.setItem('roomCode', code);
         sessionStorage.setItem('playerEmoji', selectedEmoji);
         sessionStorage.setItem('isHost', 'false');
+        
         setTimeout(() => {
           window.location.href = 'game.html';
         }, 500);
       } else {
-        joinStatus.textContent = '❌ Room not found';
+        joinStatus.textContent = '❌ Room not available';
       }
-    });
-  }
+    } else {
+      joinStatus.textContent = '❌ Room not found';
+    }
+  }, { onlyOnce: true }); // Only listen once to avoid multiple triggers
 }
-
-// Handle room code input
-roomCodeInput.addEventListener('input', () => {
-  roomCodeInput.value = roomCodeInput.value.toUpperCase().substring(0, 4);
-});
-
-roomCodeInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') {
-    checkJoinCode();
-  }
-});
-
-// Start game when opponent joins
-function watchForGameStart() {
-  if (currentRoomCode) {
-    const roomRef = ref(database, `rooms/${currentRoomCode}`);
-    onValue(roomRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        if (data.player2) {
-          createStatus.textContent = '✓ Opponent found! Starting...';
-          sessionStorage.setItem('roomCode', currentRoomCode);
-          sessionStorage.setItem('playerEmoji', selectedEmoji);
-          sessionStorage.setItem('isHost', 'true');
-          setTimeout(() => {
-            window.location.href = 'game.html';
-          }, 500);
-        }
-      }
-    });
-  }
-}
-
-// Start watching when game is created
-const originalToggleCreateGame = toggleCreateGame;
-toggleCreateGame = function() {
-  originalToggleCreateGame.call(this);
-  if (isCreatingGame) {
-    watchForGameStart();
-  }
-};
 
 init();

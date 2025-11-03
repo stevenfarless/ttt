@@ -248,7 +248,9 @@ h1 {
   font-weight: 600;
 }
 
-.room-code {
+/* Room Code Display (Create) and Input (Join) - IDENTICAL STYLING */
+.room-code,
+.room-code-input {
   background: var(--secondary);
   color: var(--success);
   font-size: 1.3rem;
@@ -258,21 +260,17 @@ h1 {
   letter-spacing: 2px;
   flex: 1;
   text-align: center;
+  border: none;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.room-code {
+  display: block;
 }
 
 .room-code-input {
-  flex: 1;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 6px;
-  background: var(--secondary);
-  color: var(--success);
-  font-size: 1.3rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  text-align: center;
-  transition: all 0.3s ease;
+  font-family: inherit;
 }
 
 .room-code-input:focus {

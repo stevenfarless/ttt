@@ -214,19 +214,20 @@ function listenToGameChanges() {
       }
 
       // Check if opponent wants to go back to menu
-      if (room.playerLeftRequested) {
-        console.log('[GAME] Opponent going back to menu');
+        if (room.playerLeftRequested) {
+        console.log('[GAME] Opponent quit the game');
         
         if (!isLeavingGame) {
           isLeavingGame = true;
           roomRef.off('value'); // Stop listening to updates
           
-          alert('Your opponent went back to menu.');
+          alert('Your opponent quit the game.');
           sessionStorage.clear();
           window.location.href = 'index.html';
         }
         return;
       }
+
 
       // Normalize board
       if (room.board) {
@@ -362,3 +363,4 @@ listenToGameChanges();
 updateTurnHighlight();
 
 console.log('[GAME] Script initialization complete');
+

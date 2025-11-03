@@ -1,366 +1,194 @@
-import { firebaseConfig } from './utils.js';
- 
-// Constants
-const ANIMATION_DURATION = 600;
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyBfJzZ52dh9lKJ8Eo9CvYZd9RK9WwQwx-U",
+  authDomain: "tic-tac-toe-multiplayer-7e3ea.firebaseapp.com",
+  projectId: "tic-tac-toe-multiplayer-7e3ea",
+  storageBucket: "tic-tac-toe-multiplayer-7e3ea.appspot.com",
+  messagingSenderId: "816848127676",
+  appId: "1:816848127676:web:b35d0a4f8c9e3d6f7c2a1b",
+  databaseURL: "https://tic-tac-toe-multiplayer-7e3ea-default-rtdb.firebaseio.com"
+};
 
-// Validate session and initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+// Get room code and emoji from session
 const roomCode = sessionStorage.getItem('roomCode');
+const playerEmoji = sessionStorage.getItem('playerEmoji');
 const isHost = sessionStorage.getItem('isHost') === 'true';
-const mySymbol = sessionStorage.getItem('mySymbol');
-const opponentSymbol = sessionStorage.getItem('opponentSymbol');
 
-if (!roomCode || !mySymbol || !opponentSymbol) {
-  console.error('[GAME] Missing session data');
-  window.location.href = 'index.html';
-}
+// DOM Elements
+const board = document.getElementById('board');
+const status = document.getElementById('status');
+const resetBtn = document.getElementById('resetBtn');
+const quitBtn = document.getElementById('quitBtn');
+const youEmoji = document.getElementById('youEmoji');
+const opponentEmoji = document.getElementById('opponentEmoji');
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-
-const db = firebase.database();
-console.log('[GAME] Script loaded');
-
-// DOM References
-const player1Indicator = document.querySelector('.player-indicator:nth-child(1)');
-const player2Indicator = document.querySelector('.player-indicator:nth-child(2)');
-const player1Emoji = document.getElementById('player1-emoji');
-const player2Emoji = document.getElementById('player2-emoji');
-const cells = document.querySelectorAll('.cell');
-const result = document.getElementById('result');
-const resetButton = document.getElementById('reset');
-const backToMenuBtn = document.getElementById('backToMenu');
-
-// Game State
-let gameBoard = Array(9).fill(null);
-let previousBoard = Array(9).fill(null);
+// Game state
+let gameState = ['', '', '', '', '', '', '', '', ''];
+let currentPlayer = 'X';
 let gameActive = false;
-let isMyTurn = isHost;
-let roomRef = null;
-let isLeavingGame = false;
+let opponentEmojiValue = null;
+let playerSymbol = isHost ? 'X' : 'O';
+let opponentSymbol = isHost ? 'O' : 'X';
+let gameStarted = false;
+let roomRef = database.ref(`rooms/${roomCode}`);
 
-console.log('[GAME] Session data loaded:', { roomCode, isHost, mySymbol, opponentSymbol });
+// Winning patterns
+const winPatterns = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+  [0, 4, 8],
+  [2, 4, 6]
+];
 
-// Set player emojis
-if (player1Emoji) player1Emoji.textContent = mySymbol;
-if (player2Emoji) player2Emoji.textContent = opponentSymbol;
-
-/**
- * Updates the turn indicator highlight
- */
-function updateTurnHighlight() {
-  try {
-    if (isMyTurn) {
-      player1Indicator.classList.add('active');
-      player2Indicator.classList.remove('active');
-    } else {
-      player1Indicator.classList.remove('active');
-      player2Indicator.classList.add('active');
-    }
-  } catch (error) {
-    console.error('[GAME] Error updating turn highlight:', error);
-  }
-}
-
-/**
- * Checks for a winner on the board
- * @param {Array} board - The game board
- * @returns {string|null} Winner symbol, 'draw', or null
- */
-function checkWinner(board) {
-  const lines = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8],
-    [0, 3, 6], [1, 4, 7], [2, 5, 8],
-    [0, 4, 8], [2, 4, 6]
-  ];
-
-  for (let line of lines) {
-    const [a, b, c] = line;
-    if (board[a] && board[a] === board[b] && board[b] === board[c]) {
-      return board[a];
-    }
-  }
-
-  return board.every(cell => cell !== null) ? 'draw' : null;
-}
-
-/**
- * Updates the visual board display
- */
-function updateBoard() {
-  try {
-    cells.forEach((cell, index) => {
-      const symbol = gameBoard[index];
-      cell.textContent = symbol || '';
-
-      cell.classList.remove('my-move', 'opponent-move');
-      cell.style.color = '';
-
-      if (symbol === mySymbol) {
-        cell.style.color = '#3B82F6';
-        cell.classList.add('my-move');
-      } else if (symbol === opponentSymbol) {
-        cell.style.color = '#EF4444';
-        cell.classList.add('opponent-move');
+// Initialize game
+function initGame() {
+  youEmoji.textContent = playerEmoji;
+  createBoard();
+  
+  // Wait for opponent
+  roomRef.on('value', (snapshot) => {
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      const opponent = isHost ? data.player2 : data.player1;
+      
+      if (opponent && !gameStarted) {
+        opponentEmojiValue = opponent;
+        opponentEmoji.textContent = opponent;
+        gameActive = true;
+        gameStarted = true;
+        currentPlayer = 'X';
+        updateStatus();
       }
-    });
-  } catch (error) {
-    console.error('[GAME] Error updating board:', error);
+    }
+  });
+
+  // Listen for opponent moves
+  roomRef.child('gameState').on('value', (snapshot) => {
+    if (snapshot.exists()) {
+      const moves = snapshot.val();
+      gameState = moves;
+      updateBoardUI();
+      
+      // Check if game has ended
+      if (checkWin()) {
+        const winner = currentPlayer === playerSymbol ? 'Opponent' : 'You';
+        status.textContent = winner === 'You' ? '🎉 You Win!' : '😢 Opponent Wins!';
+        gameActive = false;
+      } else if (gameState.every(cell => cell !== '')) {
+        status.textContent = '🤝 Draw!';
+        gameActive = false;
+      } else {
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        updateStatus();
+      }
+    }
+  });
+  
+  // Setup button listeners
+  resetBtn.addEventListener('click', resetGame);
+  quitBtn.addEventListener('click', quitGame);
+}
+
+function createBoard() {
+  board.innerHTML = '';
+  for (let i = 0; i < 9; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.dataset.index = i;
+    cell.textContent = '';
+    cell.addEventListener('click', () => handleCellClick(i));
+    board.appendChild(cell);
   }
 }
 
-/**
- * Plays animation for a cell move
- * @param {number} index - The cell index
- */
-function playMoveAnimation(index) {
-  try {
-    const cell = cells[index];
-    cell.classList.add('clicked');
-
-    setTimeout(() => {
-      cell.classList.remove('clicked');
-    }, ANIMATION_DURATION);
-  } catch (error) {
-    console.error('[GAME] Error playing animation:', error);
-  }
-}
-
-/**
- * Handles a cell click for making a move
- * @param {number} index - The cell index
- */
-function makeMove(index) {
-  if (!gameActive || !isMyTurn || gameBoard[index]) {
+function handleCellClick(index) {
+  if (!gameActive || gameState[index] !== '' || currentPlayer !== playerSymbol) {
     return;
   }
 
-  playMoveAnimation(index);
+  gameState[index] = playerSymbol;
+  updateBoardUI();
 
-  roomRef.transaction((room) => {
-    try {
-      if (!room) {
-        console.log('[GAME] Room not found');
-        return;
-      }
+  // Send move to Firebase
+  roomRef.child('gameState').set(gameState);
 
-      if (room.turn !== mySymbol) {
-        console.log('[GAME] Transaction aborted: not my turn');
-        return;
-      }
+  // Check for win
+  if (checkWin()) {
+    status.textContent = '🎉 You Win!';
+    gameActive = false;
+    return;
+  }
 
-      // Normalize board from Firebase
-      let board = [];
-      if (room.board) {
-        for (let i = 0; i < 9; i++) {
-          board[i] = room.board[i] || null;
-        }
-      } else {
-        board = Array(9).fill(null);
-      }
+  // Check for draw
+  if (gameState.every(cell => cell !== '')) {
+    status.textContent = '🤝 Draw!';
+    gameActive = false;
+    return;
+  }
 
-      if (board[index] !== null) {
-        console.log('[GAME] Cell occupied');
-        return;
-      }
-
-      // Make move
-      board[index] = mySymbol;
-
-      // Convert back to Firebase format
-      room.board = Object.fromEntries(board.map((val, i) => [i, val]));
-      room.turn = opponentSymbol;
-      room.winner = checkWinner(board);
-
-      console.log('[GAME] Move made at index', index);
-      return room;
-    } catch (error) {
-      console.error('[GAME] Transaction error:', error);
-      return;
-    }
-  }, (error) => {
-    if (error) {
-      console.error('[GAME] Transaction failed:', error);
-    }
-  });
+  // Switch to opponent
+  currentPlayer = opponentSymbol;
+  updateStatus();
 }
 
-/**
- * Listens to Firebase game changes and updates local state
- */
-function listenToGameChanges() {
-  roomRef = db.ref('rooms/' + roomCode);
-
-  roomRef.on('value', (snapshot) => {
-    try {
-      // Skip processing if we're already leaving
-      if (isLeavingGame) {
-        return;
-      }
-
-      const room = snapshot.val();
-
-      if (!room) {
-        console.log('[GAME] Room disappeared');
-        if (!isLeavingGame) {
-          result.textContent = 'Opponent left the game';
-          setTimeout(() => {
-            isLeavingGame = true;
-            roomRef.off('value');
-            window.location.href = 'index.html';
-          }, 2000);
-        }
-        return;
-      }
-
-      // Check if opponent wants to go back to menu
-        if (room.playerLeftRequested) {
-        console.log('[GAME] Opponent quit the game');
-        
-        if (!isLeavingGame) {
-          isLeavingGame = true;
-          roomRef.off('value'); // Stop listening to updates
-          
-          alert('Your opponent quit the game.');
-          sessionStorage.clear();
-          window.location.href = 'index.html';
-        }
-        return;
-      }
-
-
-      // Normalize board
-      if (room.board) {
-        gameBoard = Array.isArray(room.board)
-          ? room.board
-          : Array.from({ length: 9 }, (_, i) => room.board[i] || null);
-      } else {
-        gameBoard = Array(9).fill(null);
-      }
-
-      // Detect opponent move and play animation
-      for (let i = 0; i < 9; i++) {
-        const changed = previousBoard[i] !== gameBoard[i];
-        const isNewMove = gameBoard[i] !== null && gameBoard[i] !== undefined;
-
-        if (changed && isNewMove) {
-          console.log(`[GAME] Opponent move detected at index ${i}: ${previousBoard[i]} -> ${gameBoard[i]}`);
-          playMoveAnimation(i);
-        }
-      }
-
-      // Update previousBoard for next comparison
-      previousBoard = gameBoard.map(cell => cell);
-
-      // Update game state
-      isMyTurn = room.turn === mySymbol;
-      updateBoard();
-      updateTurnHighlight();
-
-      // Check for winner
-      if (room.winner) {
-        gameActive = false;
-        if (room.winner === 'draw') {
-          result.textContent = "It's a draw!";
-        } else {
-          result.textContent = room.winner === mySymbol ? 'You win! 🎉' : 'You lose';
-        }
-      } else {
-        gameActive = true;
-        result.textContent = isMyTurn ? 'Your turn' : "Opponent's turn";
-      }
-    } catch (error) {
-      console.error('[GAME] Error in listener:', error);
+function updateBoardUI() {
+  for (let i = 0; i < 9; i++) {
+    const cell = board.children[i];
+    if (gameState[i] === '') {
+      cell.textContent = '';
+      cell.classList.remove('filled', 'player-x', 'player-o');
+    } else if (gameState[i] === 'X') {
+      cell.textContent = isHost ? playerEmoji : opponentEmojiValue;
+      cell.classList.add('filled', 'player-x');
+    } else if (gameState[i] === 'O') {
+      cell.textContent = isHost ? opponentEmojiValue : playerEmoji;
+      cell.classList.add('filled', 'player-o');
     }
-  }, (error) => {
-    console.error('[GAME] Firebase listener error:', error);
-  });
+  }
 }
 
-/**
- * Resets the game state
- */
+function updateStatus() {
+  if (!gameStarted) {
+    status.textContent = '⏳ Waiting for opponent...';
+  } else if (!gameActive) {
+    return;
+  } else if (currentPlayer === playerSymbol) {
+    status.textContent = '🎮 Your Turn';
+  } else {
+    status.textContent = "⏳ Opponent's Turn";
+  }
+}
+
+function checkWin() {
+  return winPatterns.some(pattern =>
+    gameState[pattern[0]] !== '' &&
+    gameState[pattern[0]] === gameState[pattern[1]] &&
+    gameState[pattern[1]] === gameState[pattern[2]]
+  );
+}
+
 function resetGame() {
-  try {
-    const firstPlayer = isHost ? mySymbol : opponentSymbol;
-    const emptyBoard = Object.fromEntries(
-      Array.from({ length: 9 }, (_, i) => [i, null])
-    );
-
-    roomRef.update({
-      board: emptyBoard,
-      turn: firstPlayer,
-      winner: null
-    });
-
-    gameBoard = Array(9).fill(null);
-    previousBoard = Array(9).fill(null);
-    isMyTurn = isHost;
-    gameActive = true;
-  } catch (error) {
-    console.error('[GAME] Reset error:', error);
-  }
+  gameState = ['', '', '', '', '', '', '', '', ''];
+  currentPlayer = 'X';
+  gameActive = gameStarted;
+  updateBoardUI();
+  updateStatus();
+  roomRef.child('gameState').set(gameState);
 }
 
-/**
- * Navigates back to menu and notifies opponent
- */
-function goBackToMenu() {
-  try {
-    console.log('[GAME] Player going back to menu');
-    
-    // Prevent re-entrance
-    if (isLeavingGame) {
-      return;
-    }
-    isLeavingGame = true;
-
-    // Stop listening BEFORE updating Firebase
-    roomRef.off('value');
-
-    // Set flag to notify opponent
-    roomRef.update({
-      playerLeftRequested: true
-    }).then(() => {
-      console.log('[GAME] Notified opponent');
-      sessionStorage.clear();
-      
-      // Give opponent time to see notification before we completely leave
-      setTimeout(() => {
-        window.location.href = 'index.html';
-      }, 500);
-    }).catch(error => {
-      console.error('[GAME] Error notifying opponent:', error);
-      // Leave anyway if notification fails
-      sessionStorage.clear();
-      window.location.href = 'index.html';
-    });
-  } catch (error) {
-    console.error('[GAME] Navigation error:', error);
-    sessionStorage.clear();
-    window.location.href = 'index.html';
-  }
+function quitGame() {
+  sessionStorage.removeItem('roomCode');
+  sessionStorage.removeItem('playerEmoji');
+  sessionStorage.removeItem('isHost');
+  roomRef.off();
+  window.location.href = 'index.html';
 }
 
-// Event Listeners
-cells.forEach((cell, index) => {
-  cell.setAttribute('role', 'button');
-  cell.setAttribute('tabindex', '0');
-  cell.addEventListener('click', () => makeMove(index));
-  cell.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      makeMove(index);
-    }
-  });
-});
-
-resetButton?.addEventListener('click', resetGame);
-backToMenuBtn?.addEventListener('click', goBackToMenu);
-
-// Initialize
-listenToGameChanges();
-updateTurnHighlight();
-
-console.log('[GAME] Script initialization complete');
-
+initGame();

@@ -1,6 +1,3 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-import { getDatabase, ref, set, onValue, push, update } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
-
 // Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyBfJzZ52dh9lKJ8Eo9CvYZd9RK9WwQwx-U",
@@ -12,8 +9,8 @@ const firebaseConfig = {
   databaseURL: "https://tic-tac-toe-multiplayer-7e3ea-default-rtdb.firebaseio.com"
 };
 
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
 
 // DOM Elements
 const emojiToggleBtn = document.getElementById('emojiToggleBtn');
@@ -130,7 +127,7 @@ function toggleCreateGame() {
     createModule.classList.add('hidden');
     createStatus.textContent = '';
     if (gameStartWatcher) {
-      gameStartWatcher();
+      gameStartWatcher.off();
     }
   }
 }
@@ -171,8 +168,8 @@ function validateJoinCode(code) {
   }
 
   // Check if room exists
-  const roomRef = ref(database, `rooms/${code}`);
-  onValue(roomRef, (snapshot) => {
+  const roomRef = database.ref(`rooms/${code}`);
+  roomRef.once('value', (snapshot) => {
     if (snapshot.exists()) {
       const data = snapshot.val();
       if (data.player1) {
@@ -189,7 +186,7 @@ function validateJoinCode(code) {
       joinGameBtn.textContent = 'Join Game';
       joinStatus.textContent = '❌ Room not found';
     }
-  }, { onlyOnce: true });
+  });
 }
 
 function startJoiningGame() {
@@ -199,7 +196,7 @@ function startJoiningGame() {
   joinGameBtn.textContent = 'Join Game';
 
   // Add player2 to the room
-  update(ref(database, `rooms/${validJoinCode}`), {
+  database.ref(`rooms/${validJoinCode}`).update({
     player2: selectedEmoji,
     status: 'ready'
   });
@@ -221,8 +218,7 @@ function generateNewRoomCode() {
   createStatus.textContent = '🎮 Waiting for opponent...';
   
   // Store in Firebase
-  const roomRef = ref(database, `rooms/${code}`);
-  set(roomRef, {
+  database.ref(`rooms/${code}`).set({
     player1: selectedEmoji,
     status: 'waiting'
   });
@@ -232,8 +228,8 @@ function generateNewRoomCode() {
 }
 
 function watchForGameStart(code) {
-  const roomRef = ref(database, `rooms/${code}`);
-  gameStartWatcher = onValue(roomRef, (snapshot) => {
+  const roomRef = database.ref(`rooms/${code}`);
+  gameStartWatcher = roomRef.on('value', (snapshot) => {
     if (snapshot.exists()) {
       const data = snapshot.val();
       if (data.player2) {

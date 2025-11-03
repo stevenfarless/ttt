@@ -1,5 +1,5 @@
 import { firebaseConfig } from './utils.js';
-
+ 
 // Constants
 const ANIMATION_DURATION = 600;
 

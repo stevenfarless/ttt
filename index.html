@@ -3,52 +3,51 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tic Tac Toe</title>
+  <title>Tic Tac Toe - Multiplayer</title>
   <link rel="stylesheet" href="home.css">
 </head>
 <body>
-  <div id="menu-container">
+  <div id="container">
     <h1>Tic Tac Toe</h1>
-    
-    <div id="emoji-selector">
-      <label for="emojiDisplay">Select your game piece</label>
-      <button id="emojiDisplay" class="emoji-button">😀</button>
-      <div id="emojiPicker" class="emoji-picker" style="display: none;">
-        <button class="emoji-option" data-emoji="❌">❌</button>
-        <button class="emoji-option" data-emoji="⭕">⭕</button>
-        <button class="emoji-option" data-emoji="❤️">❤️</button>
-        <button class="emoji-option" data-emoji="💲">💲</button>
-        <button class="emoji-option" data-emoji="😀">😀</button>
-        <button class="emoji-option" data-emoji="💀">💀</button>
-        <button class="emoji-option" data-emoji="🤖">🤖</button>
-        <button class="emoji-option" data-emoji="👽">👽</button>
-        <button class="emoji-option" data-emoji="🐶">🐶</button>
-        <button class="emoji-option" data-emoji="😺">😺</button>
-        <button class="emoji-option" data-emoji="💩">💩</button>
-        <button class="emoji-option" data-emoji="🦐">🦐</button>
-        <button class="emoji-option" data-emoji="🍕">🍕</button>
-        <button class="emoji-option" data-emoji="🍣">🍣</button>
-        <button class="emoji-option" data-emoji="🍓">🍓</button>
-        <button class="emoji-option" data-emoji="🍤">🍤</button>
-        <button class="emoji-option" data-emoji="🌙">🌙</button>
-        <button class="emoji-option" data-emoji="☀️">☀️</button>
-        <button class="emoji-option" data-emoji="⭐">⭐</button>
-        <button class="emoji-option" data-emoji="🚀">🚀</button>
+
+    <!-- Emoji Picker Section -->
+    <div class="emoji-section">
+      <button id="emojiToggle" class="emoji-toggle-btn">
+        <span id="emojiDisplay">🎮</span>
+        <span class="label">Select Emoji</span>
+      </button>
+    </div>
+
+    <!-- Modal Emoji Picker -->
+    <div id="emojiModal" class="emoji-modal hidden">
+      <div class="emoji-modal-content">
+        <div class="emoji-modal-header">
+          <h2>Choose Your Game Piece</h2>
+          <button id="closeEmojiModal" class="close-btn">✕</button>
+        </div>
+        <div id="emojiPicker" class="emoji-picker">
+          <!-- Populated by JS -->
+        </div>
       </div>
     </div>
 
-    <div id="create-section">
-      <button id="createRoomBtn">Create Room</button>
-      <p id="createStatus"></p>
-      <div id="codeRow" style="display: none;">
-        <label>Room Code: <strong id="roomCodeDisplay"></strong></label>
-      </div>
+    <!-- Create Room Section -->
+    <div class="section">
+      <button id="createRoomBtn" class="btn btn-primary">Create Room</button>
+      <p id="createStatus" class="status-text"></p>
     </div>
 
-    <div id="join-section">
-      <input type="text" id="roomCodeInput" placeholder="Room Code" maxlength="4">
-      <button id="joinRoomBtn">Join Room</button>
-      <p id="joinStatus"></p>
+    <!-- Join Room Section -->
+    <div class="section">
+      <input 
+        id="roomCodeInput" 
+        type="text" 
+        placeholder="Enter Room Code"
+        maxlength="4"
+        class="room-code-input"
+      >
+      <button id="joinRoomBtn" class="btn btn-primary">Join Room</button>
+      <p id="joinStatus" class="status-text"></p>
     </div>
   </div>
 

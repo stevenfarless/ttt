@@ -1,263 +1,268 @@
+:root {
+  --primary: #282a36;
+  --secondary: #44475a;
+  --success: #50fa7b;
+  --danger: #ff5555;
+  --warning: #f1fa8c;
+  --info: #8be9fd;
+  --light: #f8f8f2;
+  --dark: #1e1f29;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 body {
-  background-color: #282a36;
-  color: #f8f8f2;
-  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  padding: 10px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px;
 }
 
-#menu-container {
-  background-color: #44475a;
-  padding: 32px 16px;
-  border-radius: 10px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  max-width: 390px;
+#container {
+  background: var(--secondary);
+  border-radius: 16px;
+  padding: 40px 30px;
+  max-width: 400px;
   width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 h1 {
   text-align: center;
-  margin-bottom: 16px;
-  color: #f8f8f2;
-  font-size: 2rem;
-}
-
-#emoji-selector {
-  background: rgba(80, 250, 123, 0.07);
-  border: none;
-  border-radius: 8px;
-  margin-bottom: 24px;
-  padding: 10px 8px 18px 8px;
-  text-align: center;
-}
-
-#emoji-selector label {
-  display: block;
-  color: #50fa7b;
-  font-weight: bold;
-  margin-bottom: 7px;
-  font-size: 1rem;
-}
-
-.emoji-preview {
-  border: 2px solid #50fa7b;
-  border-radius: 8px;
-  background: #50fa7b;
+  color: var(--info);
+  margin-bottom: 30px;
   font-size: 2.5rem;
-  display: inline-flex;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Emoji Toggle Button */
+.emoji-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.emoji-toggle-btn {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
-  margin-top: 5px;
-  padding: 10px;
-  cursor: pointer;
-  transition: all 0.2s;
-  line-height: 1;
-  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
-}
-
-.emoji-preview:hover {
-  background: #5eff85;
-  transform: scale(1.05);
-}
-
-.emoji-picker {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  background: #393b50;
-  gap: 6px;
-  width: 100%;
-  padding: 7px 5px 10px 5px;
-  border-radius: 8px;
-  margin: 0 auto;
-  max-width: none;
-}
-
-.emoji-option {
-  font-size: 1.65rem;
-  padding: 6px 0;
-  background: #44475a;
+  gap: 8px;
+  background: var(--success);
   border: none;
-  border-radius: 8px;
+  padding: 12px 24px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s;
-  line-height: 1;
+  font-size: 2rem;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  color: var(--dark);
+  width: 100%;
+}
+
+.emoji-toggle-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(80, 250, 123, 0.3);
+}
+
+.emoji-toggle-btn:active {
+  transform: translateY(0);
+}
+
+.emoji-toggle-btn .label {
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+/* Emoji Modal Overlay */
+.emoji-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.emoji-modal.hidden {
+  display: none;
+}
+
+.emoji-modal-content {
+  background: var(--secondary);
+  border-radius: 16px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.emoji-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 2px solid var(--primary);
+}
+
+.emoji-modal-header h2 {
+  color: var(--info);
+  font-size: 1.3rem;
+}
+
+.close-btn {
+  background: var(--danger);
+  border: none;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 45px;
-  height: 45px;
-  aspect-ratio: 1;
-  overflow: hidden;
-  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
 }
 
-.emoji-option:hover,
-.emoji-option:focus {
-  background: #50505a;
-  outline: none;
-  transform: scale(1.05);
+.close-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(255, 85, 85, 0.3);
 }
 
-#create-section,
-#join-section {
-  margin-bottom: 16px;
+/* Emoji Grid */
+.emoji-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  gap: 10px;
+  padding: 20px;
 }
 
-h2 {
-  color: #bd93f9;
-  margin-bottom: 8px;
-  font-size: 1.2rem;
-}
-
-input {
-  width: 100%;
+.emoji-option {
+  background: var(--primary);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font-size: 2rem;
   padding: 10px;
-  margin-bottom: 9px;
-  border: 2px solid #6272a4;
-  border-radius: 4px;
-  background-color: #44475a;
-  color: #f8f8f2;
-  font-size: 1rem;
-  transition: border-color 0.3s;
-  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
 }
 
-input:focus {
-  border-color: #50fa7b;
-  box-shadow: 0 0 4px rgba(80, 250, 123, 0.2);
-  outline: none;
+.emoji-option:hover {
+  border-color: var(--success);
+  transform: scale(1.1);
 }
 
-input::placeholder {
-  color: #6272a4;
+.emoji-option:active {
+  transform: scale(0.95);
 }
 
-button {
+/* Sections */
+.section {
+  margin-bottom: 25px;
+}
+
+.btn {
   width: 100%;
-  padding: 14px 0;
-  background-color: #50fa7b;
-  color: #282a36;
+  padding: 14px 20px;
   border: none;
-  border-radius: 6px;
-  font-size: 1.1rem;
+  border-radius: 12px;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.22s;
-  margin-bottom: 8px;
-}
-
-button:last-child {
-  margin-bottom: 0;
-}
-
-button:hover {
-  background: #5eff85;
-}
-
-button:active {
-  background: #48d966;
-}
-
-p {
-  font-size: 0.96rem;
-  text-align: center;
-  min-height: 22px;
-  margin-top: 7px;
-  color: #f8f8f2;
-}
-
-p.error {
-  color: #ff5555;
-}
-
-#codeRow {
-  margin-top: 10px;
-  text-align: center;
-}
-
-#roomCodeDisplay {
-  font-size: 1.3rem;
-  color: #50fa7b;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  font-family: 'Fira Mono', 'Menlo', 'Consolas', 'Liberation Mono', monospace;
+  transition: all 0.3s ease;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.error {
-  color: #ff5555;
-  font-weight: bold;
+.btn-primary {
+  background: var(--success);
+  color: var(--dark);
 }
 
-:focus {
-  outline: 2px solid #50fa7b !important;
-  outline-offset: 2px;
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(80, 250, 123, 0.3);
 }
 
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Input */
+.room-code-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--info);
+  border-radius: 12px;
+  background: var(--primary);
+  color: var(--light);
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+}
+
+.room-code-input:focus {
+  outline: none;
+  border-color: var(--success);
+  box-shadow: 0 0 12px rgba(80, 250, 123, 0.3);
+}
+
+.room-code-input::placeholder {
+  color: var(--secondary);
+}
+
+/* Status */
+.status-text {
+  color: var(--warning);
+  font-size: 0.85rem;
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* Responsive */
 @media (max-width: 480px) {
-  body {
-    padding: 0;
-  }
-
-  #menu-container {
-    max-width: 99vw;
-    width: 99vw;
-    border-radius: 0;
-    min-height: 100vh;
-    padding: 0 0 18px 0;
-    box-shadow: none;
+  #container {
+    padding: 25px 20px;
   }
 
   h1 {
-    font-size: 1.31rem;
-    margin-bottom: 12px;
-    margin-top: 12px;
-  }
-
-  #emoji-selector {
-    margin-bottom: 15px;
-    padding: 5px 2px 7px 2px;
-  }
-
-  .emoji-preview {
     font-size: 2rem;
-    padding: 6px 0;
-    margin-bottom: 5px;
+    margin-bottom: 20px;
   }
 
   .emoji-picker {
-    padding: 2px 2px 5px 2px;
-    gap: 3px;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
+    gap: 8px;
+    padding: 15px;
   }
 
   .emoji-option {
-    font-size: 1.13rem;
-    padding: 3px 0;
-    min-width: 0;
-    min-height: 40px;
+    min-height: 50px;
+    font-size: 1.5rem;
   }
 
-  #create-section,
-  #join-section {
-    margin-bottom: 9px;
-  }
-
-  button {
-    padding: 10px 0;
-    font-size: 1rem;
-    border-radius: 6px;
-    margin-bottom: 7px;
+  .btn {
+    padding: 12px 16px;
+    font-size: 0.9rem;
   }
 }

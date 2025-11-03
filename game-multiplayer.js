@@ -281,7 +281,7 @@ function resetGame() {
 function goBackToMenu() {
   try {
     sessionStorage.clear();
-    window.location.href = 'home.html';
+    window.location.href = 'index.html';
   } catch (error) {
     console.error('[GAME] Navigation error:', error);
   }
@@ -308,3 +308,4 @@ listenToGameChanges();
 updateTurnHighlight();
 
 console.log('[GAME] Script initialization complete');
+

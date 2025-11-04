@@ -8,36 +8,54 @@
 </head>
 <body>
   <div id="menu-container">
-    <h1>Tic Tac Toe</h1>
+    <h1>🎮 Tic Tac Toe</h1>
 
+    <!-- Emoji Selector -->
     <div id="emoji-selector">
-      <label for="emojiDisplay">Select your game piece:</label>
-      <button id="emojiDisplay" class="emoji-button">🎮</button>
+      <button id="emojiDisplay" class="emoji-button">😀</button>
       <div id="emojiPicker" class="emoji-picker" style="display: none;">
-        <button class="emoji-option" data-emoji="🎮">🎮</button>
+        <button class="emoji-option" data-emoji="❌">❌</button>
+        <button class="emoji-option" data-emoji="⭕">⭕</button>
+        <button class="emoji-option" data-emoji="❤️">❤️</button>
+        <button class="emoji-option" data-emoji="💲">💲</button>
+        <button class="emoji-option" data-emoji="😀">😀</button>
+        <button class="emoji-option" data-emoji="💀">💀</button>
+        <button class="emoji-option" data-emoji="🤖">🤖</button>
+        <button class="emoji-option" data-emoji="👽">👽</button>
+        <button class="emoji-option" data-emoji="🐶">🐶</button>
+        <button class="emoji-option" data-emoji="😺">😺</button>
+        <button class="emoji-option" data-emoji="💩">💩</button>
+        <button class="emoji-option" data-emoji="🦐">🦐</button>
+        <button class="emoji-option" data-emoji="🍕">🍕</button>
+        <button class="emoji-option" data-emoji="🍣">🍣</button>
+        <button class="emoji-option" data-emoji="🍓">🍓</button>
+        <button class="emoji-option" data-emoji="🍤">🍤</button>
+        <button class="emoji-option" data-emoji="🌙">🌙</button>
+        <button class="emoji-option" data-emoji="☀️">☀️</button>
+        <button class="emoji-option" data-emoji="⭐">⭐</button>
         <button class="emoji-option" data-emoji="🚀">🚀</button>
-        <button class="emoji-option" data-emoji="⚡">⚡</button>
-        <button class="emoji-option" data-emoji="🔥">🔥</button>
-        <button class="emoji-option" data-emoji="💎">💎</button>
-        <button class="emoji-option" data-emoji="👑">👑</button>
-        <button class="emoji-option" data-emoji="🌟">🌟</button>
-        <button class="emoji-option" data-emoji="🎯">🎯</button>
-        <button class="emoji-option" data-emoji="🎨">🎨</button>
-        <button class="emoji-option" data-emoji="🎸">🎸</button>
-        <button class="emoji-option" data-emoji="🎭">🎭</button>
-        <button class="emoji-option" data-emoji="🎲">🎲</button>
       </div>
     </div>
 
+    <!-- Create Room Section -->
     <div id="create-section">
-      <button id="createRoomBtn">Create Room</button>
-      <p id="roomCodeDisplay"></p>
+      <button id="createRoomBtn">CREATE GAME</button>
+      <div id="roomCodeBox" class="room-code-box">
+        <span id="roomCodeLabel">Your Code</span>
+        <span id="roomCodeDisplay">____</span>
+        <button id="copyCodeBtn" class="copy-btn">📋</button>
+      </div>
       <p id="createStatus"></p>
     </div>
 
+    <!-- Join Room Section -->
     <div id="join-section">
-      <input type="text" id="roomCodeInput" placeholder="Enter room code">
-      <button id="joinRoomBtn">Join Room</button>
+      <button id="joinRoomBtn">JOIN GAME</button>
+      <div id="joinCodeBox" class="room-code-box">
+        <span id="joinCodeLabel">Enter Code</span>
+        <input type="text" id="roomCodeInput" maxlength="4" placeholder="">
+        <button id="pasteCodeBtn" class="paste-btn">📋</button>
+      </div>
       <p id="joinStatus"></p>
     </div>
   </div>

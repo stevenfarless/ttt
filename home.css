@@ -29,7 +29,7 @@ body {
   background: var(--secondary);
   border-radius: 16px;
   padding: 40px 30px;
-  max-width: 400px;
+  max-width: 500px;
   width: 100%;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
@@ -45,14 +45,7 @@ h1 {
 /* Emoji Selector */
 #emoji-selector {
   text-align: center;
-  margin-bottom: 30px;
-}
-
-#emoji-selector label {
-  display: block;
-  color: var(--light);
-  margin-bottom: 10px;
-  font-size: 1rem;
+  margin-bottom: 25px;
 }
 
 .emoji-button {
@@ -61,13 +54,27 @@ h1 {
   border-radius: 12px;
   color: var(--dark);
   cursor: pointer;
-  font-size: 2rem;
-  padding: 10px 20px;
-  transition: background-color 0.3s ease;
+  font-size: 2.5rem;
+  padding: 12px 24px;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.emoji-button::after {
+  content: "Pick Your Emoji";
+  font-size: 0.9rem;
+  margin-left: 5px;
 }
 
 .emoji-button:hover {
   background: var(--warning);
+  transform: scale(1.05);
 }
 
 .emoji-picker {
@@ -76,17 +83,17 @@ h1 {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   padding: 1rem;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
   gap: 0.75rem;
-  max-width: 320px;
+  max-width: 100%;
   margin: 10px auto 0;
 }
 
 .emoji-option {
   cursor: pointer;
   font-size: 1.5rem;
-  padding: 5px;
-  border-radius: 6px;
+  padding: 8px;
+  border-radius: 8px;
   background: var(--primary);
   border: 2px solid transparent;
   transition: all 0.2s ease;
@@ -95,12 +102,6 @@ h1 {
 .emoji-option:hover {
   background-color: var(--success);
   border-color: var(--success);
-}
-
-.emoji-option.selected {
-  background-color: var(--warning);
-  border-color: var(--warning);
-  color: var(--dark);
 }
 
 /* Create Section */
@@ -113,32 +114,70 @@ h1 {
   background: var(--success);
   color: var(--dark);
   border: none;
-  border-radius: 8px;
-  padding: 12px 24px;
+  border-radius: 12px;
+  padding: 14px 24px;
   font-weight: bold;
   font-size: 1rem;
   cursor: pointer;
   width: 100%;
-  transition: background-color 0.3s ease;
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 #createRoomBtn:hover {
   background: var(--warning);
+  transform: translateY(-2px);
+}
+
+.room-code-box {
+  background: var(--primary);
+  border: 2px solid var(--info);
+  border-radius: 12px;
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  justify-content: space-between;
+}
+
+#roomCodeLabel {
+  color: var(--info);
+  font-size: 0.9rem;
+  font-weight: bold;
 }
 
 #roomCodeDisplay {
-  color: var(--info);
-  font-size: 1.2rem;
+  color: var(--success);
+  font-size: 1.3rem;
   font-weight: bold;
-  margin-top: 10px;
-  min-height: 1.5rem;
+  font-family: 'Courier New', monospace;
+  flex: 1;
 }
 
 #createStatus {
   color: var(--warning);
-  margin-top: 5px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   min-height: 1.2rem;
+}
+
+.copy-btn,
+.paste-btn {
+  background: var(--info);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.copy-btn:hover,
+.paste-btn:hover {
+  background: var(--success);
+  transform: scale(1.1);
 }
 
 /* Join Section */
@@ -146,23 +185,49 @@ h1 {
   text-align: center;
 }
 
+#joinRoomBtn {
+  background: var(--success);
+  color: var(--dark);
+  border: none;
+  border-radius: 12px;
+  padding: 14px 24px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+#joinRoomBtn:hover {
+  background: var(--warning);
+  transform: translateY(-2px);
+}
+
+#joinCodeLabel {
+  color: var(--info);
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
 #roomCodeInput {
   background: var(--primary);
-  border: 2px solid var(--info);
-  border-radius: 8px;
-  color: var(--light);
-  padding: 12px;
-  font-size: 1rem;
-  width: 100%;
-  margin-bottom: 10px;
+  border: none;
+  border-radius: 6px;
+  color: var(--success);
+  padding: 8px 12px;
+  font-size: 1.1rem;
+  font-weight: bold;
   text-align: center;
   text-transform: uppercase;
-  transition: border-color 0.3s ease;
+  font-family: 'Courier New', monospace;
+  flex: 1;
 }
 
 #roomCodeInput:focus {
   outline: none;
-  border-color: var(--success);
 }
 
 #roomCodeInput::placeholder {
@@ -170,34 +235,16 @@ h1 {
   opacity: 0.7;
 }
 
-#joinRoomBtn {
-  background: var(--info);
-  color: var(--dark);
-  border: none;
-  border-radius: 8px;
-  padding: 12px 24px;
-  font-weight: bold;
-  font-size: 1rem;
-  cursor: pointer;
-  width: 100%;
-  transition: background-color 0.3s ease;
-}
-
-#joinRoomBtn:hover {
-  background: var(--success);
-}
-
 #joinStatus {
   color: var(--danger);
-  margin-top: 10px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   min-height: 1.2rem;
 }
 
 /* Responsive */
-@media (max-width: 400px) {
+@media (max-width: 500px) {
   #menu-container {
-    padding: 20px 15px;
+    padding: 25px 20px;
   }
 
   h1 {
@@ -205,11 +252,11 @@ h1 {
   }
 
   .emoji-button {
-    font-size: 1.5rem;
-    padding: 8px 15px;
+    font-size: 2rem;
+    padding: 10px 16px;
   }
 
   .emoji-picker {
-    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
   }
 }

@@ -1,0 +1,58 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - beta
+      - alpha
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Prepare beta directory
+      if: github.ref == 'refs/heads/beta'
+      run: |
+        mkdir -p beta
+        cp -r ./* beta/
+        rm -rf beta/beta
+
+    - name: Prepare alpha directory
+      if: github.ref == 'refs/heads/alpha'
+      run: |
+        mkdir -p alpha
+        cp -r ./* alpha/
+        rm -rf alpha/alpha
+
+    - name: Deploy to GitHub Pages (beta)
+      if: github.ref == 'refs/heads/beta'
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.PERSONAL_TOKEN }}
+        publish_branch: gh-pages
+        publish_dir: ./beta
+        destination_dir: beta
+
+    - name: Deploy to GitHub Pages (alpha)
+      if: github.ref == 'refs/heads/alpha'
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.PERSONAL_TOKEN }}
+        publish_branch: gh-pages
+        publish_dir: ./alpha
+        destination_dir: alpha
+
+    - name: Deploy to GitHub Pages (main)
+      if: github.ref == 'refs/heads/main'
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.PERSONAL_TOKEN }}
+        publish_branch: gh-pages
+        publish_dir: ./

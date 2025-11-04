@@ -1,64 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tic Tac Toe - Home</title>
-  <link rel="stylesheet" href="home.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>🎮 Tic Tac Toe - Multiplayer</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="home.css" />
 </head>
 <body>
-  <div id="homeContainer">
-    <h1>🎮 Tic Tac Toe Multiplayer</h1>
-    
-    <div class="emoji-section">
-      <button class="btn btn-emoji" id="emojiToggleBtn">Choose Emoji</button>
-      <div class="selected-emoji" id="selectedEmoji">😀</div>
+    <div id="game-container">
+        <h1>🎮 Tic Tac Toe</h1>
+
+        <!-- Main Menu -->
+        <div id="main-menu" class="menu-section">
+            <div class="menu-buttons">
+                <button id="play-btn" class="primary-btn">👥 Play Multiplayer</button>
+            </div>
+        </div>
+
+        <!-- Multiplayer Setup -->
+        <div id="multiplayer-setup" class="menu-section hidden">
+            <h2>Multiplayer Setup</h2>
+            <div class="setup-options">
+                <button id="create-room-btn" class="secondary-btn">🆕 Create Room</button>
+                <button id="join-room-btn" class="secondary-btn">🔗 Join Room</button>
+            </div>
+            <button id="back-to-menu" class="back-btn">← Back</button>
+        </div>
+
+        <!-- Join Room Input -->
+        <div id="join-room-input" class="menu-section hidden">
+            <input type="text" id="room-code-input" placeholder="Enter room code (e.g., ABCD)" maxlength="4" />
+            <button id="join-confirm-btn" class="primary-btn">Join</button>
+            <button id="join-back-btn" class="back-btn">← Back</button>
+            <div id="join-error" class="error-message"></div>
+        </div>
+
+        <!-- Game Board -->
+        <div id="game-board" class="hidden">
+            <div id="player-indicators">
+                <div class="player-indicator">
+                    <div class="player-label">You</div>
+                    <div class="player-piece" id="your-piece">?</div>
+                </div>
+                <div class="player-indicator">
+                    <div class="player-label">Opponent</div>
+                    <div class="player-piece" id="opponent-piece">?</div>
+                </div>
+            </div>
+
+            <div id="game-status">Waiting for opponent...</div>
+
+            <div id="board" class="board">
+                <div class="cell" data-index="0"></div>
+                <div class="cell" data-index="1"></div>
+                <div class="cell" data-index="2"></div>
+                <div class="cell" data-index="3"></div>
+                <div class="cell" data-index="4"></div>
+                <div class="cell" data-index="5"></div>
+                <div class="cell" data-index="6"></div>
+                <div class="cell" data-index="7"></div>
+                <div class="cell" data-index="8"></div>
+            </div>
+
+            <button id="reset-game-btn" class="primary-btn">🔄 New Game</button>
+            <button id="leave-game-btn" class="danger-btn">❌ Leave Game</button>
+        </div>
+
+        <!-- Room Code Display -->
+        <div id="room-code-display" class="hidden">
+            <p>Your Room Code:</p>
+            <div class="room-code-box" id="room-code-box">XXXX</div>
+            <button id="copy-code-btn" class="secondary-btn">📋 Copy Code</button>
+        </div>
+
+        <!-- Error Messages -->
+        <div id="error-message" class="error-message"></div>
     </div>
 
-    <div id="createModule" class="module hidden">
-      <h2>Create Game</h2>
-      <div class="room-code-box">
-        <div class="room-code" id="roomCode">-</div>
-      </div>
-      <div class="button-group">
-        <button class="btn btn-primary" id="copyBtn">Copy Code</button>
-      </div>
-      <div class="status" id="createStatus"></div>
-    </div>
-
-    <div id="joinModule" class="module hidden">
-      <h2>Join Game</h2>
-      <input type="text" id="roomCodeInput" placeholder="Enter room code" maxlength="4">
-      <div class="button-group">
-        <button class="btn btn-secondary" id="pasteBtn">Paste</button>
-      </div>
-      <div class="status" id="joinStatus"></div>
-    </div>
-
-    <div class="button-group">
-      <button class="btn btn-primary" id="createGameBtn">Create Game</button>
-      <button class="btn btn-primary" id="joinGameBtn">Join Game</button>
-    </div>
-
-    <!-- Emoji Modal -->
-    <div id="emojiModal" class="modal hidden">
-      <div class="modal-content">
-        <span class="close-btn" id="closeEmojiModal">&times;</span>
-        <h2>Select Your Emoji</h2>
-        <div id="emojiPicker" class="emoji-picker"></div>
-      </div>
-    </div>
-  </div>
-
-   <!-- Load Firebase SDK FIRST -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
-  <!-- Load utils.js SECOND (initializes Firebase) -->
-  <script src="utils.js"></script>
-  <!-- Load multiplayer.js THIRD (uses database from utils) -->
-  <script src="multiplayer.js"></script>
-</body>
-</html>
-
+    <script src="utils.js"></script>
+    <script src="game-multiplayer.js"></script>
+    <script src="multiplayer.js"></script>
 </body>
 </html>

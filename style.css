@@ -2,7 +2,10 @@
   --primary: #282a36;
   --secondary: #44475a;
   --success: #50fa7b;
+  --danger: #ff5555;
+  --warning: #f1fa8c;
   --info: #8be9fd;
+  --light: #f8f8f2;
   --dark: #1e1f29;
 }
 
@@ -12,216 +15,120 @@
   box-sizing: border-box;
 }
 
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
 body {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #1e1f29 0%, #282a36 100%);
+  color: var(--light);
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  padding: 20px;
+  padding: 1rem;
 }
 
-#gameContainer {
-  background: var(--secondary);
-  border-radius: 16px;
-  padding: 40px 30px;
-  max-width: 600px;
+#game-container {
+  background: var(--primary);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
   width: 100%;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
 }
 
 h1 {
   text-align: center;
+  margin-bottom: 1.5rem;
   color: var(--info);
-  margin-bottom: 30px;
-  font-size: 2.5rem;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  font-size: 2rem;
 }
 
-/* Player symbols section */
-.symbols-section {
+#player-indicators {
   display: flex;
-  justify-content: space-around;
-  margin-bottom: 30px;
-  gap: 20px;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.symbol-card {
+.player-indicator {
   flex: 1;
-  padding: 20px;
-  border-radius: 12px;
+  background: var(--secondary);
+  padding: 1rem;
+  border-radius: 8px;
   text-align: center;
-  border: 3px solid transparent;
-  background: transparent;
-  transition: all 0.3s ease;
+  color: var(--light);
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.symbol-card.you {
-  border-color: #3498db;
-}
-
-.symbol-card.opponent {
-  border-color: #e74c3c;
-}
-
-.symbol-card.you.active {
-  background: linear-gradient(135deg, rgba(52, 152, 219, 0.4) 0%, rgba(52, 152, 219, 0.2) 100%);
-}
-
-.symbol-card.opponent.active {
-  background: linear-gradient(135deg, rgba(231, 76, 60, 0.4) 0%, rgba(231, 76, 60, 0.2) 100%);
-}
-
-.symbol-label {
-  color: var(--info);
-  font-size: 0.8rem;
-  font-weight: 600;
-  margin-bottom: 8px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-.symbol-emoji {
-  font-size: 2.5rem;
-}
-
-/* Game board */
 .board {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-bottom: 30px;
+  gap: 10px;
+  margin-bottom: 1.5rem;
 }
 
 .cell {
-  aspect-ratio: 1;
-  background: var(--primary);
-  border: 3px solid var(--success);
+  background: var(--secondary);
+  width: 100px;
+  height: 100px;
   border-radius: 12px;
-  font-size: 3rem;
   display: flex;
+  justify-content: center;
   align-items: center;
-  justify-content: center;
+  font-size: 3rem;
   cursor: pointer;
-  transition: box-shadow 0.15s ease-out;
-  box-shadow: 0 0 0 0 rgba(80, 250, 123, 0);
+  user-select: none;
+  transition: background-color 0.3s ease;
 }
 
-.cell:hover:not(.disabled) {
-  box-shadow: 0 0 12px 0 rgba(80, 250, 123, 0.4);
+.cell:hover {
+  background-color: var(--info);
 }
 
-.cell:active:not(.disabled) {
-  animation: cellPulse 0.35s ease-out;
-}
-
-@keyframes cellPulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(80, 250, 123, 0.8);
-  }
-  50% {
-    box-shadow: 0 0 8px 6px rgba(80, 250, 123, 0.4);
-  }
-  100% {
-    box-shadow: 0 0 0 15px rgba(80, 250, 123, 0);
-  }
-}
-
-.cell.disabled {
-  cursor: not-allowed;
-}
-
-/* Game status */
-.game-status {
-  text-align: center;
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 20px;
-  min-height: 2.5rem;
-  color: #f1fa8c;
-}
-
-.game-status.win {
-  color: var(--success);
-}
-
-.game-status.lose {
-  color: #ff5555;
-}
-
-/* Buttons */
-.button-group {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-}
-
-.btn {
-  padding: 12px 24px;
+.primary-btn {
+  background: var(--success);
+  color: var(--dark);
   border: none;
   border-radius: 8px;
-  font-weight: 600;
+  padding: 10px 15px;
+  font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-size: 0.9rem;
+  width: 100%;
+  margin-bottom: 0.5rem;
+  transition: background-color 0.3s ease;
 }
 
-.btn-primary {
-  background: var(--info);
-  color: var(--dark);
+.primary-btn:hover {
+  background-color: var(--warning);
 }
 
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(139, 233, 253, 0.3);
+.back-btn {
+  background: transparent;
+  border: none;
+  color: var(--info);
+  cursor: pointer;
+  font-size: 1rem;
+  width: 100%;
+  text-align: center;
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
 }
 
-.btn-primary:active {
-  transform: translateY(0);
+.back-btn:hover {
+  color: var(--warning);
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-  #gameContainer {
-    padding: 25px 20px;
-  }
-
-  h1 {
-    font-size: 1.8rem;
-    margin-bottom: 20px;
-  }
-
-  .symbols-section {
-    margin-bottom: 20px;
-    gap: 12px;
-  }
-
-  .symbol-card {
-    padding: 15px;
-  }
-
-  .symbol-emoji {
-    font-size: 2rem;
-  }
-
-  .board {
-    gap: 8px;
-    margin-bottom: 20px;
-  }
-
+@media (max-width: 460px) {
   .cell {
-    font-size: 2rem;
-  }
-
-  .game-status {
-    font-size: 1.2rem;
-  }
-
-  .btn {
-    padding: 10px 16px;
-    font-size: 0.8rem;
+    width: 80px;
+    height: 80px;
+    font-size: 2.5rem;
   }
 }

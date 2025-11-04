@@ -1,19 +1,20 @@
+// utils.js
 // Firebase Configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyB7CW4zuf7KmqlsWWmlNf8GIqncCVAmZlg",
+
+export const firebaseConfig = {
+  apiKey: "AIzaSyAQO1xbKz5yjo3TAqqU1gFZYrI-qBugRNs",
   authDomain: "tic-tac-toe-80bd7.firebaseapp.com",
   databaseURL: "https://tic-tac-toe-80bd7-default-rtdb.firebaseio.com",
   projectId: "tic-tac-toe-80bd7",
-  storageBucket: "tic-tac-toe-80bd7.firebasestorage.app",
+  storageBucket: "tic-tac-toe-80bd7.appspot.com",
   messagingSenderId: "423174319963",
-  appId: "1:423174319963:web:c5329be46c388da0eb347e"
+  appId: "1:423174319963:web:c5329be46c388da0eb347e",
+  measurementId: "G-2WC5RPCT3Q"
 };
 
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-
 // Utility Functions
-function generateRoomCode() {
+
+export function generateRoomCode() {
   const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ123456789';
   let code = '';
   for (let i = 0; i < 4; i++) {
@@ -22,7 +23,7 @@ function generateRoomCode() {
   return code;
 }
 
-function showError(element, message, timeout = 5000) {
+export function showError(element, message, timeout = 5000) {
   element.textContent = message;
   element.classList.add('error');
   if (timeout) {
@@ -33,10 +34,12 @@ function showError(element, message, timeout = 5000) {
   }
 }
 
-function validateRoomCode(code) {
-  return /^[A-HJ-KM-NP-Z1-9]{4}$/.test(code.trim().toUpperCase());
+export function validateRoomCode(code) {
+  return /^[A-HJ-NP-Z\d]{4}$/.test(code);
 }
 
-function sanitizeEmojiChoice(choice, allowedEmojis) {
-  return allowedEmojis.includes(choice) ? choice : allowedEmojis[0];
+export function sanitizeEmojiChoice(choice) {
+
+  const emojiRegex = /\p{Extended_Pictographic}/u;
+  return emojiRegex.test(choice) ? choice : '❓';
 }

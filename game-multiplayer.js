@@ -1,7 +1,5 @@
 // game-multiplayer.js
 
-import { firebaseConfig } from './utils.js';
-
 const ANIMATION_DURATION = 600;
 
 // Retrieve session data from sessionStorage
@@ -17,7 +15,7 @@ if (!roomCode || !mySymbol || !opponentSymbol) {
 }
 
 if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
+  firebase.initializeApp(window.firebaseConfig);
 }
 
 const db = firebase.database();
@@ -59,7 +57,11 @@ function checkWinner(boardState) {
   ];
 
   for (const [a, b, c] of winPatterns) {
-    if (boardState[a] && boardState[a] === boardState[b] && boardState[a] === boardState[c]) {
+    if (
+      boardState[a] &&
+      boardState[a] === boardState[b] &&
+      boardState[a] === boardState[c]
+    ) {
       return boardState[a];
     }
   }
@@ -67,7 +69,7 @@ function checkWinner(boardState) {
 }
 
 function isBoardFull(boardState) {
-  return boardState.every(cell => cell !== null);
+  return boardState.every((cell) => cell !== null);
 }
 
 async function makeMove(index) {
@@ -76,7 +78,7 @@ async function makeMove(index) {
   }
   try {
     const roomRef = db.ref(`rooms/${roomCode}`);
-    await roomRef.transaction(room => {
+    await roomRef.transaction((room) => {
       if (!room) return;
       if (room.board[index] !== null) {
         throw 'Invalid move';
@@ -148,7 +150,7 @@ resetBtn.addEventListener('click', async () => {
   if (!isHost) return;
 
   const roomRef = db.ref(`rooms/${roomCode}`);
-  await roomRef.transaction(room => {
+  await roomRef.transaction((room) => {
     if (!room) return;
     room.board = Object.fromEntries(Array(9).fill(null).map((_, i) => [i, null]));
     room.turn = isHost ? mySymbol : opponentSymbol;

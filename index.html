@@ -1,85 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>🎮 Tic Tac Toe - Multiplayer</title>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="home.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🎮 Tic Tac Toe - Multiplayer</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="home.css" />
 </head>
+
 <body>
-    <div id="game-container">
-        <h1>🎮 Tic Tac Toe</h1>
+  <div id="game-container">
+    <h1>🎮 Tic Tac Toe</h1>
 
-        <!-- Main Menu -->
-        <div id="main-menu" class="menu-section">
-            <div class="menu-buttons">
-                <button id="play-btn" class="primary-btn">👥 Play Multiplayer</button>
-            </div>
-        </div>
-
-        <!-- Multiplayer Setup -->
-        <div id="multiplayer-setup" class="menu-section hidden">
-            <h2>Multiplayer Setup</h2>
-            <div class="setup-options">
-                <button id="create-room-btn" class="secondary-btn">🆕 Create Room</button>
-                <button id="join-room-btn" class="secondary-btn">🔗 Join Room</button>
-            </div>
-            <button id="back-to-menu" class="back-btn">← Back</button>
-        </div>
-
-        <!-- Join Room Input -->
-        <div id="join-room-input" class="menu-section hidden">
-            <input type="text" id="room-code-input" placeholder="Enter room code (e.g., ABCD)" maxlength="4" />
-            <button id="join-confirm-btn" class="primary-btn">Join</button>
-            <button id="join-back-btn" class="back-btn">← Back</button>
-            <div id="join-error" class="error-message"></div>
-        </div>
-
-        <!-- Game Board -->
-        <div id="game-board" class="hidden">
-            <div id="player-indicators">
-                <div class="player-indicator">
-                    <div class="player-label">You</div>
-                    <div class="player-piece" id="your-piece">?</div>
-                </div>
-                <div class="player-indicator">
-                    <div class="player-label">Opponent</div>
-                    <div class="player-piece" id="opponent-piece">?</div>
-                </div>
-            </div>
-
-            <div id="game-status">Waiting for opponent...</div>
-
-            <div id="board" class="board">
-                <div class="cell" data-index="0"></div>
-                <div class="cell" data-index="1"></div>
-                <div class="cell" data-index="2"></div>
-                <div class="cell" data-index="3"></div>
-                <div class="cell" data-index="4"></div>
-                <div class="cell" data-index="5"></div>
-                <div class="cell" data-index="6"></div>
-                <div class="cell" data-index="7"></div>
-                <div class="cell" data-index="8"></div>
-            </div>
-
-            <button id="reset-game-btn" class="primary-btn">🔄 New Game</button>
-            <button id="leave-game-btn" class="danger-btn">❌ Leave Game</button>
-        </div>
-
-        <!-- Room Code Display -->
-        <div id="room-code-display" class="hidden">
-            <p>Your Room Code:</p>
-            <div class="room-code-box" id="room-code-box">XXXX</div>
-            <button id="copy-code-btn" class="secondary-btn">📋 Copy Code</button>
-        </div>
-
-        <!-- Error Messages -->
-        <div id="error-message" class="error-message"></div>
+    <!-- Main Menu -->
+    <div id="main-menu" class="menu-section">
+      <div class="menu-buttons">
+        <button id="play-btn" class="primary-btn">👥 Play Multiplayer</button>
+      </div>
     </div>
 
-    <script src="utils.js"></script>
-    <script src="game-multiplayer.js"></script>
-    <script src="multiplayer.js"></script>
+    <!-- Multiplayer Setup -->
+    <div id="multiplayer-setup" class="menu-section hidden">
+      <h2>Multiplayer Setup</h2>
+      <div class="setup-options">
+        <button id="create-room-btn" class="secondary-btn">🆕 Create Room</button>
+        <button id="join-room-btn" class="secondary-btn">🔗 Join Room</button>
+      </div>
+      <button id="back-to-menu" class="back-btn">← Back</button>
+    </div>
+
+    <!-- Join Room Input -->
+    <div id="join-room-input" class="menu-section hidden">
+      <input type="text" id="room-code-input" placeholder="Enter room code (e.g., ABCD)" maxlength="4" />
+      <button id="join-confirm-btn" class="primary-btn">Join</button>
+      <button id="join-back-btn" class="back-btn">← Back</button>
+      <div id="join-error" class="error-message"></div>
+    </div>
+
+    <!-- Game Board -->
+    <div id="game-board" class="hidden">
+      <div id="player-indicators">
+        <div class="player-indicator">
+          <div class="player-label">You</div>
+          <div class="player-piece" id="your-piece">?</div>
+        </div>
+        <div class="player-indicator">
+          <div class="player-label">Opponent</div>
+          <div class="player-piece" id="opponent-piece">?</div>
+        </div>
+      </div>
+
+      <div id="game-status">Waiting for opponent...</div>
+
+      <div id="board" class="board">
+        <div class="cell" data-index="0"></div>
+        <div class="cell" data-index="1"></div>
+        <div class="cell" data-index="2"></div>
+        <div class="cell" data-index="3"></div>
+        <div class="cell" data-index="4"></div>
+        <div class="cell" data-index="5"></div>
+        <div class="cell" data-index="6"></div>
+        <div class="cell" data-index="7"></div>
+        <div class="cell" data-index="8"></div>
+      </div>
+
+      <button id="reset-game-btn" class="primary-btn">🔄 New Game</button>
+      <button id="leave-game-btn" class="danger-btn">❌ Leave Game</button>
+    </div>
+
+    <!-- Room Code Display -->
+    <div id="room-code-display" class="hidden">
+      <p>Your Room Code:</p>
+      <div class="room-code-box" id="room-code-box">XXXX</div>
+      <button id="copy-code-btn" class="secondary-btn">📋 Copy Code</button>
+    </div>
+
+    <!-- Error Messages -->
+    <div id="error-message" class="error-message"></div>
+  </div>
+
+  <script src="utils.js"></script>
+  <script src="multiplayer.js"></script>
+  <script src="game-multiplayer.js"></script>
+
 </body>
+
 </html>

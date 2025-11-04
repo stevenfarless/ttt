@@ -1,8 +1,8 @@
-import { firebaseConfig } from './utils.js';
+// multiplayer.js
 
 // Initialize Firebase
 if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
+  firebase.initializeApp(window.firebaseConfig);
 }
 
 const DEBUG = true;
@@ -85,7 +85,6 @@ createRoomBtn.addEventListener('click', (e) => {
   joinRoomBtn.disabled = false;
   joinStatus.textContent = '';
   roomCodeInput.value = '';
-  // Display existing code or placeholder
   if (generatedRoomCode) {
     roomCodeDisplay.textContent = generatedRoomCode;
   } else {
@@ -104,13 +103,11 @@ joinRoomBtn.addEventListener('click', (e) => {
 // Room code input validation and button text update
 roomCodeInput.addEventListener('input', (e) => {
   e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-  // Update button text based on input length
   if (e.target.value.length === 4) {
     joinRoomBtn.textContent = 'START GAME';
   } else {
     joinRoomBtn.textContent = 'Join Game';
   }
-  // Clear status when user is typing
   joinStatus.textContent = '';
 });
 
@@ -136,7 +133,6 @@ pasteCodeBtn?.addEventListener('click', async () => {
   try {
     const text = await navigator.clipboard.readText();
     roomCodeInput.value = text.toUpperCase().substring(0, 4).replace(/[^A-Z0-9]/g, '');
-    // Trigger input event to update button text
     roomCodeInput.dispatchEvent(new Event('input'));
   } catch (error) {
     console.error('[MULTIPLAYER] Paste failed:', error);
@@ -145,8 +141,6 @@ pasteCodeBtn?.addEventListener('click', async () => {
 
 // Create game
 createRoomBtn.addEventListener('click', () => {
-  console.log('[MULTIPLAYER] Create Game clicked');
-  // If code already exists, just show the module
   if (generatedRoomCode) {
     createModule.classList.remove('hidden');
     return;
@@ -173,9 +167,7 @@ createRoomBtn.addEventListener('click', () => {
     turn: selectedEmoji,
     winner: null
   };
-  console.log('[MULTIPLAYER] Creating game:', code);
   db.ref('rooms/' + code).set(roomData).then(() => {
-    console.log('[MULTIPLAYER] Game created');
     roomCodeDisplay.textContent = code;
     createStatus.textContent = 'Waiting for opponent...';
     createStatus.style.color = 'var(--warning)';
@@ -186,14 +178,12 @@ createRoomBtn.addEventListener('click', () => {
     roomRef.on('value', (snapshot) => {
       const room = snapshot.val();
       if (room && room.guestJoined && room.guestEmoji) {
-        console.log('[MULTIPLAYER] Guest joined, navigating');
         sessionStorage.setItem('opponentSymbol', room.guestEmoji);
         roomRef.off('value');
         setTimeout(() => window.location.href = 'game.html', 300);
       }
     });
   }).catch(err => {
-    console.error('[MULTIPLAYER] Error creating game:', err);
     createStatus.textContent = 'Error creating game';
     createStatus.style.color = 'var(--danger)';
     createRoomBtn.disabled = false;
@@ -204,10 +194,7 @@ createRoomBtn.addEventListener('click', () => {
 // Join game
 joinRoomBtn.addEventListener('click', () => {
   const code = roomCodeInput.value.trim().toUpperCase();
-  console.log('[MULTIPLAYER] Join Game clicked:', code);
-  if (code.length !== 4) {
-    return;
-  }
+  if (code.length !== 4) return;
   joinRoomBtn.disabled = true;
   const selectedEmoji = emojiDisplay.textContent;
   db.ref('rooms/' + code).once('value').then(snapshot => {
@@ -224,7 +211,6 @@ joinRoomBtn.addEventListener('click', () => {
       joinRoomBtn.disabled = false;
       return;
     }
-    console.log('[MULTIPLAYER] Joining game:', code);
     const updateData = {
       guestJoined: true,
       guestEmoji: selectedEmoji
@@ -240,7 +226,6 @@ joinRoomBtn.addEventListener('click', () => {
       updateData.turn = room.hostEmoji;
     }
     db.ref('rooms/' + code).update(updateData).then(() => {
-      console.log('[MULTIPLAYER] Joined successfully');
       joinStatus.textContent = 'Joined! Starting game...';
       joinStatus.style.color = 'var(--success)';
       sessionStorage.setItem('roomCode', code);
@@ -249,7 +234,6 @@ joinRoomBtn.addEventListener('click', () => {
       sessionStorage.setItem('opponentSymbol', room.hostEmoji);
       setTimeout(() => window.location.href = 'game.html', 300);
     }).catch(err => {
-      console.error('[MULTIPLAYER] Error joining:', err);
       joinStatus.textContent = 'Error joining game';
       joinStatus.style.color = 'var(--danger)';
       joinRoomBtn.disabled = false;

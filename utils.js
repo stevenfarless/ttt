@@ -1,8 +1,7 @@
 // utils.js
 
-// Firebase Configuration
-
-export const firebaseConfig = {
+// Firebase Configuration as a global variable
+window.firebaseConfig = {
   apiKey: "AIzaSyAQO1xbKz5yjo3TAqqU1gFZYrI-qBugRNs",
   authDomain: "tic-tac-toe-80bd7.firebaseapp.com",
   databaseURL: "https://tic-tac-toe-80bd7-default-rtdb.firebaseio.com",
@@ -13,18 +12,18 @@ export const firebaseConfig = {
   measurementId: "G-2WC5RPCT3Q"
 };
 
-// Utility Functions
+// Utility Functions as globals
 
-export function generateRoomCode() {
+window.generateRoomCode = function () {
   const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ123456789';
   let code = '';
   for (let i = 0; i < 4; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return code;
-}
+};
 
-export function showError(element, message, timeout = 5000) {
+window.showError = function (element, message, timeout = 5000) {
   element.textContent = message;
   element.classList.add('error');
   if (timeout) {
@@ -33,14 +32,13 @@ export function showError(element, message, timeout = 5000) {
       element.classList.remove('error');
     }, timeout);
   }
-}
+};
 
-export function validateRoomCode(code) {
+window.validateRoomCode = function (code) {
   return /^[A-HJ-NP-Z\d]{4}$/.test(code);
-}
+};
 
-export function sanitizeEmojiChoice(choice) {
-  // Basic sanitization example
+window.sanitizeEmojiChoice = function (choice) {
   const emojiRegex = /\p{Extended_Pictographic}/u;
   return emojiRegex.test(choice) ? choice : '❓';
-}
+};

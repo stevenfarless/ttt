@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy Alpha to GitHub Pages
 
 permissions:
   contents: read
@@ -8,8 +8,6 @@ permissions:
 on:
   push:
     branches:
-      - main
-      - beta
       - alpha
 
 jobs:
@@ -22,46 +20,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Prepare beta folder only on beta branch
-      - name: Prepare beta directory
-        if: github.ref == 'refs/heads/beta'
-        run: |
-          mkdir -p beta
-          find . -maxdepth 1 ! -name 'beta' ! -name '.' -exec cp -r {} beta/ \;
-
-      # Prepare alpha folder only on alpha branch
       - name: Prepare alpha directory
-        if: github.ref == 'refs/heads/alpha'
         run: |
           mkdir -p alpha
-          find . -maxdepth 1 ! -name 'alpha' ! -name '.' -exec cp -r {} alpha/ \;
+          rsync -av --exclude 'alpha' . alpha/
 
-      # Deploy for beta branch
-      - name: Deploy to GitHub Pages (beta)
-        if: github.ref == 'refs/heads/beta'
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.PERSONAL_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: ./beta
-          destination_dir: beta
-
-      # Deploy for alpha branch
       - name: Deploy to GitHub Pages (alpha)
-        if: github.ref == 'refs/heads/alpha'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.PERSONAL_TOKEN }}
           publish_branch: gh-pages
           publish_dir: ./alpha
           destination_dir: alpha
-
-      # Deploy for main branch
-      - name: Deploy to GitHub Pages (main)
-        if: github.ref == 'refs/heads/main'
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.PERSONAL_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: ./
-          destination_dir: .

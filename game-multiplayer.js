@@ -50,17 +50,16 @@ function checkWinner(boardState) {
   const winPatterns = [
     [0, 1, 2],
     [3, 4, 5],
-    [6, 7, 8],
+    [6, 7, 8], // rows
     [0, 3, 6],
     [1, 4, 7],
-    [2, 5, 8],
+    [2, 5, 8], // cols
     [0, 4, 8],
-    [2, 4, 6],
+    [2, 4, 6], // diagonals
   ];
+
   for (const [a, b, c] of winPatterns) {
-    if (boardState[a] &&
-        boardState[a] === boardState[b] &&
-        boardState[a] === boardState[c]) {
+    if (boardState[a] && boardState[a] === boardState[b] && boardState[a] === boardState[c]) {
       return boardState[a];
     }
   }
@@ -85,10 +84,14 @@ async function makeMove(index) {
       if (room.turn !== mySymbol) {
         throw 'Not your turn';
       }
+
+      // Update board locally
       board[index] = mySymbol;
+      // Convert board to object format for Firebase
       room.board = Object.fromEntries(board.map((val, i) => [i, val]));
       room.turn = opponentSymbol;
       room.winner = checkWinner(board);
+
       return room;
     });
   } catch (error) {
@@ -98,7 +101,7 @@ async function makeMove(index) {
 
 function listenToGameChanges() {
   const roomRef = db.ref(`rooms/${roomCode}`);
-  roomRef.on('value', snapshot => {
+  roomRef.on('value', (snapshot) => {
     if (isLeavingGame) return;
     const room = snapshot.val();
     if (!room) {
@@ -108,10 +111,13 @@ function listenToGameChanges() {
       }, 2000);
       return;
     }
+
     board.splice(0, board.length, ...Object.values(room.board || Array(9).fill(null)));
     currentTurn = room.turn;
     winner = room.winner;
+
     updateBoardUI();
+
     if (winner) {
       if (winner === mySymbol) {
         result.textContent = 'You win!';
@@ -140,6 +146,7 @@ cells.forEach((cell, index) => {
 
 resetBtn.addEventListener('click', async () => {
   if (!isHost) return;
+
   const roomRef = db.ref(`rooms/${roomCode}`);
   await roomRef.transaction(room => {
     if (!room) return;
@@ -152,7 +159,9 @@ resetBtn.addEventListener('click', async () => {
 
 leaveBtn.addEventListener('click', async () => {
   isLeavingGame = true;
+
   const roomRef = db.ref(`rooms/${roomCode}`);
+
   if (isHost) {
     await roomRef.remove();
   } else {
@@ -161,7 +170,9 @@ leaveBtn.addEventListener('click', async () => {
       guestEmoji: null,
     });
   }
+
   sessionStorage.clear();
+
   window.location.href = 'index.html';
 });
 

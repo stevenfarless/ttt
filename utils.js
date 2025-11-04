@@ -1,4 +1,5 @@
 // utils.js
+
 // Firebase Configuration
 
 export const firebaseConfig = {
@@ -39,7 +40,7 @@ export function validateRoomCode(code) {
 }
 
 export function sanitizeEmojiChoice(choice) {
-
+  // Basic sanitization example
   const emojiRegex = /\p{Extended_Pictographic}/u;
   return emojiRegex.test(choice) ? choice : '❓';
 }

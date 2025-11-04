@@ -1,12 +1,12 @@
 // utils.js
 
-// Firebase Configuration as a global variable
-window.firebaseConfig = {
-  apiKey: "AIzaSyAQO1xbKz5yjo3TAqqU1gFZYrI-qBugRNs",
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyB7CW4zuf7KmqlsWWmlNf8GIqncCVAmZlg",
   authDomain: "tic-tac-toe-80bd7.firebaseapp.com",
   databaseURL: "https://tic-tac-toe-80bd7-default-rtdb.firebaseio.com",
   projectId: "tic-tac-toe-80bd7",
-  storageBucket: "tic-tac-toe-80bd7.appspot.com",
+  storageBucket: "tic-tac-toe-80bd7.firebasestorage.app",
   messagingSenderId: "423174319963",
   appId: "1:423174319963:web:c5329be46c388da0eb347e",
   measurementId: "G-2WC5RPCT3Q"

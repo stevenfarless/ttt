@@ -1,8 +1,7 @@
 // utils.js
-
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-window.firebaseConfig = {
-  apiKey: "AIzaSyB7CW4zuf7KmqlsWWmlNf8GIqncCVAmZlg",
+// Firebase Configuration
+export const firebaseConfig = {
+   apiKey: "AIzaSyAQO1xbKz5yjo3TAqqU1gFZYrI-qBugRNs",
   authDomain: "tic-tac-toe-80bd7.firebaseapp.com",
   databaseURL: "https://tic-tac-toe-80bd7-default-rtdb.firebaseio.com",
   projectId: "tic-tac-toe-80bd7",
@@ -12,18 +11,17 @@ window.firebaseConfig = {
   measurementId: "G-2WC5RPCT3Q"
 };
 
-// Utility Functions as globals
-
-window.generateRoomCode = function () {
+// Utility Functions
+export function generateRoomCode() {
   const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ123456789';
   let code = '';
   for (let i = 0; i < 4; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return code;
-};
+}
 
-window.showError = function (element, message, timeout = 5000) {
+export function showError(element, message, timeout = 5000) {
   element.textContent = message;
   element.classList.add('error');
   if (timeout) {
@@ -32,13 +30,12 @@ window.showError = function (element, message, timeout = 5000) {
       element.classList.remove('error');
     }, timeout);
   }
-};
+}
 
-window.validateRoomCode = function (code) {
-  return /^[A-HJ-NP-Z\d]{4}$/.test(code);
-};
+export function validateRoomCode(code) {
+  return /^[A-HJ-KM-NP-Z1-9]{4}$/.test(code.trim().toUpperCase());
+}
 
-window.sanitizeEmojiChoice = function (choice) {
-  const emojiRegex = /\p{Extended_Pictographic}/u;
-  return emojiRegex.test(choice) ? choice : '❓';
-};
+export function sanitizeEmojiChoice(choice, allowedEmojis) {
+  return allowedEmojis.includes(choice) ? choice : allowedEmojis[0];
+}

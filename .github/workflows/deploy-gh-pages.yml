@@ -17,22 +17,20 @@ jobs:
       with:
         fetch-depth: 0
 
-    # Copy files to a temporary folder if on beta or alpha
-    - name: Prepare beta deploy
+    - name: Prepare beta directory
       if: github.ref == 'refs/heads/beta'
       run: |
         mkdir -p beta
-        cp -r * beta/
-        rm -rf beta/beta  # avoids nesting if any
+        cp -r ./* beta/
+        rm -rf beta/beta
 
-    - name: Prepare alpha deploy
+    - name: Prepare alpha directory
       if: github.ref == 'refs/heads/alpha'
       run: |
         mkdir -p alpha
-        cp -r * alpha/
+        cp -r ./* alpha/
         rm -rf alpha/alpha
 
-    # Deploy based on branch
     - name: Deploy to GitHub Pages (beta)
       if: github.ref == 'refs/heads/beta'
       uses: peaceiris/actions-gh-pages@v4

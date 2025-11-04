@@ -1,0 +1,173 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  background-color: #282a36;
+  color: #f8f8f2;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+#game-container {
+  background-color: #44475a;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+h1 {
+  color: #f8f8f2;
+  margin-bottom: 20px;
+  font-size: 28px;
+}
+
+#board {
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  gap: 10px;
+  margin: 20px auto;
+  background-color: #282a36;
+  padding: 10px;
+  border-radius: 8px;
+  justify-items: start;
+  max-width: fit-content;
+}
+
+.cell {
+  width: 100px;
+  height: 100px;
+  background-color: #44475a;
+  border: 2px solid #6272a4;
+  border-radius: 4px;
+  font-size: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.cell::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, transparent 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cell[data-player="self"]::before {
+  background: radial-gradient(circle, rgba(80, 150, 255, 0.35) 0%, transparent 70%);
+}
+
+.cell[data-player="opponent"]::before {
+  background: radial-gradient(circle, rgba(255, 80, 80, 0.35) 0%, transparent 70%);
+}
+
+.cell::after {
+  content: attr(data-content);
+  position: relative;
+  z-index: 2;
+  font-size: 3rem;
+}
+
+.cell--emoji::after {
+  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
+}
+
+.cell--alphanumeric::after {
+  font-family: 'Fira Mono', 'Menlo', 'Consolas', 'Liberation Mono', monospace;
+  color: #fff;
+  text-shadow: 0 0 5px #fff, 0 0 10px #aaffee;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.cell:hover {
+  background-color: #50505a;
+  border-color: #50fa7b;
+}
+
+#result {
+  color: #f8f8f2;
+  font-size: 18px;
+  margin: 20px 0;
+  min-height: 24px;
+}
+
+button {
+  background-color: #50fa7b;
+  color: #282a36;
+  border: none;
+  padding: 12px 30px;
+  margin: 10px 5px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #5eff85;
+}
+
+button:active {
+  background-color: #48d966;
+}
+
+#player-indicators {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px 0;
+  gap: 20px;
+}
+
+.player-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px 25px;
+  border-radius: 10px;
+  background: rgba(68, 71, 90, 0.5);
+  border: 3px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.player-indicator span {
+  font-size: 2.5rem;
+  margin-bottom: 5px;
+  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
+}
+
+.player-label {
+  font-size: 0.9rem !important;
+  color: #f8f8f2;
+  margin-top: 5px;
+}
+
+.player-indicator.active {
+  border-color: #50fa7b;
+  background: rgba(80, 250, 123, 0.2);
+  box-shadow: 0 0 20px rgba(80, 250, 123, 0.4);
+  transform: scale(1.1);
+}
+
+.player-indicator.inactive {
+  opacity: 0.5;
+}

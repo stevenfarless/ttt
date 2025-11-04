@@ -1,4 +1,4 @@
-# 🎮 Custom Tic Tac Toe - Multiplayer
+# 🎮 TTT - 2 Player Emoji Tic Tac Toe
 
 **Version:** 1.1.0 | **Release Date:** November 4, 2025
 
@@ -6,7 +6,8 @@ A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces and pl
 
 ## 📷 Screenshots
 
-
+<img height="600" alt="homescreen" src="https://github.com/user-attachments/assets/72f15ab0-e795-4de7-8191-cee53e5eb81d" />
+<img height="600" alt="gameboard" src="https://github.com/user-attachments/assets/7d1ee014-7a7c-4fef-aea8-9204b98f56f8" />
 
 ---
 
@@ -102,7 +103,7 @@ Choose any of these 20 emojis as your game piece:
 ## 📁 Project Structure
 
 ```
-tic-tac-toe/
+ttt/
 ├── index.html               # Main menu/lobby
 ├── game.html               # Game board interface
 ├── style.css               # Game board styling

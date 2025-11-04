@@ -7,64 +7,77 @@
   <link rel="stylesheet" href="home.css">
 </head>
 <body>
-  <div id="menu-container">
+  <div id="container">
     <h1>🎮 Tic Tac Toe</h1>
 
     <!-- Emoji Selector -->
-    <div id="emoji-selector">
-      <button id="emojiDisplay" class="emoji-button">😀</button>
-      <div id="emojiPicker" class="emoji-picker" style="display: none;">
-        <button class="emoji-option" data-emoji="❌">❌</button>
-        <button class="emoji-option" data-emoji="⭕">⭕</button>
-        <button class="emoji-option" data-emoji="❤️">❤️</button>
-        <button class="emoji-option" data-emoji="💲">💲</button>
-        <button class="emoji-option" data-emoji="😀">😀</button>
-        <button class="emoji-option" data-emoji="💀">💀</button>
-        <button class="emoji-option" data-emoji="🤖">🤖</button>
-        <button class="emoji-option" data-emoji="👽">👽</button>
-        <button class="emoji-option" data-emoji="🐶">🐶</button>
-        <button class="emoji-option" data-emoji="😺">😺</button>
-        <button class="emoji-option" data-emoji="💩">💩</button>
-        <button class="emoji-option" data-emoji="🦐">🦐</button>
-        <button class="emoji-option" data-emoji="🍕">🍕</button>
-        <button class="emoji-option" data-emoji="🍣">🍣</button>
-        <button class="emoji-option" data-emoji="🍓">🍓</button>
-        <button class="emoji-option" data-emoji="🍤">🍤</button>
-        <button class="emoji-option" data-emoji="🌙">🌙</button>
-        <button class="emoji-option" data-emoji="☀️">☀️</button>
-        <button class="emoji-option" data-emoji="⭐">⭐</button>
-        <button class="emoji-option" data-emoji="🚀">🚀</button>
+    <div class="emoji-section">
+      <button class="emoji-toggle-btn" id="emojiToggle">
+        <span id="emojiDisplay">😀</span>
+        <span class="label">Pick Your Emoji</span>
+      </button>
+    </div>
+
+    <!-- Emoji Modal -->
+    <div id="emojiModal" class="emoji-modal hidden">
+      <div class="emoji-modal-content">
+        <div class="emoji-modal-header">
+          <h2>Choose Your Game Piece</h2>
+          <button class="close-btn" id="closeEmojiModal">&times;</button>
+        </div>
+        <div class="emoji-picker" id="emojiPicker">
+          <button class="emoji-option" data-emoji="❌">❌</button>
+          <button class="emoji-option" data-emoji="⭕">⭕</button>
+          <button class="emoji-option" data-emoji="❤️">❤️</button>
+          <button class="emoji-option" data-emoji="💲">💲</button>
+          <button class="emoji-option" data-emoji="😀">😀</button>
+          <button class="emoji-option" data-emoji="💀">💀</button>
+          <button class="emoji-option" data-emoji="🤖">🤖</button>
+          <button class="emoji-option" data-emoji="👽">👽</button>
+          <button class="emoji-option" data-emoji="🐶">🐶</button>
+          <button class="emoji-option" data-emoji="😺">😺</button>
+          <button class="emoji-option" data-emoji="💩">💩</button>
+          <button class="emoji-option" data-emoji="🦐">🦐</button>
+        </div>
       </div>
     </div>
 
     <!-- Create Room Section -->
-    <div id="create-section">
-      <button id="createRoomBtn">CREATE GAME</button>
-      <div id="roomCodeBox" class="room-code-box">
-        <span id="roomCodeLabel">Your Code</span>
-        <span id="roomCodeDisplay">____</span>
-        <button id="copyCodeBtn" class="copy-btn">📋</button>
+    <div class="section" id="createSection">
+      <button class="btn btn-primary" id="createRoomBtn">CREATE GAME</button>
+      <div class="room-module hidden" id="createModule">
+        <div class="code-display">
+          <div class="code-container">
+            <span class="label">Your Code</span>
+            <span class="room-code" id="roomCodeDisplay">____</span>
+            <button class="copy-btn" id="copyCodeBtn">📋</button>
+          </div>
+        </div>
+        <div class="status-text" id="createStatus"></div>
       </div>
-      <p id="createStatus"></p>
     </div>
 
     <!-- Join Room Section -->
-    <div id="join-section">
-      <button id="joinRoomBtn">JOIN GAME</button>
-      <div id="joinCodeBox" class="room-code-box">
-        <span id="joinCodeLabel">Enter Code</span>
-        <input type="text" id="roomCodeInput" maxlength="4" placeholder="">
-        <button id="pasteCodeBtn" class="paste-btn">📋</button>
+    <div class="section" id="joinSection">
+      <button class="btn btn-primary" id="joinRoomBtn">JOIN GAME</button>
+      <div class="room-module hidden" id="joinModule">
+        <div class="code-display">
+          <div class="code-container">
+            <span class="label">Enter Code</span>
+            <input type="text" class="room-code-input" id="roomCodeInput" placeholder="XXXX" maxlength="4">
+            <button class="paste-btn" id="pasteCodeBtn">📋</button>
+          </div>
+        </div>
+        <div class="status-text" id="joinStatus"></div>
       </div>
-      <p id="joinStatus"></p>
     </div>
   </div>
 
-  <!-- Firebase SDK v8 (Compatibility mode) -->
+  <!-- Firebase SDK v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
   
-  <!-- Firebase Configuration -->
+  <!-- Firebase Config -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyB7CW4zuf7KmqlsWWmlNf8GIqncCVAmZlg",
@@ -79,7 +92,6 @@
     firebase.initializeApp(firebaseConfig);
   </script>
   
-  <!-- Your app script -->
   <script src="multiplayer.js"></script>
 </body>
 </html>

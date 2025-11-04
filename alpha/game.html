@@ -1,0 +1,48 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TTT - Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-container">
+    <h1>Tic Tac Toe<br>1.1.1</h1>
+    
+    <div id="player-indicators">
+      <div class="player-indicator active">
+        <span id="player1-emoji"></span>
+        <span class="player-label">You</span>
+      </div>
+      <div class="player-indicator">
+        <span id="player2-emoji"></span>
+        <span class="player-label">Opponent</span>
+      </div>
+    </div>
+
+    <div id="board">
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+    </div>
+
+    <p id="result">Connecting...</p>
+
+    <div id="button-container">
+      <button id="reset">Reset Game</button>
+      <button id="backToMenu">Quit Game</button>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script type="module" src="game-multiplayer.js"></script>
+</body>
+</html>

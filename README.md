@@ -1,180 +1,202 @@
-# Custom Tic-Tac-Toe (Multiplayer)
+# 🎮 Custom Tic Tac Toe - Multiplayer
 
-A fully functional real-time multiplayer Tic-Tac-Toe game built with vanilla JavaScript and Firebase Realtime Database. Play with friends online using simple 4-character room codes.
+**Version:** 1.1.0 | **Release Date:** November 4, 2025
 
-## Screenshots
+A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces and player perspective colors, built with vanilla JavaScript and Firebase.
 
-<img width="500" alt="image" src="https://github.com/user-attachments/assets/512a5805-0d78-4d75-8878-639ca165ef83" />
-
-<img width="500" alt="image" src="https://github.com/user-attachments/assets/4ae1a7f0-f8d0-47ef-9ddd-838319d3f014" />
+## 📷 Screenshots
 
 
-## Features
 
-✅ **Real-time Multiplayer** - Play with anyone, anywhere using Firebase  
-✅ **Room Code System** - Easy-to-share 4-character codes  
-✅ **Turn-based Gameplay** - Clear indicators for whose turn it is  
-✅ **Auto-sync** - Moves sync instantly across all connected players  
-✅ **Winner Detection** - Automatic win/draw detection  
-✅ **Responsive Design** - Clean, modern UI with Dracula theme colors  
-✅ **Session Management** - Proper room cleanup and player disconnect handling
+---
 
-## Quick Start
+## ✨ Features
 
-### Create a Room
+- **🎯 Classic Tic Tac Toe Gameplay** - The timeless 3x3 grid game you know and love
+- **👥 Real-Time Multiplayer** - Firebase-powered live game synchronization
+- **🎨 Custom Emoji Pieces** - Choose from 20+ emojis as your game piece
+- **🌈 Player Perspective Colors** - See your moves in BLUE and opponent's in RED for clarity
+- **🏠 Room Codes** - Share a 4-character room code with your opponent to join a game
+- **📱 Mobile Responsive** - Play on desktop, tablet, or mobile seamlessly
+- **⚡ Real-Time Sync** - Moves sync instantly across both players' screens
+- **🎨 Dark UI** - Dracula-inspired color scheme with smooth animations
 
-1. Open the game
-2. Click **"Create New Room"**
-3. Share the 4-character room code with your friend
-4. Wait for them to join
-5. Game starts automatically when both players are connected!
+---
 
-### Join a Room
-
-1. Open the game
-2. Enter the 4-character room code
-3. Click **"Join Room"**
-4. Start playing!
-
-## Technologies Used
-
-- **Frontend**: HTML5, CSS3, Vanilla JavaScript
-- **Backend**: Firebase Realtime Database v8
-- **Hosting**: GitHub Pages
-
-## Room Code Design
-
-Room codes use an optimized character set:
-
-```
-ABCDEFGHJKMNPQRSTUVWXYZ123456789
-```
-
-**Why these characters?**
-
-- Removed **I, L, O, 0** to prevent confusion
-- 32 characters providing over 1 million unique combinations
-- Easy to read and share verbally or via text
-
-## Installation
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Firebase project (free tier supported)
-- Node.js or a local server for development
+- Modern web browser (Chrome, Firefox, Safari, Edge)
+- Internet connection
+- Firebase Realtime Database (for multiplayer functionality)
 
-### Setup
+### Installation
 
-1. Clone the repository
+1. **Clone the repository**
    ```
    git clone https://github.com/stevenfarless/ttt.git
    cd ttt
    ```
 
-2. Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
-
-3. Enable **Realtime Database** in Firebase
-
-4. Copy your Firebase config and add it to `game.html` and `home.html`:
-
+2. **Open in your browser**
    ```
-   const firebaseConfig = {
-     apiKey: "YOUR_API_KEY",
-     authDomain: "YOUR_PROJECT.firebaseapp.com",
-     databaseURL: "https://YOUR_PROJECT.firebaseio.com",
-     projectId: "YOUR_PROJECT_ID",
-     storageBucket: "YOUR_PROJECT.appspot.com",
-     messagingSenderId: "YOUR_SENDER_ID",
-     appId: "YOUR_APP_ID"
-   };
+   open index.html
    ```
 
-5. Deploy to GitHub Pages or serve locally
+3. **Configure Firebase (Multiplayer Mode)**
+   - Go to [Firebase Console](https://console.firebase.google.com)
+   - Create a new project
+   - Enable Realtime Database
+   - Copy your Firebase config from Project Settings
+   - Update the Firebase configuration in `home.html` with your credentials:
+     ```
+     const firebaseConfig = {
+       apiKey: "YOUR_API_KEY",
+       authDomain: "YOUR_AUTH_DOMAIN",
+       databaseURL: "YOUR_DATABASE_URL",
+       projectId: "YOUR_PROJECT_ID",
+       storageBucket: "YOUR_STORAGE_BUCKET",
+       messagingSenderId: "YOUR_MESSAGING_ID",
+       appId: "YOUR_APP_ID"
+     };
+     ```
 
-### Local Development
+---
 
-1. Use a local server (e.g., Live Server VS Code extension)
-2. Open `index.html`
+## 🎮 How to Play Multiplayer
 
-**Note:** Do not open HTML files directly - Firebase requires a proper HTTP server.
+### Player 1 (Host)
+- Open `index.html`
+- Select your emoji piece from the picker
+- Click "Create Room"
+- Share the 4-character room code with Player 2
 
-## File Structure
+### Player 2 (Guest)
+- Open `index.html`
+- Select your emoji piece
+- Enter the room code from Player 1
+- Click "Join Room"
+
+### Playing
+- Players take turns clicking cells on the 3x3 grid
+- Host always goes first
+- Your moves appear in **BLUE**, opponent's in **RED**
+- Win by getting three in a row (horizontal, vertical, or diagonal)
+- Game ends with a win or draw
+
+---
+
+## 🎨 Available Emoji Pieces
+
+Choose any of these 20 emojis as your game piece:
+
+❌ ⭕ ❤️ 💲
+😀 💀 🤖 👽
+🐶 😺 💩 🦐
+🍕 🍣 🍓 🍤
+🌙 ☀️ ⭐ 🚀
+
+---
+
+## 📁 Project Structure
 
 ```
-├── index.html              # Landing page
-├── home.html               # Main menu (create/join room)
-├── game.html               # Game board
-├── multiplayer.js          # Room creation/join logic
-├── game-multiplayer.js     # Core game logic & Firebase sync
-├── style.css               # Game board styles
-├── home.css                # Menu styles
-├── LICENSE                 # GPL-3.0 license
-└── README.md               # This file
+tic-tac-toe/
+├── index.html               # Main menu/lobby
+├── game.html               # Game board interface
+├── style.css               # Game board styling
+├── home.css                # Menu styling
+├── multiplayer.js          # Room creation & joining logic
+├── game-multiplayer.js     # Game logic & Firebase sync
+├── utils.js                # Utility functions
+├── README.md               # This file
+└── LICENSE                 # GPL License
 ```
 
-## Configuration
+---
 
-### Debug Mode
+## 🛠️ Technologies Used
 
-To enable/disable debug logging in `game-multiplayer.js` and `multiplayer.js`:
+- **HTML5** - Semantic markup and structure
+- **CSS3** - Modern styling with Flexbox & Grid, animations
+- **Vanilla JavaScript (ES6+)** - No frameworks, pure JS
+- **Firebase Realtime Database** - Real-time multiplayer synchronization
+- **Emoji Support** - Dynamic emoji rendering and display
 
+---
+
+## 📱 Browser Support
+
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
+
+---
+
+## 🐛 Known Issues & Limitations
+
+- Firebase free tier has rate limits (may affect rapid gameplay)
+- Emoji rendering varies across browsers and operating systems
+- Reconnection handling is basic (full page refresh recommended if disconnected)
+- Room data persists in Firebase after game ends
+- Player indicator updates may briefly lag on very slow connections
+- Mobile emoji sizes may render inconsistently on older devices
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] AI opponent for single player
+- [ ] User authentication & accounts
+- [ ] Leaderboard and statistics tracking
+- [ ] Sound effects toggle
+- [ ] Dark/Light theme selector
+- [ ] Tournament mode (best of 3/5)
+- [ ] Custom username display
+- [ ] Game history & replays
+
+---
+
+## 🤝 Contributing
+
+This project welcomes contributions and feedback! Please feel free to:
+- Report bugs via GitHub Issues
+- Suggest features and improvements
+- Submit pull requests with enhancements
+- Test on different devices and browsers
+
+---
+
+## 📄 License
+
+GPL 3 License - see LICENSE file for details
+
+---
+
+## 📞 Support & Feedback
+
+Found a bug? Have a suggestion? Please open an issue on GitHub!
+
+**GitHub Issues:** [https://github.com/stevenfarless/ttt/issues](https://github.com/stevenfarless/ttt/issues)
+
+---
+
+## ⚡ Development Status
+
+| Aspect | Status |
+|--------|--------|
+| Core Gameplay | ✅ Stable |
+| Real-Time Multiplayer | ✅ Working |
+| Turn Management | ✅ Functional |
+| Player Perspective Colors | ✅ Implemented |
+| Mobile Responsive | ✅ Responsive |
+| Firebase Integration | ✅ Functional |
+| UI/UX Polish | 🟡 In Progress |
+| Error Handling | 🟡 In Progress |
+
+---
+
+**Built with ❤️ by Steven Farless**
 ```
-const DEBUG = true;   // Enable debug logs
-const DEBUG = false;  // Disable debug logs
-```
-
-## Roadmap
-
-- 🎯 Chat functionality
-- 🎯 Player statistics tracking
-- 🎯 Rematch button
-- 🎯 Sound effects & animations
-- 🎯 AI opponent mode
-
-## Troubleshooting
-
-**Game won't load?**
-- Ensure Firebase config is correctly set in HTML files
-- Check that you're using a local server (not `file://`)
-- Verify Firebase Realtime Database is enabled
-
-**Moves not syncing?**
-- Check your Firebase connection
-- Verify both players are in the same room code
-- Check browser console for errors
-
-**Room code not working?**
-- Ensure code is exactly 4 characters
-- Verify the room creator is still connected
-- Try creating a new room
-
-## Contributing
-
-Found a bug or have a feature request? Feel free to open an issue or submit a pull request!
-
-## License
-
-GPL-3.0 License - See LICENSE file for details
-
-## Credits
-
-Developed by **Steven Farless**  
-Built with Firebase and vanilla JavaScript  
-UI inspired by Dracula color theme
-
-## Version History
-
-**v1.0.0** (November 2025) - First Official Release
-- Production-ready Firebase integration
-- Refined multiplayer synchronization
-- Improved error handling and edge cases
-- Optimized performance for real-time updates
-- Enhanced session management
-- Polished UI and user experience
-
-**v0.2.0-Alpha** (October 2025)
-- Fixed Firebase sparse array handling
-- Optimized room code character set
-- Added real-time game state synchronization
-- Improved turn tracking logic
-- Added debug logging system

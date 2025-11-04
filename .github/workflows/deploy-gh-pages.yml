@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - main
-      - alpha
       - beta
+      - alpha
 
 jobs:
   build-and-deploy:
@@ -17,21 +17,10 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Setup Node.js (if your site uses Node for build, adjust version as needed)
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-
-    - name: Install dependencies and build site
-      run: |
-        npm install
-        npm run build
-      # Replace with your actual build commands if different
-
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_branch: gh-pages
-        publish_dir: ./build
+        publish_dir: ./
         destination_dir: ${{ github.ref == 'refs/heads/alpha' && 'alpha' || (github.ref == 'refs/heads/beta' && 'beta' || '') }}

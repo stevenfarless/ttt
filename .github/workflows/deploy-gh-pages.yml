@@ -17,10 +17,44 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Deploy to GitHub Pages
+    # Copy files to a temporary folder if on beta or alpha
+    - name: Prepare beta deploy
+      if: github.ref == 'refs/heads/beta'
+      run: |
+        mkdir -p beta
+        cp -r * beta/
+        rm -rf beta/beta  # avoids nesting if any
+
+    - name: Prepare alpha deploy
+      if: github.ref == 'refs/heads/alpha'
+      run: |
+        mkdir -p alpha
+        cp -r * alpha/
+        rm -rf alpha/alpha
+
+    # Deploy based on branch
+    - name: Deploy to GitHub Pages (beta)
+      if: github.ref == 'refs/heads/beta'
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.PERSONAL_TOKEN }}
+        publish_branch: gh-pages
+        publish_dir: ./beta
+        destination_dir: beta
+
+    - name: Deploy to GitHub Pages (alpha)
+      if: github.ref == 'refs/heads/alpha'
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.PERSONAL_TOKEN }}
+        publish_branch: gh-pages
+        publish_dir: ./alpha
+        destination_dir: alpha
+
+    - name: Deploy to GitHub Pages (main)
+      if: github.ref == 'refs/heads/main'
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.PERSONAL_TOKEN }}
         publish_branch: gh-pages
         publish_dir: ./
-        destination_dir: ${{ github.ref == 'refs/heads/alpha' && 'alpha' || (github.ref == 'refs/heads/beta' && 'beta' || '') }}

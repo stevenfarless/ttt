@@ -24,11 +24,12 @@ const joinRoomBtn = document.getElementById('joinRoomBtn');
 const createModule = document.getElementById('createModule');
 const joinModule = document.getElementById('joinModule');
 const roomCodeInput = document.getElementById('roomCodeInput');
-const roomCodeDisplay = document.getElementById('roomCodeDisplay');
+const roomCodeDisplay = document.getElementById('room-code-display');  // fixed here
 const createStatus = document.getElementById('createStatus');
 const joinStatus = document.getElementById('joinStatus');
 const copyCodeBtn = document.getElementById('copyCodeBtn');
 const pasteCodeBtn = document.getElementById('pasteCodeBtn');
+
 
 // Track generated room code
 let generatedRoomCode = null;

@@ -156,7 +156,14 @@ function normalizeBoardFromFirebase(firebaseBoard) {
     return firebaseBoard;
   }
   
-  return Array.from({ length: 9 }, (_, i) => firebaseBoard[i] || null);
+  // Convert Firebase object format to array
+  const normalized = Array(9).fill(null);
+  for (let i = 0; i < 9; i++) {
+    if (firebaseBoard[i] !== undefined) {
+      normalized[i] = firebaseBoard[i];
+    }
+  }
+  return normalized;
 }
 
 /**
@@ -193,7 +200,7 @@ function makeMove(index) {
       // Make move
       board[index] = mySymbol;
 
-      // Convert back to Firebase format
+      // Convert back to Firebase format (object with numeric keys)
       room.board = Object.fromEntries(board.map((val, i) => [i, val]));
       room.turn = opponentSymbol;
       room.winner = checkWinner(board);
@@ -222,7 +229,7 @@ function listenToGameChanges() {
 
   roomRef.on('value', (snapshot) => {
     try {
-      // Skip processing if we're already leaving
+      // Skip processing if we're already leaving or listeners are inactive
       if (isLeavingGame || !eventListenersActive) {
         return;
       }
@@ -283,7 +290,7 @@ function listenToGameChanges() {
         if (room.winner === 'draw') {
           result.textContent = "It's a draw!";
         } else {
-          result.textContent = room.winner === mySymbol ? 'You win! 🎉' : 'You lose';
+          result.textContent = room.winner === mySymbol ? 'You win! \U0001f389' : 'You lose';
         }
       } else {
         gameActive = true;
@@ -374,7 +381,7 @@ function goBackToMenu() {
  */
 function cleanup() {
   try {
-    cells.forEach((cell, index) => {
+    cells.forEach((cell) => {
       // Clone and replace to remove all listeners
       const newCell = cell.cloneNode(true);
       cell.parentNode.replaceChild(newCell, cell);

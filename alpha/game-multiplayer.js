@@ -1,9 +1,9 @@
 import { firebaseConfig } from './utils.js';
- 
+
 // Constants
 const ANIMATION_DURATION = 600;
 
-// Validate session and initialize Firebase
+// Cache sessionStorage at startup (only called once)
 const roomCode = sessionStorage.getItem('roomCode');
 const isHost = sessionStorage.getItem('isHost') === 'true';
 const mySymbol = sessionStorage.getItem('mySymbol');
@@ -33,11 +33,12 @@ const backToMenuBtn = document.getElementById('backToMenu');
 
 // Game State
 let gameBoard = Array(9).fill(null);
-let previousBoard = Array(9).fill(null);
+let previousBoard = [...gameBoard];
 let gameActive = false;
 let isMyTurn = isHost;
 let roomRef = null;
 let isLeavingGame = false;
+let eventListenersActive = true;
 
 console.log('[GAME] Session data loaded:', { roomCode, isHost, mySymbol, opponentSymbol });
 
@@ -85,23 +86,41 @@ function checkWinner(board) {
 }
 
 /**
- * Updates the visual board display
+ * Updates only changed cells on the visual board
  */
 function updateBoard() {
   try {
     cells.forEach((cell, index) => {
       const symbol = gameBoard[index];
-      cell.textContent = symbol || '';
+      
+      // Only update cells that have changed
+      if (cell.textContent !== (symbol || '')) {
+        cell.textContent = symbol || '';
+      }
 
-      cell.classList.remove('my-move', 'opponent-move');
-      cell.style.color = '';
+      // Update styling only if symbol changed
+      const newColor = symbol === mySymbol ? '#3B82F6' : 
+                       symbol === opponentSymbol ? '#EF4444' : '';
+      
+      const hadMyMove = cell.classList.contains('my-move');
+      const hadOpponentMove = cell.classList.contains('opponent-move');
+      const shouldHaveMyMove = symbol === mySymbol;
+      const shouldHaveOpponentMove = symbol === opponentSymbol;
 
-      if (symbol === mySymbol) {
-        cell.style.color = '#3B82F6';
+      if (hadMyMove && !shouldHaveMyMove) {
+        cell.classList.remove('my-move');
+      } else if (!hadMyMove && shouldHaveMyMove) {
         cell.classList.add('my-move');
-      } else if (symbol === opponentSymbol) {
-        cell.style.color = '#EF4444';
+      }
+
+      if (hadOpponentMove && !shouldHaveOpponentMove) {
+        cell.classList.remove('opponent-move');
+      } else if (!hadOpponentMove && shouldHaveOpponentMove) {
         cell.classList.add('opponent-move');
+      }
+
+      if (cell.style.color !== newColor) {
+        cell.style.color = newColor;
       }
     });
   } catch (error) {
@@ -117,13 +136,27 @@ function playMoveAnimation(index) {
   try {
     const cell = cells[index];
     cell.classList.add('clicked');
-
     setTimeout(() => {
       cell.classList.remove('clicked');
     }, ANIMATION_DURATION);
   } catch (error) {
     console.error('[GAME] Error playing animation:', error);
   }
+}
+
+/**
+ * Normalizes board from Firebase (object or array format)
+ */
+function normalizeBoardFromFirebase(firebaseBoard) {
+  if (!firebaseBoard) {
+    return Array(9).fill(null);
+  }
+  
+  if (Array.isArray(firebaseBoard)) {
+    return firebaseBoard;
+  }
+  
+  return Array.from({ length: 9 }, (_, i) => firebaseBoard[i] || null);
 }
 
 /**
@@ -149,15 +182,8 @@ function makeMove(index) {
         return;
       }
 
-      // Normalize board from Firebase
-      let board = [];
-      if (room.board) {
-        for (let i = 0; i < 9; i++) {
-          board[i] = room.board[i] || null;
-        }
-      } else {
-        board = Array(9).fill(null);
-      }
+      // Normalize board from Firebase once
+      const board = normalizeBoardFromFirebase(room.board);
 
       if (board[index] !== null) {
         console.log('[GAME] Cell occupied');
@@ -173,11 +199,14 @@ function makeMove(index) {
       room.winner = checkWinner(board);
 
       console.log('[GAME] Move made at index', index);
+
       return room;
+
     } catch (error) {
       console.error('[GAME] Transaction error:', error);
       return;
     }
+
   }, (error) => {
     if (error) {
       console.error('[GAME] Transaction failed:', error);
@@ -194,7 +223,7 @@ function listenToGameChanges() {
   roomRef.on('value', (snapshot) => {
     try {
       // Skip processing if we're already leaving
-      if (isLeavingGame) {
+      if (isLeavingGame || !eventListenersActive) {
         return;
       }
 
@@ -214,13 +243,12 @@ function listenToGameChanges() {
       }
 
       // Check if opponent wants to go back to menu
-        if (room.playerLeftRequested) {
+      if (room.playerLeftRequested) {
         console.log('[GAME] Opponent quit the game');
-        
         if (!isLeavingGame) {
           isLeavingGame = true;
-          roomRef.off('value'); // Stop listening to updates
-          
+          eventListenersActive = false;
+          roomRef.off('value');
           alert('Your opponent quit the game.');
           sessionStorage.clear();
           window.location.href = 'index.html';
@@ -228,29 +256,21 @@ function listenToGameChanges() {
         return;
       }
 
-
-      // Normalize board
-      if (room.board) {
-        gameBoard = Array.isArray(room.board)
-          ? room.board
-          : Array.from({ length: 9 }, (_, i) => room.board[i] || null);
-      } else {
-        gameBoard = Array(9).fill(null);
-      }
+      // Normalize board once
+      const newBoard = normalizeBoardFromFirebase(room.board);
 
       // Detect opponent move and play animation
       for (let i = 0; i < 9; i++) {
-        const changed = previousBoard[i] !== gameBoard[i];
-        const isNewMove = gameBoard[i] !== null && gameBoard[i] !== undefined;
-
-        if (changed && isNewMove) {
-          console.log(`[GAME] Opponent move detected at index ${i}: ${previousBoard[i]} -> ${gameBoard[i]}`);
+        if (previousBoard[i] !== newBoard[i] && newBoard[i] !== null && newBoard[i] !== undefined) {
+          console.log(`[GAME] Opponent move detected at index ${i}: ${previousBoard[i]} -> ${newBoard[i]}`);
           playMoveAnimation(i);
+          break; // Only animate the first changed cell
         }
       }
 
       // Update previousBoard for next comparison
-      previousBoard = gameBoard.map(cell => cell);
+      previousBoard = [...newBoard];
+      gameBoard = newBoard;
 
       // Update game state
       isMyTurn = room.turn === mySymbol;
@@ -269,9 +289,11 @@ function listenToGameChanges() {
         gameActive = true;
         result.textContent = isMyTurn ? 'Your turn' : "Opponent's turn";
       }
+
     } catch (error) {
       console.error('[GAME] Error in listener:', error);
     }
+
   }, (error) => {
     console.error('[GAME] Firebase listener error:', error);
   });
@@ -294,9 +316,10 @@ function resetGame() {
     });
 
     gameBoard = Array(9).fill(null);
-    previousBoard = Array(9).fill(null);
+    previousBoard = [...gameBoard];
     isMyTurn = isHost;
     gameActive = true;
+
   } catch (error) {
     console.error('[GAME] Reset error:', error);
   }
@@ -308,12 +331,14 @@ function resetGame() {
 function goBackToMenu() {
   try {
     console.log('[GAME] Player going back to menu');
-    
+
     // Prevent re-entrance
     if (isLeavingGame) {
       return;
     }
+
     isLeavingGame = true;
+    eventListenersActive = false;
 
     // Stop listening BEFORE updating Firebase
     roomRef.off('value');
@@ -324,17 +349,19 @@ function goBackToMenu() {
     }).then(() => {
       console.log('[GAME] Notified opponent');
       sessionStorage.clear();
-      
+
       // Give opponent time to see notification before we completely leave
       setTimeout(() => {
         window.location.href = 'index.html';
       }, 500);
+
     }).catch(error => {
       console.error('[GAME] Error notifying opponent:', error);
       // Leave anyway if notification fails
       sessionStorage.clear();
       window.location.href = 'index.html';
     });
+
   } catch (error) {
     console.error('[GAME] Navigation error:', error);
     sessionStorage.clear();
@@ -342,25 +369,50 @@ function goBackToMenu() {
   }
 }
 
-// Event Listeners
+/**
+ * Cleanup function to remove event listeners
+ */
+function cleanup() {
+  try {
+    cells.forEach((cell, index) => {
+      // Clone and replace to remove all listeners
+      const newCell = cell.cloneNode(true);
+      cell.parentNode.replaceChild(newCell, cell);
+    });
+
+    resetButton?.removeEventListener('click', resetGame);
+    backToMenuBtn?.removeEventListener('click', goBackToMenu);
+
+    eventListenersActive = false;
+  } catch (error) {
+    console.error('[GAME] Cleanup error:', error);
+  }
+}
+
+// Event Listeners - with proper cleanup
+const cellClickHandler = (index) => () => makeMove(index);
+const cellKeydownHandler = (index) => (e) => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    makeMove(index);
+  }
+};
+
 cells.forEach((cell, index) => {
   cell.setAttribute('role', 'button');
   cell.setAttribute('tabindex', '0');
-  cell.addEventListener('click', () => makeMove(index));
-  cell.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      makeMove(index);
-    }
-  });
+  cell.addEventListener('click', cellClickHandler(index));
+  cell.addEventListener('keydown', cellKeydownHandler(index));
 });
 
 resetButton?.addEventListener('click', resetGame);
 backToMenuBtn?.addEventListener('click', goBackToMenu);
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', cleanup);
 
 // Initialize
 listenToGameChanges();
 updateTurnHighlight();
 
 console.log('[GAME] Script initialization complete');
-

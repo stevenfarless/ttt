@@ -1,59 +1,48 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tic Tac Toe - Multiplayer</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TTT - Game</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-  <div class="container">
-    <header>
-      <h1>Tic Tac Toe</h1>
-    </header>
-
-    <main>
-      <div class="game-info">
-        <div class="player-indicator">
-          <span id="player1-emoji">❌</span>
-          <span class="label">Player 1</span>
-        </div>
-        <div class="divider">vs</div>
-        <div class="player-indicator">
-          <span id="player2-emoji">⭕</span>
-          <span class="label">Player 2</span>
-        </div>
+  <div id="game-container">
+    <h1>Tic Tac Toe<br>1.1.1 Alpha</h1>
+    
+    <div id="player-indicators">
+      <div class="player-indicator active">
+        <span id="player1-emoji"></span>
+        <span class="player-label">You</span>
       </div>
-
-      <div id="result" class="result">Waiting for opponent...</div>
-
-      <div class="game-board">
-        <div class="cell"></div>
-        <div class="cell"></div>
-        <div class="cell"></div>
-        <div class="cell"></div>
-        <div class="cell"></div>
-        <div class="cell"></div>
-        <div class="cell"></div>
-        <div class="cell"></div>
-        <div class="cell"></div>
+      <div class="player-indicator">
+        <span id="player2-emoji"></span>
+        <span class="player-label">Opponent</span>
       </div>
+    </div>
 
-      <div class="controls">
-        <button id="reset" class="btn btn-primary">New Game</button>
-        <button id="backToMenu" class="btn btn-secondary">Back to Menu</button>
-      </div>
-    </main>
+    <div id="board">
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+    </div>
+
+    <p id="result">Connecting...</p>
+
+    <div id="button-container">
+      <button id="reset">Reset Game</button>
+      <button id="backToMenu">Quit Game</button>
+    </div>
   </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
-
-  <!-- Game Script -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script type="module" src="game-multiplayer.js"></script>
 </body>
- 
 </html>

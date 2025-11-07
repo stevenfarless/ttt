@@ -25,81 +25,62 @@ body {
   padding: 20px;
 }
 
-.container {
+#container {
   background: var(--secondary);
   border-radius: 16px;
   padding: 40px 30px;
-  max-width: 500px;
+  max-width: 400px;
   width: 100%;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
-header {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
 h1 {
+  text-align: center;
   color: var(--info);
-  margin-bottom: 10px;
+  margin-bottom: 30px;
   font-size: 2.5rem;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
-.subtitle {
-  color: var(--warning);
-  font-size: 0.9rem;
-  font-weight: 500;
-  margin: 0;
-}
-
-main {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-
-/* Emoji Section */
+/* Emoji Toggle Button */
 .emoji-section {
   text-align: center;
+  margin-bottom: 30px;
+}
+
+.emoji-toggle-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-}
-
-#emojiDisplay {
-  font-size: 4rem;
-  line-height: 1;
-  margin-bottom: 10px;
-}
-
-#emojiToggle {
+  gap: 8px;
   background: var(--success);
-  color: var(--dark);
   border: none;
   padding: 12px 24px;
   border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 600;
   cursor: pointer;
+  font-size: 2rem;
   transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-weight: 600;
+  color: var(--dark);
   width: 100%;
 }
 
-#emojiToggle:hover {
+.emoji-toggle-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(80, 250, 123, 0.3);
 }
 
-#emojiToggle:active {
+.emoji-toggle-btn:active {
   transform: translateY(0);
 }
 
-/* Modal */
-.modal {
+.emoji-toggle-btn .label {
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+/* Emoji Modal Overlay */
+.emoji-modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -114,11 +95,11 @@ main {
   backdrop-filter: blur(4px);
 }
 
-.modal.hidden {
+.emoji-modal.hidden {
   display: none;
 }
 
-.modal-content {
+.emoji-modal-content {
   background: var(--secondary);
   border-radius: 16px;
   max-width: 500px;
@@ -126,45 +107,47 @@ main {
   max-height: 80vh;
   overflow-y: auto;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-  padding: 20px;
 }
 
-.modal-close {
+.emoji-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 2px solid var(--primary);
+}
+
+.emoji-modal-header h2 {
+  color: var(--info);
+  font-size: 1.3rem;
+}
+
+.close-btn {
   background: var(--danger);
   border: none;
   color: white;
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  float: right;
-  margin-bottom: 10px;
 }
 
-.modal-close:hover {
+.close-btn:hover {
   transform: scale(1.1);
   box-shadow: 0 4px 8px rgba(255, 85, 85, 0.3);
 }
 
-.modal h2 {
-  color: var(--info);
-  font-size: 1.3rem;
-  clear: both;
-  text-align: center;
-  margin-top: 10px;
-}
-
-/* Emoji Picker Grid */
-#emojiPicker {
+/* Emoji Grid - 4 EMOJIS PER ROW (ALL SCREENS) */
+.emoji-picker {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
-  margin-top: 20px;
+  padding: 20px;
 }
 
 .emoji-option {
@@ -190,11 +173,11 @@ main {
   transform: scale(0.95);
 }
 
-/* Button Section */
-.button-section {
+/* Sections - Flex container to keep module + button together */
+.section {
+  margin-bottom: 25px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
 }
 
 .btn {
@@ -210,66 +193,28 @@ main {
   letter-spacing: 0.5px;
 }
 
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 .btn-primary {
   background: var(--success);
   color: var(--dark);
 }
 
-.btn-primary:hover:not(:disabled) {
+.btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(80, 250, 123, 0.3);
 }
 
-.btn-primary:active:not(:disabled) {
+.btn-primary:active {
   transform: translateY(0);
 }
 
-.btn-secondary {
-  background: var(--light);
-  color: var(--dark);
-}
-
-.btn-secondary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(248, 248, 242, 0.3);
-}
-
-.btn-secondary:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.btn-large {
-  padding: 16px 24px;
-  font-size: 1.1rem;
-}
-
-.btn-small {
-  padding: 10px 16px;
-  font-size: 0.9rem;
-}
-
-/* Module Sections */
-.module {
-  background: var(--primary);
-  border-radius: 12px;
-  padding: 20px;
+/* Room Module - Attached BELOW button */
+.room-module {
+  margin: 0;
   animation: slideDown 0.3s ease;
 }
 
-.module.hidden {
+.room-module.hidden {
   display: none;
-}
-
-.module h2 {
-  color: var(--info);
-  font-size: 1.3rem;
-  margin-bottom: 15px;
-  text-align: center;
 }
 
 @keyframes slideDown {
@@ -283,149 +228,124 @@ main {
   }
 }
 
-/* Room Code Display */
-.room-code-display {
-  background: var(--secondary);
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 15px;
-  text-align: center;
+/* Code Display - Both Create & Join */
+.code-display {
+  background: var(--primary);
+  border-left: 4px solid var(--success);
+  border-radius: 8px 8px 0 0;
+  padding: 16px;
+  margin-bottom: 0;
+  overflow: hidden;
 }
 
-.room-code-display .label {
-  color: var(--warning);
-  font-size: 0.85rem;
+/* Code Container - EXACT SAME FOR BOTH */
+.code-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.code-container .label {
+  color: var(--info);
+  font-size: 0.9rem;
   font-weight: 600;
-  margin-bottom: 8px;
+  white-space: nowrap;
+}
+
+/* Room Code Display (Create) and Input (Join) - IDENTICAL STYLING */
+.room-code,
+.room-code-input {
+  background: var(--secondary);
+  color: var(--success);
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: 6px;
+  letter-spacing: 2px;
+  flex: 1;
+  text-align: center;
+  border: none;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  min-width: 0;
+}
+
+.room-code {
   display: block;
 }
 
-#roomCodeDisplay {
-  color: var(--success);
-  font-size: 1.8rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  margin: 0;
-}
-
-/* Input Field */
-.input-field {
-  width: 100%;
-  padding: 12px;
-  background: var(--secondary);
-  border: 2px solid transparent;
-  border-radius: 8px;
-  color: var(--success);
-  font-size: 1.1rem;
-  text-transform: uppercase;
-  text-align: center;
-  letter-spacing: 2px;
-  font-weight: 700;
+.room-code-input {
   font-family: inherit;
-  margin-bottom: 15px;
-  transition: all 0.3s ease;
 }
 
-.input-field:focus {
+.room-code-input:focus {
   outline: none;
-  border-color: var(--success);
   box-shadow: 0 0 12px rgba(80, 250, 123, 0.3);
 }
 
-.input-field::placeholder {
-  color: var(--warning);
-  opacity: 0.6;
+.room-code-input::placeholder {
+  color: var(--primary);
+  opacity: 0.5;
 }
 
-/* Button Row */
-.button-row {
+/* Buttons - EXACT SAME FOR BOTH */
+.copy-btn,
+.paste-btn {
+  background: var(--info);
+  border: none;
+  color: var(--dark);
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
   display: flex;
-  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.button-row .btn {
-  flex: 1;
+.copy-btn:hover,
+.paste-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(139, 233, 253, 0.3);
+}
+
+.copy-btn:active,
+.paste-btn:active {
+  transform: scale(0.95);
 }
 
 /* Status Messages */
-.status-message {
+.status-text {
   color: var(--warning);
   font-size: 0.85rem;
   text-align: center;
   font-weight: 500;
   min-height: 1.2em;
-  margin-bottom: 15px;
+  background: var(--primary);
+  padding: 8px 16px;
+  border-left: 4px solid var(--success);
+  border-radius: 0 0 8px 8px;
+  margin-bottom: 0;
 }
 
-.status-message.error {
-  color: var(--danger);
-}
-
-.status-message.success {
-  color: var(--success);
-}
-
-/* Loading Indicator */
-.loading-indicator {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.loading-indicator.hidden {
-  display: none;
-}
-
-.spinner {
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid white;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin 1s linear infinite;
-  margin-bottom: 20px;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-#loadingText {
-  color: white;
-  font-size: 18px;
-  font-weight: 500;
-}
-
-/* Responsive Design */
+/* Responsive - Container adjusts width, grid stays 4 columns */
 @media (max-width: 480px) {
-  .container {
+  #container {
     padding: 25px 20px;
     max-width: 100%;
   }
 
   h1 {
     font-size: 2rem;
+    margin-bottom: 20px;
   }
 
-  #emojiDisplay {
-    font-size: 3rem;
-  }
-
-  #emojiPicker {
+  .emoji-picker {
     gap: 8px;
+    padding: 15px;
   }
 
   .emoji-option {
@@ -438,11 +358,8 @@ main {
     font-size: 0.9rem;
   }
 
-  #roomCodeDisplay {
-    font-size: 1.5rem;
-  }
-
-  .input-field {
-    font-size: 1rem;
+  .room-code,
+  .room-code-input {
+    font-size: 1.1rem;
   }
 }

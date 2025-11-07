@@ -1,77 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tic Tac Toe</title>
-  <link rel="stylesheet" href="home.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe - Multiplayer</title>
+  <link rel="stylesheet" href="home.css">
 </head>
-
 <body>
-  <div class="container">
-    <header>
-      <h1>Tic Tac Toe</h1>
-      <p class="subtitle">Multiplayer Game</p>
-    </header>
+  <div id="container">
+    <h1>Tic Tac Toe<br>1.1.1 Alpha</h1>
 
-    <main>
-      <!-- Emoji Selector -->
-      <section class="emoji-section">
-        <div id="emojiDisplay" class="emoji-display">❌</div>
-        <button id="emojiToggle" class="btn btn-primary">Change Emoji</button>
+    <!-- Emoji Picker Section -->
+    <div class="emoji-section">
+      <button id="emojiToggle" class="emoji-toggle-btn">
+        <span id="emojiDisplay">🎮</span>
+        <span class="label">Select Emoji</span>
+      </button>
+    </div>
 
-        <!-- Emoji Modal -->
-        <div id="emojiModal" class="modal hidden">
-          <div class="modal-content">
-            <button id="closeEmojiModal" class="modal-close">&times;</button>
-            <h2>Choose Your Symbol</h2>
-            <div id="emojiPicker" class="emoji-picker"></div>
+    <!-- Modal Emoji Picker -->
+    <div id="emojiModal" class="emoji-modal hidden">
+      <div class="emoji-modal-content">
+        <div class="emoji-modal-header">
+          <h2>Choose Your Game Piece</h2>
+          <button id="closeEmojiModal" class="close-btn">✕</button>
+        </div>
+        <div id="emojiPicker" class="emoji-picker">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Game Section -->
+    <div class="section">
+      <button id="createRoomBtn" class="btn btn-primary">Create Game</button>
+      <div id="createModule" class="room-module hidden">
+        <div class="code-display">
+          <div class="code-container">
+            <span class="label">Your Code:</span>
+            <span id="roomCodeDisplay" class="room-code">XXXX</span>
+            <button id="copyCodeBtn" class="copy-btn" title="Copy to clipboard">📋</button>
           </div>
         </div>
-      </section>
-
-      <!-- Main Buttons -->
-      <section class="button-section">
-        <button id="createRoomBtn" class="btn btn-primary btn-large">Create Game</button>
-        <button id="joinRoomBtn" class="btn btn-secondary btn-large">Join Game</button>
-      </section>
-
-      <!-- Create Game Module -->
-      <section id="createModule" class="module hidden">
-        <h2>Create Game</h2>
-        <div id="createStatus" class="status-message"></div>
-        <div class="room-code-display">
-          <p class="label">Room Code:</p>
-          <p id="roomCodeDisplay" class="code">XXXX</p>
-        </div>
-        <button id="copyCodeBtn" class="btn btn-small">Copy Code</button>
-      </section>
-
-      <!-- Join Game Module -->
-      <section id="joinModule" class="module hidden">
-        <h2>Join Game</h2>
-        <div id="joinStatus" class="status-message"></div>
-        <input id="roomCodeInput" type="text" placeholder="Enter Room Code" maxlength="4" class="input-field" />
-        <div class="button-row">
-          <button id="pasteCodeBtn" class="btn btn-small">Paste Code</button>
-        </div>
-      </section>
-
-      <!-- Loading Indicator -->
-      <div id="loadingIndicator" class="loading-indicator hidden">
-        <div class="spinner"></div>
-        <p id="loadingText">Creating room...</p>
+        <p id="createStatus" class="status-text"></p>
       </div>
-    </main>
+    </div>
+
+    <!-- Join Game Section -->
+    <div class="section">
+      <div id="joinModule" class="room-module hidden">
+        <div class="code-display">
+          <div class="code-container">
+            <span class="label">Enter Code:</span>
+            <input 
+              id="roomCodeInput" 
+              type="text" 
+              maxlength="4"
+              class="room-code-input"
+            >
+            <button id="pasteCodeBtn" class="paste-btn" title="Paste from clipboard">📋</button>
+          </div>
+        </div>
+        <p id="joinStatus" class="status-text"></p>
+      </div>
+      <button id="joinRoomBtn" class="btn btn-primary">Join Game</button>
+    </div>
   </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
-
-  <!-- Multiplayer Script -->
-  <script src="multiplayer.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script type="module" src="multiplayer.js"></script>
 </body>
-
 </html>

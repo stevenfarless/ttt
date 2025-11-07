@@ -15,8 +15,7 @@
   box-sizing: border-box;
 }
 
-html,
-body {
+html, body {
   width: 100%;
   height: 100%;
 }
@@ -87,12 +86,10 @@ h1 {
     border-color: var(--light);
     box-shadow: none;
   }
-
   50% {
     border-color: var(--success);
     box-shadow: 0 0 15px rgba(80, 250, 123, 0.5);
   }
-
   100% {
     border-color: var(--light);
     box-shadow: none;
@@ -105,12 +102,10 @@ h1 {
     outline: 2px solid var(--success);
     outline-offset: 0;
   }
-
   50% {
     outline: 3px solid rgba(80, 250, 123, 0.6);
     outline-offset: 4px;
   }
-
   100% {
     outline: 2px solid rgba(80, 250, 123, 0);
     outline-offset: 8px;

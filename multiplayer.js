@@ -1,5 +1,3 @@
-//multiplayer.js
-
 import { firebaseConfig, generateRoomCode, validateRoomCode } from "./utils.js";
 
 // Initialize Firebase
@@ -52,142 +50,319 @@ function cacheSessionData() {
 
 // DOM Elements
 const emojiDisplay = document.getElementById("emojiDisplay");
-const prevBtn = document.getElementById("prevEmoji");
-const nextBtn = document.getElementById("nextEmoji");
-const createGameBtn = document.getElementById("createGame");
-const joinGameBtn = document.getElementById("joinGame");
+const emojiToggle = document.getElementById("emojiToggle");
+const emojiModal = document.getElementById("emojiModal");
+const closeEmojiModal = document.getElementById("closeEmojiModal");
+const emojiPicker = document.getElementById("emojiPicker");
+const createRoomBtn = document.getElementById("createRoomBtn");
+const joinRoomBtn = document.getElementById("joinRoomBtn");
+const createModule = document.getElementById("createModule");
+const joinModule = document.getElementById("joinModule");
 const roomCodeInput = document.getElementById("roomCodeInput");
-const statusDiv = document.getElementById("status");
+const roomCodeDisplay = document.getElementById("roomCodeDisplay");
+const createStatus = document.getElementById("createStatus");
+const joinStatus = document.getElementById("joinStatus");
+const copyCodeBtn = document.getElementById("copyCodeBtn");
+const pasteCodeBtn = document.getElementById("pasteCodeBtn");
 
-let selectedIndex = 0;
-let selectedEmoji = emojis[selectedIndex];
+// Track generated room code
+let generatedRoomCode = null;
+let emojiPickerInitialized = false;
 
-// Update emoji display
-function updateEmojiDisplay() {
-  if (emojiDisplay) {
-    emojiDisplay.textContent = emojis[selectedIndex];
-    selectedEmoji = emojis[selectedIndex];
+// Debounce input handler
+let inputDebounceTimer = null;
+const DEBOUNCE_DELAY = 150;
+
+/**
+ * Initialize emoji picker once
+ */
+function initEmojiPicker() {
+  if (emojiPickerInitialized) {
+    return;
+  }
+
+  emojiPicker.innerHTML = "";
+  emojis.forEach((emoji) => {
+    const option = document.createElement("button");
+    option.className = "emoji-option";
+    option.textContent = emoji;
+    option.setAttribute("data-emoji", emoji);
+    option.addEventListener("click", (e) => {
+      e.preventDefault();
+      selectEmoji(emoji);
+    });
+    emojiPicker.appendChild(option);
+  });
+
+  emojiPickerInitialized = true;
+}
+
+function selectEmoji(emoji) {
+  emojiDisplay.textContent = emoji;
+  emojiModal.classList.add("hidden");
+}
+
+function getRandomEmoji() {
+  return emojis[Math.floor(Math.random() * emojis.length)];
+}
+
+// Set random emoji on page load
+emojiDisplay.textContent = getRandomEmoji();
+initEmojiPicker();
+
+// Emoji modal toggle
+emojiToggle.addEventListener("click", () => {
+  emojiModal.classList.remove("hidden");
+});
+
+closeEmojiModal.addEventListener("click", () => {
+  emojiModal.classList.add("hidden");
+});
+
+emojiModal.addEventListener("click", (e) => {
+  if (e.target === emojiModal) {
+    emojiModal.classList.add("hidden");
+  }
+});
+
+/**
+ * Toggle create module
+ */
+function showCreateModule() {
+  if (!createModule.classList.contains("hidden")) return;
+  createModule.classList.remove("hidden");
+  joinModule.classList.add("hidden");
+  joinRoomBtn.disabled = false;
+  joinStatus.textContent = "";
+  roomCodeInput.value = "";
+
+  // Display existing code or placeholder
+  if (generatedRoomCode) {
+    roomCodeDisplay.textContent = generatedRoomCode;
+  } else {
+    roomCodeDisplay.textContent = "XXXX";
   }
 }
 
-// Event listeners for emoji selection
-if (prevBtn) {
-  prevBtn.addEventListener("click", () => {
-    selectedIndex = (selectedIndex - 1 + emojis.length) % emojis.length;
-    updateEmojiDisplay();
-  });
+/**
+ * Toggle join module
+ */
+function showJoinModule() {
+  if (!joinModule.classList.contains("hidden")) return;
+  joinModule.classList.remove("hidden");
+  createModule.classList.add("hidden");
+  createRoomBtn.disabled = false;
+  createStatus.textContent = "";
 }
 
-if (nextBtn) {
-  nextBtn.addEventListener("click", () => {
-    selectedIndex = (selectedIndex + 1) % emojis.length;
-    updateEmojiDisplay();
-  });
-}
+// Button toggle handlers - single listener per button
+createRoomBtn.addEventListener("click", showCreateModule);
+joinRoomBtn.addEventListener("click", showJoinModule);
 
-// Create game
-if (createGameBtn) {
-  createGameBtn.addEventListener("click", async () => {
-    try {
-      const roomCode = generateRoomCode();
-      const emptyBoard = Object.fromEntries(
-        Array.from({ length: 9 }, (_, i) => [i, null])
-      );
+// Room code input validation with debounce
+roomCodeInput.addEventListener("input", (e) => {
+  e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
 
-      await db.ref("rooms/" + roomCode).set({
-        board: emptyBoard,
-        turn: selectedEmoji,
-        hostEmoji: selectedEmoji,
-        guestEmoji: null,
-        player1: true,
-        player2: false,
-        winner: null,
-        createdAt: Date.now(),
-      });
+  // Clear previous debounce timer
+  if (inputDebounceTimer) {
+    clearTimeout(inputDebounceTimer);
+  }
 
-      sessionStorage.setItem("roomCode", roomCode);
+  // Debounce button text update
+  inputDebounceTimer = setTimeout(() => {
+    if (e.target.value.length === 4) {
+      joinRoomBtn.textContent = "START GAME";
+    } else {
+      joinRoomBtn.textContent = "Join Game";
+    }
+  }, DEBOUNCE_DELAY);
+
+  // Clear status immediately when typing
+  joinStatus.textContent = "";
+});
+
+// Copy room code
+copyCodeBtn?.addEventListener("click", async () => {
+  try {
+    const code = roomCodeDisplay.textContent;
+    await navigator.clipboard.writeText(code);
+    const originalText = copyCodeBtn.textContent;
+    copyCodeBtn.textContent = "\u2713";
+    copyCodeBtn.style.background = "var(--success)";
+    setTimeout(() => {
+      copyCodeBtn.textContent = originalText;
+      copyCodeBtn.style.background = "";
+    }, 1500);
+  } catch (error) {
+    console.error("[MULTIPLAYER] Copy failed:", error);
+  }
+});
+
+// Paste room code
+pasteCodeBtn?.addEventListener("click", async () => {
+  try {
+    const text = await navigator.clipboard.readText();
+    roomCodeInput.value = text
+      .toUpperCase()
+      .substring(0, 4)
+      .replace(/[^A-Z0-9]/g, "");
+    // Trigger input event to update button text
+    roomCodeInput.dispatchEvent(new Event("input"));
+  } catch (error) {
+    console.error("[MULTIPLAYER] Paste failed:", error);
+  }
+});
+
+// Create game - separate listener
+createRoomBtn.addEventListener("click", () => {
+  console.log("[MULTIPLAYER] Create Game clicked");
+
+  // If code already exists, just show the module (already handled by showCreateModule)
+  if (generatedRoomCode) {
+    return;
+  }
+
+  createRoomBtn.disabled = true;
+
+  const code = generateRoomCode();
+  generatedRoomCode = code;
+
+  const selectedEmoji = emojiDisplay.textContent;
+
+  const roomData = {
+    roomCode: code,
+    hostJoined: true,
+    guestJoined: false,
+    hostEmoji: selectedEmoji,
+    guestEmoji: null,
+    board: {
+      0: null,
+      1: null,
+      2: null,
+      3: null,
+      4: null,
+      5: null,
+      6: null,
+      7: null,
+      8: null,
+    },
+    turn: selectedEmoji,
+    winner: null,
+  };
+
+  console.log("[MULTIPLAYER] Creating game:", code);
+
+  db.ref("rooms/" + code)
+    .set(roomData)
+    .then(() => {
+      console.log("[MULTIPLAYER] Game created");
+      roomCodeDisplay.textContent = code;
+      createStatus.textContent = "Waiting for opponent...";
+      createStatus.style.color = "var(--warning)";
+
+      sessionStorage.setItem("roomCode", code);
       sessionStorage.setItem("isHost", "true");
       sessionStorage.setItem("mySymbol", selectedEmoji);
-      // Don't set opponentSymbol yet - we'll get it from Firebase in game
-      sessionStorage.removeItem("opponentSymbol");
 
-      console.log("[MULTIPLAYER] Room created:", roomCode);
-      window.location.href = "game.html";
-    } catch (error) {
-      console.error("[MULTIPLAYER] Create game error:", error);
-      if (statusDiv) {
-        statusDiv.textContent = "Error creating game. Please try again.";
-        statusDiv.style.color = "red";
-      }
-    }
-  });
-}
+      const roomRef = db.ref("rooms/" + code);
 
-// Join game
-if (joinGameBtn) {
-  joinGameBtn.addEventListener("click", async () => {
-    try {
-      const roomCode = roomCodeInput.value.toUpperCase().trim();
-
-      if (!validateRoomCode(roomCode)) {
-        if (statusDiv) {
-          statusDiv.textContent = "Invalid room code format";
-          statusDiv.style.color = "red";
+      const listener = (snapshot) => {
+        const room = snapshot.val();
+        if (room && room.guestJoined && room.guestEmoji) {
+          console.log("[MULTIPLAYER] Guest joined, navigating");
+          sessionStorage.setItem("opponentSymbol", room.guestEmoji);
+          roomRef.off("value", listener);
+          setTimeout(() => (window.location.href = "game.html"), 300);
         }
+      };
+
+      roomRef.on("value", listener);
+    })
+    .catch((err) => {
+      console.error("[MULTIPLAYER] Error creating game:", err);
+      createStatus.textContent = "Error creating game";
+      createStatus.style.color = "var(--danger)";
+      createRoomBtn.disabled = false;
+      generatedRoomCode = null;
+    });
+});
+
+// Join game - separate listener
+joinRoomBtn.addEventListener("click", () => {
+  const code = roomCodeInput.value.trim().toUpperCase();
+  console.log("[MULTIPLAYER] Join Game clicked:", code);
+
+  if (!validateRoomCode(code)) {
+    return;
+  }
+
+  joinRoomBtn.disabled = true;
+
+  const selectedEmoji = emojiDisplay.textContent;
+
+  db.ref("rooms/" + code)
+    .once("value")
+    .then((snapshot) => {
+      if (!snapshot.exists()) {
+        joinStatus.textContent = "Game not found";
+        joinStatus.style.color = "var(--danger)";
+        joinRoomBtn.disabled = false;
         return;
       }
 
-      const roomRef = db.ref("rooms/" + roomCode);
-      const snapshot = await roomRef.once("value");
       const room = snapshot.val();
 
-      if (!room) {
-        if (statusDiv) {
-          statusDiv.textContent = "Room not found";
-          statusDiv.style.color = "red";
-        }
+      if (room.guestJoined) {
+        joinStatus.textContent = "Game is full";
+        joinStatus.style.color = "var(--danger)";
+        joinRoomBtn.disabled = false;
         return;
       }
 
-      if (room.player2) {
-        if (statusDiv) {
-          statusDiv.textContent = "Room is full";
-          statusDiv.style.color = "red";
-        }
-        return;
-      }
+      console.log("[MULTIPLAYER] Joining game:", code);
 
-      // Update room with guest info
       const updateData = {
+        guestJoined: true,
         guestEmoji: selectedEmoji,
-        player2: true,
       };
+
+      if (!room.board) {
+        updateData.board = {
+          0: null,
+          1: null,
+          2: null,
+          3: null,
+          4: null,
+          5: null,
+          6: null,
+          7: null,
+          8: null,
+        };
+      }
 
       if (!room.turn) {
         updateData.turn = room.hostEmoji;
       }
 
-      await roomRef.update(updateData);
+      db.ref("rooms/" + code)
+        .update(updateData)
+        .then(() => {
+          console.log("[MULTIPLAYER] Joined successfully");
+          joinStatus.textContent = "Joined! Starting game...";
+          joinStatus.style.color = "var(--success)";
 
-      sessionStorage.setItem("roomCode", roomCode);
-      sessionStorage.setItem("isHost", "false");
-      sessionStorage.setItem("mySymbol", selectedEmoji);
-      sessionStorage.setItem("opponentSymbol", room.hostEmoji);
+          sessionStorage.setItem("roomCode", code);
+          sessionStorage.setItem("isHost", "false");
+          sessionStorage.setItem("mySymbol", selectedEmoji);
+          sessionStorage.setItem("opponentSymbol", room.hostEmoji);
 
-      console.log("[MULTIPLAYER] Joined room:", roomCode);
-      window.location.href = "game.html";
-    } catch (error) {
-      console.error("[MULTIPLAYER] Join game error:", error);
-      if (statusDiv) {
-        statusDiv.textContent = "Error joining game. Please try again.";
-        statusDiv.style.color = "red";
-      }
-    }
-  });
-}
-
-// Initialize emoji display
-updateEmojiDisplay();
-
-// Cache session data
-cacheSessionData();
+          setTimeout(() => (window.location.href = "game.html"), 300);
+        })
+        .catch((err) => {
+          console.error("[MULTIPLAYER] Error joining:", err);
+          joinStatus.textContent = "Error joining game";
+          joinStatus.style.color = "var(--danger)";
+          joinRoomBtn.disabled = false;
+        });
+    });
+});

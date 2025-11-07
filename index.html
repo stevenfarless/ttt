@@ -12,8 +12,8 @@
         
         <!-- Emoji Selection Section -->
         <div class="emoji-section">
-            <button class="emoji-toggle-btn" id="emojiToggleBtn">
-                <span id="selectedEmoji">🎮</span>
+            <button class="emoji-toggle-btn" id="emojiToggle">
+                <span id="emojiDisplay">🎮</span>
                 <span class="label">Select Emoji</span>
             </button>
         </div>
@@ -23,45 +23,42 @@
             <div class="emoji-modal-content">
                 <div class="emoji-modal-header">
                     <h2>Choose Your Emoji</h2>
-                    <button class="close-btn" id="closeEmojiBtn">&times;</button>
+                    <button class="close-btn" id="closeEmojiModal">&times;</button>
                 </div>
                 <div id="emojiPicker" class="emoji-picker"></div>
             </div>
         </div>
 
-        <!-- Home Section -->
-        <div id="homeSection">
+        <!-- Main Section (Create/Join Buttons) -->
+        <div id="mainSection">
             <div class="section">
-                <button class="btn btn-primary" id="createBtn">Create Game</button>
+                <button class="btn btn-primary" id="createRoomBtn">CREATE GAME</button>
             </div>
             <div class="section">
-                <button class="btn btn-primary" id="joinBtn">Join Game</button>
+                <button class="btn btn-primary" id="joinRoomBtn">JOIN GAME</button>
             </div>
         </div>
 
-        <!-- Create Game Section -->
-        <div id="createSection" class="section hidden">
-            <button class="btn btn-primary" id="createGameBtn">Create Game</button>
-            <div id="createModule" class="room-module hidden">
-                <div class="code-display">
-                    <div class="code-container">
-                        <span class="label">Code:</span>
-                        <div id="createRoomCode" class="room-code"></div>
-                        <button class="copy-btn" id="copyCodeBtn" title="Copy code">📋</button>
-                    </div>
+        <!-- Create Module -->
+        <div id="createModule" class="module hidden">
+            <div class="code-display">
+                <div class="code-container">
+                    <span class="label">Code:</span>
+                    <div id="roomCodeDisplay" class="room-code">XXXX</div>
+                    <button class="copy-btn" id="copyCodeBtn" title="Copy code">📋</button>
                 </div>
-                <div class="status-text" id="createStatus"></div>
             </div>
+            <div class="status-text" id="createStatus"></div>
         </div>
 
-        <!-- Join Game Section -->
-        <div id="joinSection" class="section hidden">
+        <!-- Join Module -->
+        <div id="joinModule" class="module hidden">
             <div class="code-display">
                 <div class="code-container">
                     <span class="label">Code:</span>
                     <input 
                         type="text" 
-                        id="roomCode" 
+                        id="roomCodeInput" 
                         class="room-code-input" 
                         placeholder="Enter code"
                         maxlength="4"
@@ -69,13 +66,8 @@
                     <button class="paste-btn" id="pasteCodeBtn" title="Paste code">📋</button>
                 </div>
             </div>
-            <button class="btn btn-primary" id="joinRoomBtn">Join Game</button>
+            <button class="btn btn-primary" id="joinGameBtn">Join Game</button>
             <div class="status-text" id="joinStatus"></div>
-        </div>
-
-        <!-- Back Button (Hidden) -->
-        <div id="backButtonContainer" style="display: none; margin-top: 20px;">
-            <button class="btn btn-primary" id="backBtn" style="background: var(--danger);">Back</button>
         </div>
     </div>
 
@@ -83,7 +75,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
 
-    <!-- Multiplayer Module -->
+    <!-- Multiplayer Script -->
     <script type="module" src="multiplayer.js"></script>
 </body>
 </html>

@@ -6,7 +6,7 @@ import { firebaseConfig, generateRoomCode, validateRoomCode } from "./utils.js";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
- 
+
 const DEBUG = true;
 const db = firebase.database();
 console.log("[MULTIPLAYER] Script loaded");
@@ -199,7 +199,7 @@ copyCodeBtn?.addEventListener("click", async () => {
     const code = roomCodeDisplay.textContent;
     await navigator.clipboard.writeText(code);
     const originalText = copyCodeBtn.textContent;
-    copyCodeBtn.textContent = "\u2713";
+    copyCodeBtn.textContent = "✓";
     copyCodeBtn.style.background = "var(--success)";
     setTimeout(() => {
       copyCodeBtn.textContent = originalText;

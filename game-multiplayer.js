@@ -364,4 +364,3 @@ updateTurnHighlight();
 
 console.log('[GAME] Script initialization complete');
 
- 

@@ -6,7 +6,7 @@ import { firebaseConfig, generateRoomCode, validateRoomCode } from "./utils.js";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-
+ 
 const DEBUG = true;
 const db = firebase.database();
 console.log("[MULTIPLAYER] Script loaded");

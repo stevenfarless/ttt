@@ -14,7 +14,7 @@ if (!roomCode || !mySymbol) {
   console.error("[GAME] Missing session data");
   window.location.href = "index.html";
 }
-
+ 
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }

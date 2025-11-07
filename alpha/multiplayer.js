@@ -184,3 +184,4 @@ joinGameBtn.addEventListener('click', async () => {
     console.error('Join game error:', error);
   }
 });
+ 

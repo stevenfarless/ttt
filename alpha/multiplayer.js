@@ -31,34 +31,11 @@ const roomCodeInput = document.getElementById('roomCodeInput');
 const joinGameBtn = document.getElementById('joinGameBtn');
 const createStatus = document.getElementById('createStatus');
 const joinStatus = document.getElementById('joinStatus');
+const copyCodeBtn = document.getElementById('copyCodeBtn');
+const pasteCodeBtn = document.getElementById('pasteCodeBtn');
 
 const EMOJI_OPTIONS = ['🎮', '🎲', '🎯', '🎪', '🎨', '🎭', '🎬', '🎤'];
 let selectedEmoji = EMOJI_OPTIONS[0];
-
-// Utility Functions
-function generateRoomCode() {
-  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ123456789';
-  let code = '';
-  for (let i = 0; i < 4; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return code;
-}
-
-function validateRoomCode(code) {
-  return /^[A-HJ-NPQ-Z1-9]{4}$/.test(code);
-}
-
-function showError(element, message, timeout = 5000) {
-  element.textContent = message;
-  element.style.color = 'var(--danger)';
-  if (timeout) {
-    setTimeout(() => {
-      element.textContent = '';
-      element.style.color = '';
-    }, timeout);
-  }
-}
 
 // Initialize emoji picker
 emojiPicker.innerHTML = EMOJI_OPTIONS.map(emoji => 
@@ -96,7 +73,15 @@ document.querySelector(`[data-emoji="${selectedEmoji}"]`).classList.add('selecte
 // CREATE GAME BUTTON
 createRoomBtn.addEventListener('click', async () => {
   try {
-    const roomCode = generateRoomCode();
+    const roomCode = (() => {
+      const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ123456789';
+      let code = '';
+      for (let i = 0; i < 4; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return code;
+    })();
+
     const roomRef = db.ref(`rooms/${roomCode}`);
     
     await roomRef.set({
@@ -122,7 +107,8 @@ createRoomBtn.addEventListener('click', async () => {
       window.location.href = 'game.html';
     }, 2000);
   } catch (error) {
-    showError(createStatus, 'Failed to create game');
+    createStatus.textContent = 'Failed to create game';
+    createStatus.style.color = 'var(--danger)';
     console.error('Create game error:', error);
   }
 });
@@ -137,8 +123,9 @@ joinRoomBtn.addEventListener('click', () => {
 joinGameBtn.addEventListener('click', async () => {
   const code = roomCodeInput.value.trim().toUpperCase();
 
-  if (!validateRoomCode(code)) {
-    showError(joinStatus, 'Invalid room code format');
+  if (code.length !== 4 || !/^[A-HJ-NPQ-Z1-9]{4}$/.test(code)) {
+    joinStatus.textContent = 'Invalid room code format';
+    joinStatus.style.color = 'var(--danger)';
     return;
   }
 
@@ -149,12 +136,13 @@ joinGameBtn.addEventListener('click', async () => {
     const room = snapshot.val();
 
     if (!room) {
-      showError(joinStatus, 'Room not found');
+      joinStatus.textContent = 'Room not found';
+      joinStatus.style.color = 'var(--danger)';
       joinGameBtn.disabled = false;
       return;
     }
 
-    // CRITICAL FIX: Prevent guest from choosing same emoji as host
+    // 🔧 CRITICAL FIX: Prevent guest from choosing same emoji as host
     if (selectedEmoji === room.hostEmoji) {
       joinStatus.textContent = 'Please choose a different emoji';
       joinStatus.style.color = 'var(--danger)';
@@ -179,9 +167,34 @@ joinGameBtn.addEventListener('click', async () => {
       window.location.href = 'game.html';
     }, 1000);
   } catch (error) {
-    showError(joinStatus, 'Error joining game');
+    joinStatus.textContent = 'Error joining game';
+    joinStatus.style.color = 'var(--danger)';
     joinGameBtn.disabled = false;
     console.error('Join game error:', error);
   }
 });
- 
+
+// Copy room code
+copyCodeBtn?.addEventListener('click', async () => {
+  try {
+    const code = roomCodeDisplay.textContent;
+    await navigator.clipboard.writeText(code);
+    const originalText = copyCodeBtn.textContent;
+    copyCodeBtn.textContent = '✓';
+    setTimeout(() => {
+      copyCodeBtn.textContent = originalText;
+    }, 1500);
+  } catch (error) {
+    console.error('[MULTIPLAYER] Copy failed:', error);
+  }
+});
+
+// Paste room code
+pasteCodeBtn?.addEventListener('click', async () => {
+  try {
+    const text = await navigator.clipboard.readText();
+    roomCodeInput.value = text.toUpperCase().substring(0, 4).replace(/[^A-Z0-9]/g, '');
+  } catch (error) {
+    console.error('[MULTIPLAYER] Paste failed:', error);
+  }
+});

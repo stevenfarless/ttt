@@ -9,14 +9,12 @@
 <body>
     <div id="container">
         <h1>🎮 Tic Tac Toe</h1>
-        
         <div class="emoji-section">
             <button class="emoji-toggle-btn" id="emojiToggle">
                 <span id="emojiDisplay">🎮</span>
                 <span class="label">Select Emoji</span>
             </button>
         </div>
-
         <div id="emojiModal" class="emoji-modal hidden">
             <div class="emoji-modal-content">
                 <div class="emoji-modal-header">
@@ -26,7 +24,6 @@
                 <div id="emojiPicker" class="emoji-picker"></div>
             </div>
         </div>
-
         <div id="mainSection">
             <div class="section">
                 <button class="btn btn-primary" id="createRoomBtn">CREATE GAME</button>
@@ -35,7 +32,6 @@
                 <button class="btn btn-primary" id="joinRoomBtn">JOIN GAME</button>
             </div>
         </div>
-
         <div id="createModule" class="hidden">
             <div class="code-display">
                 <div class="code-container">
@@ -46,7 +42,6 @@
             </div>
             <div class="status-text" id="createStatus"></div>
         </div>
-
         <div id="joinModule" class="hidden">
             <div class="code-display">
                 <div class="code-container">
@@ -59,7 +54,6 @@
             <div class="status-text" id="joinStatus"></div>
         </div>
     </div>
-
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
     <script src="multiplayer.js"></script>

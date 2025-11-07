@@ -41,8 +41,18 @@
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-database-compat.js"></script>
     <script src="game-multiplayer.js"></script>
+    <script>
+      // Display previous logs
+      window.addEventListener('load', () => {
+        const logs = JSON.parse(sessionStorage.getItem('appLogs') || '[]');
+        logs.forEach(log => console.log(log));
+        sessionStorage.removeItem('appLogs');
+      });
+    </script>
+
+
 </body>
 </html>

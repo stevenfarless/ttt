@@ -105,7 +105,7 @@ function updateBoard() {
   try {
     cells.forEach((cell, index) => {
       const symbol = gameBoard[index];
-      
+
       // Only update cells that have changed
       if (cell.textContent !== (symbol || "")) {
         cell.textContent = symbol || "";
@@ -122,7 +122,8 @@ function updateBoard() {
       const hadMyMove = cell.classList.contains("my-move");
       const hadOpponentMove = cell.classList.contains("opponent-move");
       const shouldHaveMyMove = symbol === mySymbol;
-      const shouldHaveOpponentMove = symbol !== null && symbol !== undefined && symbol !== mySymbol;
+      const shouldHaveOpponentMove =
+        symbol !== null && symbol !== undefined && symbol !== mySymbol;
 
       if (hadMyMove && !shouldHaveMyMove) {
         cell.classList.remove("my-move");
@@ -196,7 +197,11 @@ function getOpponentSymbol() {
  */
 function makeMove(index) {
   if (!gameActive || !isMyTurn || gameBoard[index]) {
-    console.log("[GAME] Move blocked:", { gameActive, isMyTurn, cellOccupied: !!gameBoard[index] });
+    console.log("[GAME] Move blocked:", {
+      gameActive,
+      isMyTurn,
+      cellOccupied: !!gameBoard[index],
+    });
     return;
   }
 
@@ -229,13 +234,18 @@ function makeMove(index) {
 
         // Make move
         board[index] = mySymbol;
-        
+
         // Convert back to Firebase format (object with numeric keys)
         room.board = Object.fromEntries(board.map((val, i) => [i, val]));
         room.turn = getOpponentSymbol();
         room.winner = checkWinner(board);
-        
-        console.log("[GAME] Move made at index", index, "- next turn:", room.turn);
+
+        console.log(
+          "[GAME] Move made at index",
+          index,
+          "- next turn:",
+          room.turn
+        );
         return room;
       } catch (error) {
         console.error("[GAME] Transaction error:", error);
@@ -324,7 +334,14 @@ function listenToGameChanges() {
 
         // Update game state
         isMyTurn = room.turn === mySymbol;
-        console.log("[GAME] Turn update - room.turn:", room.turn, "mySymbol:", mySymbol, "isMyTurn:", isMyTurn);
+        console.log(
+          "[GAME] Turn update - room.turn:",
+          room.turn,
+          "mySymbol:",
+          mySymbol,
+          "isMyTurn:",
+          isMyTurn
+        );
         updateBoard();
         updateTurnHighlight();
 

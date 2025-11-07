@@ -1,6 +1,7 @@
+// utils.js
 // Firebase Configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyAQO1xbKz5yjo3TAqqU1gFZYrI-qBugRNs",
+export const firebaseConfig = {
+   apiKey: "AIzaSyAQO1xbKz5yjo3TAqqU1gFZYrI-qBugRNs",
   authDomain: "tic-tac-toe-80bd7.firebaseapp.com",
   databaseURL: "https://tic-tac-toe-80bd7-default-rtdb.firebaseio.com",
   projectId: "tic-tac-toe-80bd7",
@@ -10,7 +11,8 @@ const firebaseConfig = {
   measurementId: "G-2WC5RPCT3Q"
 };
 
-function generateRoomCode() {
+// Utility Functions
+export function generateRoomCode() {
   const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ123456789';
   let code = '';
   for (let i = 0; i < 4; i++) {
@@ -19,21 +21,21 @@ function generateRoomCode() {
   return code;
 }
 
-function showError(element, message, timeout = 5000) {
+export function showError(element, message, timeout = 5000) {
   element.textContent = message;
-  element.style.color = 'var(--danger)';
+  element.classList.add('error');
   if (timeout) {
     setTimeout(() => {
       element.textContent = '';
-      element.style.color = '';
+      element.classList.remove('error');
     }, timeout);
   }
 }
 
-function validateRoomCode(code) {
-  return /^[A-HJ-NPQ-Z1-9]{4}$/.test(code.trim().toUpperCase());
+export function validateRoomCode(code) {
+  return /^[A-HJ-KM-NP-Z1-9]{4}$/.test(code.trim().toUpperCase());
 }
 
-function sanitizeEmojiChoice(choice, allowedEmojis) {
+export function sanitizeEmojiChoice(choice, allowedEmojis) {
   return allowedEmojis.includes(choice) ? choice : allowedEmojis[0];
 }

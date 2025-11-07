@@ -1,61 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic Tac Toe - Multiplayer</title>
-    <link rel="stylesheet" href="home.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe - Multiplayer</title>
+  <link rel="stylesheet" href="home.css">
 </head>
 <body>
-    <div id="container">
-        <h1>🎮 Tic Tac Toe</h1>
-        <div class="emoji-section">
-            <button class="emoji-toggle-btn" id="emojiToggle">
-                <span id="emojiDisplay">🎮</span>
-                <span class="label">Select Emoji</span>
-            </button>
-        </div>
-        <div id="emojiModal" class="emoji-modal hidden">
-            <div class="emoji-modal-content">
-                <div class="emoji-modal-header">
-                    <h2>Choose Your Emoji</h2>
-                    <button class="close-btn" id="closeEmojiModal">&times;</button>
-                </div>
-                <div id="emojiPicker" class="emoji-picker"></div>
-            </div>
-        </div>
-        <div id="mainSection">
-            <div class="section">
-                <button class="btn btn-primary" id="createRoomBtn">CREATE GAME</button>
-            </div>
-            <div class="section">
-                <button class="btn btn-primary" id="joinRoomBtn">JOIN GAME</button>
-            </div>
-        </div>
-        <div id="createModule" class="hidden">
-            <div class="code-display">
-                <div class="code-container">
-                    <span class="label">Code:</span>
-                    <div id="roomCodeDisplay" class="room-code">XXXX</div>
-                    <button class="copy-btn" id="copyCodeBtn" title="Copy code">📋</button>
-                </div>
-            </div>
-            <div class="status-text" id="createStatus"></div>
-        </div>
-        <div id="joinModule" class="hidden">
-            <div class="code-display">
-                <div class="code-container">
-                    <span class="label">Code:</span>
-                    <input type="text" id="roomCodeInput" class="room-code-input" placeholder="Enter code" maxlength="4">
-                    <button class="paste-btn" id="pasteCodeBtn" title="Paste code">📋</button>
-                </div>
-            </div>
-            <button class="btn btn-primary" id="joinGameBtn">JOIN GAME</button>
-            <div class="status-text" id="joinStatus"></div>
-        </div>
+  <div id="container">
+    <h1>Tic Tac Toe<br>1.1.0</h1>
+
+    <!-- Emoji Picker Section -->
+    <div class="emoji-section">
+      <button id="emojiToggle" class="emoji-toggle-btn">
+        <span id="emojiDisplay">🎮</span>
+        <span class="label">Select Emoji</span>
+      </button>
     </div>
-    <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-database-compat.js"></script>
-    <script src="multiplayer.js"></script>
+
+    <!-- Modal Emoji Picker -->
+    <div id="emojiModal" class="emoji-modal hidden">
+      <div class="emoji-modal-content">
+        <div class="emoji-modal-header">
+          <h2>Choose Your Game Piece</h2>
+          <button id="closeEmojiModal" class="close-btn">✕</button>
+        </div>
+        <div id="emojiPicker" class="emoji-picker">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Game Section -->
+    <div class="section">
+      <button id="createRoomBtn" class="btn btn-primary">Create Game</button>
+      <div id="createModule" class="room-module hidden">
+        <div class="code-display">
+          <div class="code-container">
+            <span class="label">Your Code:</span>
+            <span id="roomCodeDisplay" class="room-code">XXXX</span>
+            <button id="copyCodeBtn" class="copy-btn" title="Copy to clipboard">📋</button>
+          </div>
+        </div>
+        <p id="createStatus" class="status-text"></p>
+      </div>
+    </div>
+
+    <!-- Join Game Section -->
+    <div class="section">
+      <div id="joinModule" class="room-module hidden">
+        <div class="code-display">
+          <div class="code-container">
+            <span class="label">Enter Code:</span>
+            <input 
+              id="roomCodeInput" 
+              type="text" 
+              maxlength="4"
+              class="room-code-input"
+            >
+            <button id="pasteCodeBtn" class="paste-btn" title="Paste from clipboard">📋</button>
+          </div>
+        </div>
+        <p id="joinStatus" class="status-text"></p>
+      </div>
+      <button id="joinRoomBtn" class="btn btn-primary">Join Game</button>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script type="module" src="multiplayer.js"></script>
 </body>
 </html>

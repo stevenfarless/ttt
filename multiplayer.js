@@ -15,7 +15,6 @@ if (!firebase.apps.length) {
 const db = firebase.database();
 console.log('[MULTIPLAYER] Script loaded');
 
-// DOM Elements
 const createRoomBtn = document.getElementById('createRoomBtn');
 const joinRoomBtn = document.getElementById('joinRoomBtn');
 const createModule = document.getElementById('createModule');
@@ -37,7 +36,6 @@ const pasteCodeBtn = document.getElementById('pasteCodeBtn');
 const EMOJI_OPTIONS = ['🎮', '🎲', '🎯', '🎪', '🎨', '🎭', '🎬', '🎤'];
 let selectedEmoji = EMOJI_OPTIONS[0];
 
-// Initialize emoji picker
 emojiPicker.innerHTML = EMOJI_OPTIONS.map(emoji => 
   `<button class="emoji-btn" data-emoji="${emoji}">${emoji}</button>`
 ).join('');
@@ -52,7 +50,6 @@ emojiPicker.addEventListener('click', (e) => {
   }
 });
 
-// Emoji Modal Toggle
 emojiToggle.addEventListener('click', () => {
   emojiModal.classList.remove('hidden');
 });
@@ -67,10 +64,8 @@ emojiModal.addEventListener('click', (e) => {
   }
 });
 
-// Set initial selected emoji
 document.querySelector(`[data-emoji="${selectedEmoji}"]`).classList.add('selected');
 
-// CREATE GAME BUTTON
 createRoomBtn.addEventListener('click', async () => {
   try {
     const roomCode = (() => {
@@ -113,13 +108,11 @@ createRoomBtn.addEventListener('click', async () => {
   }
 });
 
-// JOIN GAME BUTTON (Show Join Module)
 joinRoomBtn.addEventListener('click', () => {
   mainSection.classList.add('hidden');
   joinModule.classList.remove('hidden');
 });
 
-// JOIN GAME SUBMIT BUTTON
 joinGameBtn.addEventListener('click', async () => {
   const code = roomCodeInput.value.trim().toUpperCase();
 
@@ -142,7 +135,6 @@ joinGameBtn.addEventListener('click', async () => {
       return;
     }
 
-    // 🔧 CRITICAL FIX: Prevent guest from choosing same emoji as host
     if (selectedEmoji === room.hostEmoji) {
       joinStatus.textContent = 'Please choose a different emoji';
       joinStatus.style.color = 'var(--danger)';
@@ -174,7 +166,6 @@ joinGameBtn.addEventListener('click', async () => {
   }
 });
 
-// Copy room code
 copyCodeBtn?.addEventListener('click', async () => {
   try {
     const code = roomCodeDisplay.textContent;
@@ -189,7 +180,6 @@ copyCodeBtn?.addEventListener('click', async () => {
   }
 });
 
-// Paste room code
 pasteCodeBtn?.addEventListener('click', async () => {
   try {
     const text = await navigator.clipboard.readText();

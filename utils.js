@@ -10,7 +10,6 @@ const firebaseConfig = {
   measurementId: "G-2WC5RPCT3Q"
 };
 
-// Utility Functions
 function generateRoomCode() {
   const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ123456789';
   let code = '';

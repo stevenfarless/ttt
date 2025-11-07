@@ -10,7 +10,6 @@
     <div id="container">
         <h1>🎮 Tic Tac Toe</h1>
         
-        <!-- Emoji Selection Section -->
         <div class="emoji-section">
             <button class="emoji-toggle-btn" id="emojiToggle">
                 <span id="emojiDisplay">🎮</span>
@@ -18,7 +17,6 @@
             </button>
         </div>
 
-        <!-- Emoji Modal -->
         <div id="emojiModal" class="emoji-modal hidden">
             <div class="emoji-modal-content">
                 <div class="emoji-modal-header">
@@ -29,7 +27,6 @@
             </div>
         </div>
 
-        <!-- Main Section (Create/Join Buttons) -->
         <div id="mainSection">
             <div class="section">
                 <button class="btn btn-primary" id="createRoomBtn">CREATE GAME</button>
@@ -39,7 +36,6 @@
             </div>
         </div>
 
-        <!-- Create Module (Hidden by default) -->
         <div id="createModule" class="hidden">
             <div class="code-display">
                 <div class="code-container">
@@ -51,7 +47,6 @@
             <div class="status-text" id="createStatus"></div>
         </div>
 
-        <!-- Join Module (Hidden by default) -->
         <div id="joinModule" class="hidden">
             <div class="code-display">
                 <div class="code-container">
@@ -71,11 +66,11 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK - NO type="module" -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
 
-    <!-- Multiplayer Script -->
+    <!-- Multiplayer - NO type="module" -->
     <script src="multiplayer.js"></script>
 </body>
 </html>

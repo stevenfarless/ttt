@@ -1,5 +1,5 @@
 import { firebaseConfig } from './utils.js';
- 
+
 // Constants
 const ANIMATION_DURATION = 600;
 
@@ -9,17 +9,36 @@ const isHost = sessionStorage.getItem('isHost') === 'true';
 const mySymbol = sessionStorage.getItem('mySymbol');
 const opponentSymbol = sessionStorage.getItem('opponentSymbol');
 
+window.gameLogger?.log('GAME', 'Game script starting', {
+  roomCode,
+  isHost,
+  mySymbol,
+  opponentSymbol,
+  sessionValid: !!(roomCode && mySymbol && opponentSymbol)
+}, 'info');
+
 if (!roomCode || !mySymbol || !opponentSymbol) {
+  window.gameLogger?.log('GAME', 'Invalid session - missing critical data', {
+    roomCodePresent: !!roomCode,
+    mySymbolPresent: !!mySymbol,
+    opponentSymbolPresent: !!opponentSymbol
+  }, 'error');
   console.error('[GAME] Missing session data');
   window.location.href = 'index.html';
 }
 
 if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
+  window.gameLogger?.logFirebaseInit(firebaseConfig);
+  try {
+    firebase.initializeApp(firebaseConfig);
+    window.gameLogger?.logFirebaseInitComplete(true);
+  } catch (error) {
+    window.gameLogger?.logFirebaseInitComplete(false, error);
+  }
 }
 
 const db = firebase.database();
-console.log('[GAME] Script loaded');
+window.gameLogger?.log('GAME', 'Firebase initialized', {}, 'success');
 
 // DOM References
 const player1Indicator = document.querySelector('.player-indicator:nth-child(1)');
@@ -31,6 +50,14 @@ const result = document.getElementById('result');
 const resetButton = document.getElementById('reset');
 const backToMenuBtn = document.getElementById('backToMenu');
 
+window.gameLogger?.log('GAME', 'DOM elements loaded', {
+  domElementsFound: [
+    player1Indicator, player2Indicator, player1Emoji, player2Emoji, cells,
+    result, resetButton, backToMenuBtn
+  ].filter(Boolean).length,
+  cellCount: cells.length
+}, 'debug');
+
 // Game State
 let gameBoard = Array(9).fill(null);
 let previousBoard = Array(9).fill(null);
@@ -39,11 +66,22 @@ let isMyTurn = isHost;
 let roomRef = null;
 let isLeavingGame = false;
 
-console.log('[GAME] Session data loaded:', { roomCode, isHost, mySymbol, opponentSymbol });
+window.gameLogger?.log('GAME', 'Session data validated', {
+  roomCode,
+  isHost,
+  mySymbol,
+  opponentSymbol,
+  initialTurn: isMyTurn
+}, 'info');
 
 // Set player emojis
 if (player1Emoji) player1Emoji.textContent = mySymbol;
 if (player2Emoji) player2Emoji.textContent = opponentSymbol;
+
+window.gameLogger?.log('GAME', 'Player emojis set', {
+  player1: mySymbol,
+  player2: opponentSymbol
+}, 'debug');
 
 /**
  * Updates the turn indicator highlight
@@ -57,8 +95,17 @@ function updateTurnHighlight() {
       player1Indicator.classList.remove('active');
       player2Indicator.classList.add('active');
     }
+    window.gameLogger?.logUIInteraction({
+      action: 'Turn highlight updated',
+      element: 'player-indicators',
+      eventType: 'state_change',
+      info: { isMyTurn, mySymbol, opponentSymbol }
+    });
   } catch (error) {
-    console.error('[GAME] Error updating turn highlight:', error);
+    window.gameLogger?.log('GAME', 'Error updating turn highlight', {
+      error: error.message,
+      stack: error.stack
+    }, 'error');
   }
 }
 
@@ -77,11 +124,24 @@ function checkWinner(board) {
   for (let line of lines) {
     const [a, b, c] = line;
     if (board[a] && board[a] === board[b] && board[b] === board[c]) {
+      window.gameLogger?.log('GAME', 'Winner found', {
+        winner: board[a],
+        winningLine: line,
+        symbolMatches: `${board[a]} === ${board[b]} === ${board[c]}`
+      }, 'info');
       return board[a];
     }
   }
 
-  return board.every(cell => cell !== null) ? 'draw' : null;
+  if (board.every(cell => cell !== null)) {
+    window.gameLogger?.log('GAME', 'Draw detected', {
+      boardFull: true,
+      totalMoves: board.filter(c => c !== null).length
+    }, 'info');
+    return 'draw';
+  }
+
+  return null;
 }
 
 /**
@@ -92,7 +152,6 @@ function updateBoard() {
     cells.forEach((cell, index) => {
       const symbol = gameBoard[index];
       cell.textContent = symbol || '';
-
       cell.classList.remove('my-move', 'opponent-move');
       cell.style.color = '';
 
@@ -104,8 +163,19 @@ function updateBoard() {
         cell.classList.add('opponent-move');
       }
     });
+    window.gameLogger?.logGameState({
+      board: gameBoard,
+      gameActive,
+      isMyTurn,
+      mySymbol,
+      opponentSymbol,
+      isHost
+    });
   } catch (error) {
-    console.error('[GAME] Error updating board:', error);
+    window.gameLogger?.log('GAME', 'Error updating board display', {
+      error: error.message,
+      stack: error.stack
+    }, 'error');
   }
 }
 
@@ -117,12 +187,17 @@ function playMoveAnimation(index) {
   try {
     const cell = cells[index];
     cell.classList.add('clicked');
+    window.gameLogger?.log('GAME', 'Move animation started', { cellIndex: index }, 'debug');
 
     setTimeout(() => {
       cell.classList.remove('clicked');
+      window.gameLogger?.log('GAME', 'Move animation completed', { cellIndex: index }, 'debug');
     }, ANIMATION_DURATION);
   } catch (error) {
-    console.error('[GAME] Error playing animation:', error);
+    window.gameLogger?.log('GAME', 'Error playing animation', {
+      error: error.message,
+      cellIndex: index
+    }, 'error');
   }
 }
 
@@ -132,20 +207,38 @@ function playMoveAnimation(index) {
  */
 function makeMove(index) {
   if (!gameActive || !isMyTurn || gameBoard[index]) {
+    if (!gameActive) {
+      window.gameLogger?.log('GAME', 'Move rejected: game not active', { cellIndex: index }, 'debug');
+    } else if (!isMyTurn) {
+      window.gameLogger?.log('GAME', 'Move rejected: not my turn', { cellIndex: index }, 'debug');
+    } else {
+      window.gameLogger?.log('GAME', 'Move rejected: cell occupied', { cellIndex: index }, 'debug');
+    }
     return;
   }
+
+  window.gameLogger?.logMove({
+    cellIndex: index,
+    player: 'me',
+    symbol: mySymbol,
+    boardState: gameBoard.slice(),
+    timestamp: Date.now()
+  });
 
   playMoveAnimation(index);
 
   roomRef.transaction((room) => {
     try {
       if (!room) {
-        console.log('[GAME] Room not found');
+        window.gameLogger?.log('GAME', 'Room not found during transaction', {}, 'warn');
         return;
       }
 
       if (room.turn !== mySymbol) {
-        console.log('[GAME] Transaction aborted: not my turn');
+        window.gameLogger?.log('GAME', 'Transaction aborted: turn mismatch', {
+          expectedTurn: mySymbol,
+          actualTurn: room.turn
+        }, 'debug');
         return;
       }
 
@@ -160,7 +253,10 @@ function makeMove(index) {
       }
 
       if (board[index] !== null) {
-        console.log('[GAME] Cell occupied');
+        window.gameLogger?.log('GAME', 'Cell already occupied during transaction', {
+          cellIndex: index,
+          currentValue: board[index]
+        }, 'warn');
         return;
       }
 
@@ -172,15 +268,29 @@ function makeMove(index) {
       room.turn = opponentSymbol;
       room.winner = checkWinner(board);
 
-      console.log('[GAME] Move made at index', index);
+      window.gameLogger?.log('GAME', 'Move committed to Firebase', {
+        cellIndex: index,
+        newTurn: opponentSymbol,
+        winner: room.winner || 'ongoing',
+        boardState: board
+      }, 'info');
+
       return room;
     } catch (error) {
-      console.error('[GAME] Transaction error:', error);
+      window.gameLogger?.log('GAME', 'Transaction error', {
+        error: error.message,
+        stack: error.stack,
+        cellIndex: index
+      }, 'error');
       return;
     }
   }, (error) => {
     if (error) {
-      console.error('[GAME] Transaction failed:', error);
+      window.gameLogger?.log('GAME', 'Transaction failed', {
+        error: error.message,
+        code: error.code,
+        cellIndex: index
+      }, 'error');
     }
   });
 }
@@ -191,43 +301,69 @@ function makeMove(index) {
 function listenToGameChanges() {
   roomRef = db.ref('rooms/' + roomCode);
 
+  window.gameLogger?.logFirebaseConnection(roomCode);
+  window.gameLogger?.log('GAME', 'Setting up Firebase listener', {
+    roomCode,
+    timestamp: new Date().toISOString()
+  }, 'info');
+
   roomRef.on('value', (snapshot) => {
     try {
       // Skip processing if we're already leaving
       if (isLeavingGame) {
+        window.gameLogger?.log('GAME', 'Ignoring Firebase update: leaving game', {}, 'debug');
         return;
       }
 
       const room = snapshot.val();
 
       if (!room) {
-        console.log('[GAME] Room disappeared');
+        window.gameLogger?.log('GAME', 'Room disappeared from Firebase', {
+          roomCode,
+          timestamp: new Date().toISOString()
+        }, 'warn');
+
         if (!isLeavingGame) {
           result.textContent = 'Opponent left the game';
+          window.gameLogger?.log('GAME', 'Opponent disconnected', {}, 'warn');
+
           setTimeout(() => {
             isLeavingGame = true;
             roomRef.off('value');
+            window.gameLogger?.logPageTransition('game.html', 'index.html', {
+              reason: 'opponent_left',
+              roomCode
+            });
             window.location.href = 'index.html';
           }, 2000);
         }
+
         return;
       }
 
       // Check if opponent wants to go back to menu
-        if (room.playerLeftRequested) {
-        console.log('[GAME] Opponent quit the game');
-        
+      if (room.playerLeftRequested) {
+        window.gameLogger?.log('GAME', 'Opponent requested to leave', {
+          roomCode,
+          playerLeftRequested: true
+        }, 'warn');
+
         if (!isLeavingGame) {
           isLeavingGame = true;
-          roomRef.off('value'); // Stop listening to updates
-          
+          roomRef.off('value');
           alert('Your opponent quit the game.');
+
+          window.gameLogger?.logPageTransition('game.html', 'index.html', {
+            reason: 'opponent_quit',
+            roomCode
+          });
+
           sessionStorage.clear();
           window.location.href = 'index.html';
         }
+
         return;
       }
-
 
       // Normalize board
       if (room.board) {
@@ -242,9 +378,14 @@ function listenToGameChanges() {
       for (let i = 0; i < 9; i++) {
         const changed = previousBoard[i] !== gameBoard[i];
         const isNewMove = gameBoard[i] !== null && gameBoard[i] !== undefined;
-
         if (changed && isNewMove) {
-          console.log(`[GAME] Opponent move detected at index ${i}: ${previousBoard[i]} -> ${gameBoard[i]}`);
+          window.gameLogger?.logMove({
+            cellIndex: i,
+            player: 'opponent',
+            symbol: gameBoard[i],
+            boardState: gameBoard.slice(),
+            timestamp: Date.now()
+          });
           playMoveAnimation(i);
         }
       }
@@ -262,18 +403,49 @@ function listenToGameChanges() {
         gameActive = false;
         if (room.winner === 'draw') {
           result.textContent = "It's a draw!";
+          window.gameLogger?.log('GAME', 'Game ended in draw', {
+            roomCode,
+            boardState: gameBoard
+          }, 'info');
         } else {
-          result.textContent = room.winner === mySymbol ? 'You win! 🎉' : 'You lose';
+          const didIWin = room.winner === mySymbol;
+          result.textContent = didIWin ? 'You win! 🎉' : 'You lose';
+          window.gameLogger?.log('GAME', 'Game ended with winner', {
+            roomCode,
+            winner: room.winner,
+            didIWin,
+            mySymbol,
+            opponentSymbol,
+            boardState: gameBoard
+          }, 'info');
         }
       } else {
         gameActive = true;
         result.textContent = isMyTurn ? 'Your turn' : "Opponent's turn";
+        window.gameLogger?.logGameState({
+          board: gameBoard,
+          gameActive,
+          isMyTurn,
+          turn: room.turn
+        });
       }
     } catch (error) {
-      console.error('[GAME] Error in listener:', error);
+      window.gameLogger?.log('GAME', 'Error processing Firebase update', {
+        error: error.message,
+        stack: error.stack,
+        roomCode
+      }, 'error');
     }
   }, (error) => {
-    console.error('[GAME] Firebase listener error:', error);
+    window.gameLogger?.logFirebaseConnectionFailure(error, {
+      attemptedRoom: roomCode,
+      step: 'listening_to_game_changes'
+    });
+    window.gameLogger?.log('GAME', 'Firebase listener error', {
+      error: error.message,
+      code: error.code,
+      roomCode
+    }, 'error');
   });
 }
 
@@ -287,6 +459,12 @@ function resetGame() {
       Array.from({ length: 9 }, (_, i) => [i, null])
     );
 
+    window.gameLogger?.log('GAME', 'Resetting game', {
+      roomCode,
+      firstPlayer,
+      isHost
+    }, 'info');
+
     roomRef.update({
       board: emptyBoard,
       turn: firstPlayer,
@@ -297,8 +475,17 @@ function resetGame() {
     previousBoard = Array(9).fill(null);
     isMyTurn = isHost;
     gameActive = true;
+
+    window.gameLogger?.log('GAME', 'Game reset complete', {
+      roomCode,
+      gameActive,
+      isMyTurn
+    }, 'success');
   } catch (error) {
-    console.error('[GAME] Reset error:', error);
+    window.gameLogger?.log('GAME', 'Reset error', {
+      error: error.message,
+      stack: error.stack
+    }, 'error');
   }
 }
 
@@ -307,36 +494,65 @@ function resetGame() {
  */
 function goBackToMenu() {
   try {
-    console.log('[GAME] Player going back to menu');
-    
+    window.gameLogger?.log('GAME', 'Player initiating return to menu', {
+      roomCode,
+      isHost,
+      gameActive
+    }, 'info');
+
     // Prevent re-entrance
     if (isLeavingGame) {
+      window.gameLogger?.log('GAME', 'Already leaving game, ignoring duplicate request', {}, 'debug');
       return;
     }
+
     isLeavingGame = true;
 
     // Stop listening BEFORE updating Firebase
     roomRef.off('value');
+    window.gameLogger?.log('GAME', 'Firebase listener stopped', {}, 'debug');
 
     // Set flag to notify opponent
     roomRef.update({
       playerLeftRequested: true
     }).then(() => {
-      console.log('[GAME] Notified opponent');
+      window.gameLogger?.log('GAME', 'Notified opponent of departure', {
+        roomCode
+      }, 'success');
+
       sessionStorage.clear();
-      
+      window.gameLogger?.logPageTransition('game.html', 'index.html', {
+        initiator: 'player',
+        roomCode
+      });
+
       // Give opponent time to see notification before we completely leave
       setTimeout(() => {
         window.location.href = 'index.html';
       }, 500);
+
     }).catch(error => {
-      console.error('[GAME] Error notifying opponent:', error);
+      window.gameLogger?.log('GAME', 'Error notifying opponent of departure', {
+        error: error.message,
+        code: error.code
+      }, 'error');
+
       // Leave anyway if notification fails
       sessionStorage.clear();
+      window.gameLogger?.logPageTransition('game.html', 'index.html', {
+        initiator: 'player',
+        reason: 'notification_failed',
+        roomCode
+      });
+
       window.location.href = 'index.html';
     });
   } catch (error) {
-    console.error('[GAME] Navigation error:', error);
+    window.gameLogger?.log('GAME', 'Navigation error', {
+      error: error.message,
+      stack: error.stack
+    }, 'error');
+
     sessionStorage.clear();
     window.location.href = 'index.html';
   }
@@ -346,21 +562,63 @@ function goBackToMenu() {
 cells.forEach((cell, index) => {
   cell.setAttribute('role', 'button');
   cell.setAttribute('tabindex', '0');
-  cell.addEventListener('click', () => makeMove(index));
+
+  cell.addEventListener('click', () => {
+    window.gameLogger?.logUIInteraction({
+      action: 'Cell clicked',
+      element: `cell-${index}`,
+      eventType: 'click',
+      info: { cellIndex: index, cellContent: gameBoard[index] }
+    });
+    makeMove(index);
+  });
+
   cell.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
+      window.gameLogger?.logUIInteraction({
+        action: 'Cell activated via keyboard',
+        element: `cell-${index}`,
+        eventType: 'keydown',
+        info: { cellIndex: index, key: e.key }
+      });
       makeMove(index);
     }
   });
 });
 
-resetButton?.addEventListener('click', resetGame);
-backToMenuBtn?.addEventListener('click', goBackToMenu);
+resetButton?.addEventListener('click', () => {
+  window.gameLogger?.logUIInteraction({
+    action: 'Reset button clicked',
+    element: 'resetButton',
+    eventType: 'click'
+  });
+  resetGame();
+});
+
+backToMenuBtn?.addEventListener('click', () => {
+  window.gameLogger?.logUIInteraction({
+    action: 'Back to menu button clicked',
+    element: 'backToMenuBtn',
+    eventType: 'click'
+  });
+  goBackToMenu();
+});
 
 // Initialize
+window.gameLogger?.log('GAME', 'Starting game initialization', {
+  roomCode,
+  isHost,
+  mySymbol,
+  opponentSymbol
+}, 'info');
+
 listenToGameChanges();
 updateTurnHighlight();
 
-console.log('[GAME] Script initialization complete');
-
+window.gameLogger?.log('GAME', 'Game script fully loaded and initialized', {
+  roomCode,
+  eventListenersAttached: cells.length + 2,
+  gameActive,
+  isMyTurn
+}, 'success');

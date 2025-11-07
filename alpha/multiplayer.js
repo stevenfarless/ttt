@@ -66,6 +66,8 @@ const createStatus = document.getElementById("createStatus");
 const joinStatus = document.getElementById("joinStatus");
 const copyCodeBtn = document.getElementById("copyCodeBtn");
 const pasteCodeBtn = document.getElementById("pasteCodeBtn");
+const loadingIndicator = document.getElementById("loadingIndicator");
+const loadingText = document.getElementById("loadingText");
 
 // Track generated room code
 let generatedRoomCode = null;
@@ -74,6 +76,18 @@ let emojiPickerInitialized = false;
 // Debounce input handler
 let inputDebounceTimer = null;
 const DEBOUNCE_DELAY = 150;
+
+/**
+ * Show/hide loading indicator
+ */
+function showLoading(show = true, message = "Creating room...") {
+  if (show) {
+    loadingIndicator.classList.remove("hidden");
+    if (message) loadingText.textContent = message;
+  } else {
+    loadingIndicator.classList.add("hidden");
+  }
+}
 
 /**
  * Initialize emoji picker once
@@ -223,6 +237,7 @@ createRoomBtn.addEventListener("click", () => {
     }
 
     createRoomBtn.disabled = true;
+    showLoading(true, "Creating room...");
 
     const code = generateRoomCode();
     generatedRoomCode = code;
@@ -257,6 +272,7 @@ createRoomBtn.addEventListener("click", () => {
       .then(() => {
         console.log("[MULTIPLAYER] Game created");
         roomCodeDisplay.textContent = code;
+        showLoading(false);
         createStatus.textContent = "Waiting for opponent...";
         createStatus.style.color = "var(--warning)";
 
@@ -272,7 +288,8 @@ createRoomBtn.addEventListener("click", () => {
             console.log("[MULTIPLAYER] Guest joined, navigating");
             sessionStorage.setItem("opponentSymbol", room.guestEmoji);
             roomRef.off("value", listener);
-            setTimeout(() => (window.location.href = "game.html"), 300);
+            showLoading(true, "Starting game...");
+            setTimeout(() => (window.location.href = "game.html"), 500);
           }
         };
 
@@ -284,6 +301,7 @@ createRoomBtn.addEventListener("click", () => {
         createStatus.style.color = "var(--danger)";
         createRoomBtn.disabled = false;
         generatedRoomCode = null;
+        showLoading(false);
       });
   } else {
     // Show the create module
@@ -294,7 +312,7 @@ createRoomBtn.addEventListener("click", () => {
 // Join game button handler - SINGLE listener
 joinRoomBtn.addEventListener("click", () => {
   const code = roomCodeInput.value.trim().toUpperCase();
-  
+
   // If we're in the join module and have a code, join the game
   if (!joinModule.classList.contains("hidden") && code.length === 4) {
     console.log("[MULTIPLAYER] Join Game clicked:", code);
@@ -304,6 +322,7 @@ joinRoomBtn.addEventListener("click", () => {
     }
 
     joinRoomBtn.disabled = true;
+    showLoading(true, "Joining room...");
 
     const selectedEmoji = emojiDisplay.textContent;
 
@@ -314,6 +333,7 @@ joinRoomBtn.addEventListener("click", () => {
           joinStatus.textContent = "Game not found";
           joinStatus.style.color = "var(--danger)";
           joinRoomBtn.disabled = false;
+          showLoading(false);
           return;
         }
 
@@ -323,6 +343,7 @@ joinRoomBtn.addEventListener("click", () => {
           joinStatus.textContent = "Game is full";
           joinStatus.style.color = "var(--danger)";
           joinRoomBtn.disabled = false;
+          showLoading(false);
           return;
         }
 
@@ -363,13 +384,15 @@ joinRoomBtn.addEventListener("click", () => {
             sessionStorage.setItem("mySymbol", selectedEmoji);
             sessionStorage.setItem("opponentSymbol", room.hostEmoji);
 
-            setTimeout(() => (window.location.href = "game.html"), 300);
+            showLoading(true, "Starting game...");
+            setTimeout(() => (window.location.href = "game.html"), 500);
           })
           .catch((err) => {
             console.error("[MULTIPLAYER] Error joining:", err);
             joinStatus.textContent = "Error joining game";
             joinStatus.style.color = "var(--danger)";
             joinRoomBtn.disabled = false;
+            showLoading(false);
           });
       });
   } else {

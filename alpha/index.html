@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tic Tac Toe - Multiplayer</title>
   <link rel="stylesheet" href="home.css">
 </head>
+
 <body>
   <div id="container">
     <h1>Tic Tac Toe<br>1.1.2 alpha</h1>
@@ -52,12 +54,7 @@
         <div class="code-display">
           <div class="code-container">
             <span class="label">Enter Code:</span>
-            <input 
-              id="roomCodeInput" 
-              type="text" 
-              maxlength="4"
-              class="room-code-input"
-            >
+            <input id="roomCodeInput" type="text" maxlength="4" class="room-code-input">
             <button id="pasteCodeBtn" class="paste-btn" title="Paste from clipboard">📋</button>
           </div>
         </div>
@@ -71,4 +68,5 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script type="module" src="multiplayer.js"></script>
 </body>
+
 </html>

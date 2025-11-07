@@ -1,12 +1,44 @@
-//TESTINGG
-// Wait for DOM to be ready
+// Wait for Firebase SDK to be available
+function waitForFirebase() {
+  return new Promise((resolve) => {
+    if (typeof firebase !== 'undefined') {
+      console.log('[MULTIPLAYER] Firebase already loaded');
+      resolve();
+    } else {
+      console.log('[MULTIPLAYER] Waiting for Firebase...');
+      const checkFirebase = setInterval(() => {
+        if (typeof firebase !== 'undefined') {
+          console.log('[MULTIPLAYER] Firebase loaded!');
+          clearInterval(checkFirebase);
+          resolve();
+        }
+      }, 100);
+      // Timeout after 5 seconds
+      setTimeout(() => {
+        clearInterval(checkFirebase);
+        console.error('[MULTIPLAYER] Firebase failed to load after 5 seconds');
+        resolve(); // Continue anyway
+      }, 5000);
+    }
+  });
+}
+
+// Wait for DOM and Firebase, then init
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initMultiplayer);
+  document.addEventListener('DOMContentLoaded', async () => {
+    await waitForFirebase();
+    initMultiplayer();
+  });
 } else {
-  initMultiplayer();
+  waitForFirebase().then(initMultiplayer);
 }
 
 function initMultiplayer() {
+  if (typeof firebase === 'undefined') {
+    console.error('[MULTIPLAYER] FATAL: Firebase is not defined. Check CDN scripts loaded.');
+    return;
+  }
+
   // Initialize Firebase
   if (!firebase.apps.length) {
     firebase.initializeApp({
@@ -22,7 +54,7 @@ function initMultiplayer() {
   }
 
   const db = firebase.database();
-  console.log('[MULTIPLAYER] Script loaded');
+  console.log('[MULTIPLAYER] Script loaded and Firebase initialized');
 
   // DOM Elements
   const createRoomBtn = document.getElementById('createRoomBtn');
@@ -43,18 +75,14 @@ function initMultiplayer() {
   const copyCodeBtn = document.getElementById('copyCodeBtn');
   const pasteCodeBtn = document.getElementById('pasteCodeBtn');
 
-  // Verify elements exist
   if (!createRoomBtn || !joinRoomBtn) {
     console.error('[MULTIPLAYER] ERROR: Button elements not found!');
-    console.error('createRoomBtn:', createRoomBtn);
-    console.error('joinRoomBtn:', joinRoomBtn);
     return;
   }
 
   const EMOJI_OPTIONS = ['🎮', '🎲', '🎯', '🎪', '🎨', '🎭', '🎬', '🎤'];
   let selectedEmoji = EMOJI_OPTIONS[0];
 
-  // Initialize emoji picker
   if (emojiPicker) {
     emojiPicker.innerHTML = EMOJI_OPTIONS.map(emoji => 
       `<button class="emoji-btn" data-emoji="${emoji}">${emoji}</button>`
@@ -71,7 +99,6 @@ function initMultiplayer() {
     });
   }
 
-  // Emoji Modal Toggle
   if (emojiToggle) {
     emojiToggle.addEventListener('click', () => {
       emojiModal.classList.remove('hidden');
@@ -92,13 +119,11 @@ function initMultiplayer() {
     });
   }
 
-  // Set initial selected emoji
   const firstEmoji = document.querySelector(`[data-emoji="${selectedEmoji}"]`);
   if (firstEmoji) {
     firstEmoji.classList.add('selected');
   }
 
-  // CREATE GAME BUTTON
   if (createRoomBtn) {
     createRoomBtn.addEventListener('click', async () => {
       try {
@@ -143,7 +168,6 @@ function initMultiplayer() {
     });
   }
 
-  // JOIN GAME BUTTON (Show Join Module)
   if (joinRoomBtn) {
     joinRoomBtn.addEventListener('click', () => {
       if (mainSection) mainSection.classList.add('hidden');
@@ -151,7 +175,6 @@ function initMultiplayer() {
     });
   }
 
-  // JOIN GAME SUBMIT BUTTON
   if (joinGameBtn) {
     joinGameBtn.addEventListener('click', async () => {
       const code = roomCodeInput.value.trim().toUpperCase();
@@ -207,7 +230,6 @@ function initMultiplayer() {
     });
   }
 
-  // Copy room code
   if (copyCodeBtn) {
     copyCodeBtn.addEventListener('click', async () => {
       try {
@@ -224,7 +246,6 @@ function initMultiplayer() {
     });
   }
 
-  // Paste room code
   if (pasteCodeBtn) {
     pasteCodeBtn.addEventListener('click', async () => {
       try {

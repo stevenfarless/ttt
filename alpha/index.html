@@ -39,8 +39,8 @@
             </div>
         </div>
 
-        <!-- Create Module -->
-        <div id="createModule" class="module hidden">
+        <!-- Create Module (Hidden by default) -->
+        <div id="createModule" class="hidden">
             <div class="code-display">
                 <div class="code-container">
                     <span class="label">Code:</span>
@@ -51,8 +51,8 @@
             <div class="status-text" id="createStatus"></div>
         </div>
 
-        <!-- Join Module -->
-        <div id="joinModule" class="module hidden">
+        <!-- Join Module (Hidden by default) -->
+        <div id="joinModule" class="hidden">
             <div class="code-display">
                 <div class="code-container">
                     <span class="label">Code:</span>
@@ -66,16 +66,16 @@
                     <button class="paste-btn" id="pasteCodeBtn" title="Paste code">📋</button>
                 </div>
             </div>
-            <button class="btn btn-primary" id="joinGameBtn">Join Game</button>
+            <button class="btn btn-primary" id="joinGameBtn">JOIN GAME</button>
             <div class="status-text" id="joinStatus"></div>
         </div>
     </div>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK - MUST load FIRST, WITHOUT type="module" -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
 
-    <!-- Multiplayer Script -->
+    <!-- Multiplayer Module - ONLY this has type="module" -->
     <script type="module" src="multiplayer.js"></script>
 </body>
 </html>

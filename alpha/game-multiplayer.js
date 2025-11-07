@@ -9,7 +9,6 @@ const ANIMATION_DURATION = 600;
 const roomCode = sessionStorage.getItem("roomCode");
 const isHost = sessionStorage.getItem("isHost") === "true";
 const mySymbol = sessionStorage.getItem("mySymbol");
-let opponentSymbol = sessionStorage.getItem("opponentSymbol"); // Make this mutable
 
 if (!roomCode || !mySymbol) {
   console.error("[GAME] Missing session data");
@@ -46,37 +45,15 @@ let roomRef = null;
 let isLeavingGame = false;
 let eventListenersActive = true;
 
+// Firebase room data
+let hostEmoji = null;
+let guestEmoji = null;
+
 console.log("[GAME] Session data loaded:", {
   roomCode,
   isHost,
   mySymbol,
-  opponentSymbol,
 });
-
-// Initialize opponent symbol from Firebase if host
-async function initializeOpponentSymbol() {
-  if (isHost && !opponentSymbol) {
-    try {
-      const snapshot = await db.ref("rooms/" + roomCode).once("value");
-      const room = snapshot.val();
-      if (room && room.guestEmoji) {
-        opponentSymbol = room.guestEmoji;
-        sessionStorage.setItem("opponentSymbol", opponentSymbol);
-        console.log("[GAME] Opponent symbol initialized:", opponentSymbol);
-        
-        // Update player emojis
-        if (player1Emoji) player1Emoji.textContent = mySymbol;
-        if (player2Emoji) player2Emoji.textContent = opponentSymbol;
-      }
-    } catch (error) {
-      console.error("[GAME] Error initializing opponent symbol:", error);
-    }
-  }
-}
-
-// Set player emojis initially
-if (player1Emoji) player1Emoji.textContent = mySymbol;
-if (player2Emoji && opponentSymbol) player2Emoji.textContent = opponentSymbol;
 
 /**
  * Updates the turn indicator highlight
@@ -138,14 +115,14 @@ function updateBoard() {
       const newColor =
         symbol === mySymbol
           ? "#3B82F6"
-          : symbol === opponentSymbol
+          : symbol !== null && symbol !== undefined
           ? "#EF4444"
           : "";
 
       const hadMyMove = cell.classList.contains("my-move");
       const hadOpponentMove = cell.classList.contains("opponent-move");
       const shouldHaveMyMove = symbol === mySymbol;
-      const shouldHaveOpponentMove = symbol === opponentSymbol;
+      const shouldHaveOpponentMove = symbol !== null && symbol !== undefined && symbol !== mySymbol;
 
       if (hadMyMove && !shouldHaveMyMove) {
         cell.classList.remove("my-move");
@@ -207,6 +184,13 @@ function normalizeBoardFromFirebase(firebaseBoard) {
 }
 
 /**
+ * Get the opponent symbol
+ */
+function getOpponentSymbol() {
+  return isHost ? guestEmoji : hostEmoji;
+}
+
+/**
  * Handles a cell click for making a move
  * @param {number} index - The cell index
  */
@@ -216,9 +200,9 @@ function makeMove(index) {
     return;
   }
 
-  // Ensure we have opponent symbol
-  if (!opponentSymbol) {
-    console.error("[GAME] Opponent symbol not set!");
+  // Ensure we have both symbols from Firebase
+  if (!hostEmoji || !guestEmoji) {
+    console.error("[GAME] Symbols not ready:", { hostEmoji, guestEmoji });
     return;
   }
 
@@ -248,10 +232,10 @@ function makeMove(index) {
         
         // Convert back to Firebase format (object with numeric keys)
         room.board = Object.fromEntries(board.map((val, i) => [i, val]));
-        room.turn = opponentSymbol;
+        room.turn = getOpponentSymbol();
         room.winner = checkWinner(board);
         
-        console.log("[GAME] Move made at index", index, "- next turn:", opponentSymbol);
+        console.log("[GAME] Move made at index", index, "- next turn:", room.turn);
         return room;
       } catch (error) {
         console.error("[GAME] Transaction error:", error);
@@ -294,13 +278,13 @@ function listenToGameChanges() {
           return;
         }
 
-        // Update opponent symbol if we don't have it yet (for host)
-        if (isHost && !opponentSymbol && room.guestEmoji) {
-          opponentSymbol = room.guestEmoji;
-          sessionStorage.setItem("opponentSymbol", opponentSymbol);
-          if (player2Emoji) player2Emoji.textContent = opponentSymbol;
-          console.log("[GAME] Opponent joined with symbol:", opponentSymbol);
-        }
+        // Update symbols from Firebase
+        if (room.hostEmoji) hostEmoji = room.hostEmoji;
+        if (room.guestEmoji) guestEmoji = room.guestEmoji;
+
+        // Update player emojis on screen
+        if (hostEmoji && player1Emoji) player1Emoji.textContent = hostEmoji;
+        if (guestEmoji && player2Emoji) player2Emoji.textContent = guestEmoji;
 
         // Check if opponent wants to go back to menu
         if (room.playerLeftRequested) {
@@ -372,7 +356,7 @@ function listenToGameChanges() {
  */
 function resetGame() {
   try {
-    const firstPlayer = isHost ? mySymbol : opponentSymbol;
+    const firstPlayer = isHost ? hostEmoji : guestEmoji;
     const emptyBoard = Object.fromEntries(
       Array.from({ length: 9 }, (_, i) => [i, null])
     );
@@ -476,9 +460,7 @@ backToMenuBtn?.addEventListener("click", goBackToMenu);
 // Cleanup on page unload
 window.addEventListener("beforeunload", cleanup);
 
-// Initialize
-initializeOpponentSymbol().then(() => {
-  listenToGameChanges();
-  updateTurnHighlight();
-  console.log("[GAME] Script initialization complete");
-});
+// Initialize - start listening to Firebase immediately
+listenToGameChanges();
+updateTurnHighlight();
+console.log("[GAME] Script initialization complete");

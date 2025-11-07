@@ -9,9 +9,9 @@ const ANIMATION_DURATION = 600;
 const roomCode = sessionStorage.getItem("roomCode");
 const isHost = sessionStorage.getItem("isHost") === "true";
 const mySymbol = sessionStorage.getItem("mySymbol");
-const opponentSymbol = sessionStorage.getItem("opponentSymbol");
+let opponentSymbol = sessionStorage.getItem("opponentSymbol"); // Make this mutable
 
-if (!roomCode || !mySymbol || !opponentSymbol) {
+if (!roomCode || !mySymbol) {
   console.error("[GAME] Missing session data");
   window.location.href = "index.html";
 }
@@ -40,7 +40,7 @@ const backToMenuBtn = document.getElementById("backToMenu");
 // Game State
 let gameBoard = Array(9).fill(null);
 let previousBoard = [...gameBoard];
-let gameActive = true; // CHANGED: Set to true immediately since both players are in the room
+let gameActive = true;
 let isMyTurn = isHost;
 let roomRef = null;
 let isLeavingGame = false;
@@ -53,9 +53,30 @@ console.log("[GAME] Session data loaded:", {
   opponentSymbol,
 });
 
-// Set player emojis
+// Initialize opponent symbol from Firebase if host
+async function initializeOpponentSymbol() {
+  if (isHost && !opponentSymbol) {
+    try {
+      const snapshot = await db.ref("rooms/" + roomCode).once("value");
+      const room = snapshot.val();
+      if (room && room.guestEmoji) {
+        opponentSymbol = room.guestEmoji;
+        sessionStorage.setItem("opponentSymbol", opponentSymbol);
+        console.log("[GAME] Opponent symbol initialized:", opponentSymbol);
+        
+        // Update player emojis
+        if (player1Emoji) player1Emoji.textContent = mySymbol;
+        if (player2Emoji) player2Emoji.textContent = opponentSymbol;
+      }
+    } catch (error) {
+      console.error("[GAME] Error initializing opponent symbol:", error);
+    }
+  }
+}
+
+// Set player emojis initially
 if (player1Emoji) player1Emoji.textContent = mySymbol;
-if (player2Emoji) player2Emoji.textContent = opponentSymbol;
+if (player2Emoji && opponentSymbol) player2Emoji.textContent = opponentSymbol;
 
 /**
  * Updates the turn indicator highlight
@@ -191,6 +212,13 @@ function normalizeBoardFromFirebase(firebaseBoard) {
  */
 function makeMove(index) {
   if (!gameActive || !isMyTurn || gameBoard[index]) {
+    console.log("[GAME] Move blocked:", { gameActive, isMyTurn, cellOccupied: !!gameBoard[index] });
+    return;
+  }
+
+  // Ensure we have opponent symbol
+  if (!opponentSymbol) {
+    console.error("[GAME] Opponent symbol not set!");
     return;
   }
 
@@ -223,7 +251,7 @@ function makeMove(index) {
         room.turn = opponentSymbol;
         room.winner = checkWinner(board);
         
-        console.log("[GAME] Move made at index", index);
+        console.log("[GAME] Move made at index", index, "- next turn:", opponentSymbol);
         return room;
       } catch (error) {
         console.error("[GAME] Transaction error:", error);
@@ -266,6 +294,14 @@ function listenToGameChanges() {
           return;
         }
 
+        // Update opponent symbol if we don't have it yet (for host)
+        if (isHost && !opponentSymbol && room.guestEmoji) {
+          opponentSymbol = room.guestEmoji;
+          sessionStorage.setItem("opponentSymbol", opponentSymbol);
+          if (player2Emoji) player2Emoji.textContent = opponentSymbol;
+          console.log("[GAME] Opponent joined with symbol:", opponentSymbol);
+        }
+
         // Check if opponent wants to go back to menu
         if (room.playerLeftRequested) {
           console.log("[GAME] Opponent quit the game");
@@ -304,6 +340,7 @@ function listenToGameChanges() {
 
         // Update game state
         isMyTurn = room.turn === mySymbol;
+        console.log("[GAME] Turn update - room.turn:", room.turn, "mySymbol:", mySymbol, "isMyTurn:", isMyTurn);
         updateBoard();
         updateTurnHighlight();
 
@@ -440,6 +477,8 @@ backToMenuBtn?.addEventListener("click", goBackToMenu);
 window.addEventListener("beforeunload", cleanup);
 
 // Initialize
-listenToGameChanges();
-updateTurnHighlight();
-console.log("[GAME] Script initialization complete");
+initializeOpponentSymbol().then(() => {
+  listenToGameChanges();
+  updateTurnHighlight();
+  console.log("[GAME] Script initialization complete");
+});

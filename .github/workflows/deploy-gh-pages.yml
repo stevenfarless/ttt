@@ -23,11 +23,13 @@ jobs:
       - name: Prepare alpha directory
         run: |
           mkdir -p alpha
-          rsync -av --exclude 'alpha' . alpha/
+          rsync -av --exclude 'alpha' --exclude '.git' . alpha/
 
       - name: Deploy to GitHub Pages (alpha)
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.PERSONAL_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: ./alpha          destination_dir: beta
+          publish_dir: ./alpha
+          destination_dir: alpha
+          keep_files: true

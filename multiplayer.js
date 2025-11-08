@@ -2,7 +2,7 @@ import { firebaseConfig } from './utils.js';
 
 // Initialize Firebase
 if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 }
 
 const DEBUG = true;
@@ -28,6 +28,7 @@ const createStatus = document.getElementById('createStatus');
 const joinStatus = document.getElementById('joinStatus');
 const copyCodeBtn = document.getElementById('copyCodeBtn');
 const pasteCodeBtn = document.getElementById('pasteCodeBtn');
+console.log('[MULTIPLAYER] ✅ DOM elements loaded successfully');
 
 // Track generated room code
 let generatedRoomCode = null;

@@ -1,12 +1,12 @@
 # 🎮 Custom Tic Tac Toe - Multiplayer
 
-**Version:** 0.3.1-alpha | **Release Date:** October 31, 2025
-
-> ⚠️ **ALPHA RELEASE NOTICE** 
-> 
-> This is an early-stage alpha release. The project is actively under development and may experience breaking changes or unexpected behavior without notice. Features are subject to change as core functionality is refined and stabilized. We recommend using this for testing and feedback purposes only. Stability and backwards compatibility are not guaranteed at this stage.
+**Version:** 1.1.0 | **Release Date:** November 4, 2025
 
 A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces and player perspective colors, built with vanilla JavaScript and Firebase.
+
+## 📷 Screenshots
+
+
 
 ---
 
@@ -26,6 +26,7 @@ A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces and pl
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Modern web browser (Chrome, Firefox, Safari, Edge)
 - Internet connection
 - Firebase Realtime Database (for multiplayer functionality)
@@ -33,11 +34,15 @@ A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces and pl
 ### Installation
 
 1. **Clone the repository**
-git clone https://github.com/stevenfarless/tic-tac-toe.git
-cd tic-tac-toe
+   ```
+   git clone https://github.com/stevenfarless/ttt.git
+   cd ttt
+   ```
 
 2. **Open in your browser**
-open index.html
+   ```
+   open index.html
+   ```
 
 3. **Configure Firebase (Multiplayer Mode)**
    - Go to [Firebase Console](https://console.firebase.google.com)
@@ -61,24 +66,24 @@ open index.html
 
 ## 🎮 How to Play Multiplayer
 
-1. **Player 1 (Host)**
-   - Open `index.html`
-   - Select your emoji piece from the picker
-   - Click "Create Room"
-   - Share the 4-character room code with Player 2
+### Player 1 (Host)
+- Open `index.html`
+- Select your emoji piece from the picker
+- Click "Create Room"
+- Share the 4-character room code with Player 2
 
-2. **Player 2 (Guest)**
-   - Open `index.html`
-   - Select your emoji piece
-   - Enter the room code from Player 1
-   - Click "Join Room"
+### Player 2 (Guest)
+- Open `index.html`
+- Select your emoji piece
+- Enter the room code from Player 1
+- Click "Join Room"
 
-3. **Playing**
-   - Players take turns clicking cells on the 3x3 grid
-   - Host always goes first
-   - Your moves appear in **BLUE**, opponent's in **RED**
-   - Win by getting three in a row (horizontal, vertical, or diagonal)
-   - Game ends with a win or draw
+### Playing
+- Players take turns clicking cells on the 3x3 grid
+- Host always goes first
+- Your moves appear in **BLUE**, opponent's in **RED**
+- Win by getting three in a row (horizontal, vertical, or diagonal)
+- Game ends with a win or draw
 
 ---
 
@@ -86,23 +91,28 @@ open index.html
 
 Choose any of these 20 emojis as your game piece:
 
-❌ ⭕ ❤️ 💲 😀 💀 🤖 👽 🐶 😺 💩 🦐 🍕 🍣 🍓 🍤 🌙 ☀️ ⭐ 🚀
+❌ ⭕ ❤️ 💲
+😀 💀 🤖 👽
+🐶 😺 💩 🦐
+🍕 🍣 🍓 🍤
+🌙 ☀️ ⭐ 🚀
 
 ---
 
 ## 📁 Project Structure
 
+```
 tic-tac-toe/
-index.html # Entry point redirect
-home.html # Main menu/lobby
-game.html # Game board interface
-style.css # Game board styling
-home.css # Menu styling
-multiplayer.js # Room creation & joining logic
-game-multiplayer.js # Game logic & Firebase sync
-utils.js # Utility functions
-README.md # This file
-LICENSE # GPL License
+├── index.html               # Main menu/lobby
+├── game.html               # Game board interface
+├── style.css               # Game board styling
+├── home.css                # Menu styling
+├── multiplayer.js          # Room creation & joining logic
+├── game-multiplayer.js     # Game logic & Firebase sync
+├── utils.js                # Utility functions
+├── README.md               # This file
+└── LICENSE                 # GPL License
+```
 
 ---
 
@@ -125,7 +135,7 @@ LICENSE # GPL License
 
 ---
 
-## 🐛 Known Issues & Limitations (Alpha Stage)
+## 🐛 Known Issues & Limitations
 
 - Firebase free tier has rate limits (may affect rapid gameplay)
 - Emoji rendering varies across browsers and operating systems
@@ -151,7 +161,7 @@ LICENSE # GPL License
 
 ## 🤝 Contributing
 
-This is an alpha project, so contributions and feedback are welcome! Please feel free to:
+This project welcomes contributions and feedback! Please feel free to:
 - Report bugs via GitHub Issues
 - Suggest features and improvements
 - Submit pull requests with enhancements
@@ -169,7 +179,7 @@ GPL 3 License - see LICENSE file for details
 
 Found a bug? Have a suggestion? Please open an issue on GitHub!
 
-**GitHub Issues:** [https://github.com/stevenfarless/tic-tac-toe/issues](https://github.com/stevenfarless/tic-tac-toe/issues)
+**GitHub Issues:** [https://github.com/stevenfarless/ttt/issues](https://github.com/stevenfarless/ttt/issues)
 
 ---
 
@@ -189,3 +199,4 @@ Found a bug? Have a suggestion? Please open an issue on GitHub!
 ---
 
 **Built with ❤️ by Steven Farless**
+```

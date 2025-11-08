@@ -23,7 +23,7 @@ jobs:
       - name: Prepare beta directory
         run: |
           mkdir -p beta
-          rsync -av --exclude 'beta' . beta/
+          rsync -av --exclude 'beta' --exclude '.git' . beta/
 
       - name: Deploy to GitHub Pages (beta)
         uses: peaceiris/actions-gh-pages@v4
@@ -32,3 +32,4 @@ jobs:
           publish_branch: gh-pages
           publish_dir: ./beta
           destination_dir: beta
+          keep_files: true

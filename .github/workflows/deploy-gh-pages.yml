@@ -1,4 +1,4 @@
-name: Deploy alpha to GitHub Pages
+name: Deploy Alpha to GitHub Pages
 
 permissions:
   contents: read

@@ -1,0 +1,70 @@
+name: Auto-Restore Alpha Workflow
+
+on:
+  push:
+    branches:
+      - alpha
+
+jobs:
+  restore-workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout alpha branch
+        uses: actions/checkout@v3
+        with:
+          ref: alpha
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Restore correct alpha workflow
+        run: |
+          cat > .github/workflows/deploy-gh-pages.yml << 'EOF'
+          name: Deploy Alpha to GitHub Pages
+
+          permissions:
+            contents: read
+            pages: write
+            id-token: write
+
+          on:
+            push:
+              branches:
+                - alpha
+
+          jobs:
+            build-and-deploy:
+              runs-on: ubuntu-latest
+
+              steps:
+                - name: Checkout code
+                  uses: actions/checkout@v3
+                  with:
+                    fetch-depth: 0
+
+                - name: Prepare alpha directory
+                  run: |
+                    mkdir -p alpha
+                    rsync -av --exclude 'alpha' --exclude '.git' . alpha/
+
+                - name: Deploy to GitHub Pages (alpha)
+                  uses: peaceiris/actions-gh-pages@v4
+                  with:
+                    github_token: ${{ secrets.PERSONAL_TOKEN }}
+                    publish_branch: gh-pages
+                    publish_dir: ./alpha
+                    destination_dir: alpha
+                    keep_files: true
+          EOF
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          git diff --quiet .github/workflows/deploy-gh-pages.yml || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit restored workflow
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/deploy-gh-pages.yml
+          git commit -m "Auto-restore alpha workflow file"
+          git push

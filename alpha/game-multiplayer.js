@@ -1,7 +1,14 @@
-import { firebaseConfig } from './utils.js';
+// game-multiplayer.js
+import { firebaseConfig, replayStoredLogs } from './utils.js';
 
 // Constants
 const ANIMATION_DURATION = 600;
+
+// Add this section:
+// ============================================
+// REPLAY STORED LOGS FROM PREVIOUS PAGE
+// ============================================
+replayStoredLogs();
 
 console.log('[GAME] 🎮 Game script starting at', new Date().toISOString());
 console.log(`[GAME] ⚙️ Animation duration: ${ANIMATION_DURATION}ms`);
@@ -102,13 +109,13 @@ function checkWinner(board) {
   const startTime = performance.now();
   console.log('[GAME] 🔍 Checking for winner...');
   console.log(`[GAME] 📊 Current board state: [${board.map((c, i) => `${i}:${c || '_'}`).join(', ')}]`);
-  
+
   const lines = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8],
     [0, 3, 6], [1, 4, 7], [2, 5, 8],
     [0, 4, 8], [2, 4, 6]
   ];
-  
+
   for (let line of lines) {
     const [a, b, c] = line;
     if (board[a] && board[a] === board[b] && board[b] === board[c]) {
@@ -117,15 +124,15 @@ function checkWinner(board) {
       return board[a];
     }
   }
-  
+
   const isDraw = board.every(cell => cell !== null);
   const endTime = performance.now();
-  
+
   if (isDraw) {
     console.log(`[GAME] 🤝 Game is a draw (checked in ${(endTime - startTime).toFixed(2)}ms)`);
     return 'draw';
   }
-  
+
   console.log(`[GAME] ➡️ No winner yet (checked in ${(endTime - startTime).toFixed(2)}ms)`);
   return null;
 }
@@ -136,14 +143,14 @@ function checkWinner(board) {
 function updateBoard() {
   const startTime = performance.now();
   console.log('[GAME] 🎨 Updating board display...');
-  
+
   try {
     cells.forEach((cell, index) => {
       const symbol = gameBoard[index];
       cell.textContent = symbol || '';
       cell.classList.remove('my-move', 'opponent-move');
       cell.style.color = '';
-      
+
       if (symbol === mySymbol) {
         cell.style.color = '#3B82F6';
         cell.classList.add('my-move');
@@ -152,7 +159,7 @@ function updateBoard() {
         cell.classList.add('opponent-move');
       }
     });
-    
+
     const endTime = performance.now();
     console.log(`[GAME] ✅ Board display updated in ${(endTime - startTime).toFixed(2)}ms`);
     console.log(`[GAME] 📊 Displayed board: [${gameBoard.map((c, i) => `${i}:${c || '_'}`).join(', ')}]`);
@@ -168,12 +175,12 @@ function updateBoard() {
 function playMoveAnimation(index) {
   const startTime = performance.now();
   console.log(`[GAME] 🎬 Playing animation for cell ${index}`);
-  
+
   try {
     const cell = cells[index];
     cell.classList.add('clicked');
     console.log(`[GAME] ✅ Animation class added to cell ${index}`);
-    
+
     setTimeout(() => {
       cell.classList.remove('clicked');
       const endTime = performance.now();
@@ -192,7 +199,7 @@ function makeMove(index) {
   const startTime = performance.now();
   console.log(`[GAME] 🎯 Player clicked cell ${index}`);
   console.log(`[GAME] 🎮 Move context: gameActive=${gameActive}, isMyTurn=${isMyTurn}, cellEmpty=${!gameBoard[index]}`);
-  
+
   if (!gameActive || !isMyTurn || gameBoard[index]) {
     if (!gameActive) console.log('[GAME] ⚠️ Move rejected: Game not active');
     if (!isMyTurn) console.log('[GAME] ⚠️ Move rejected: Not your turn');
@@ -202,7 +209,7 @@ function makeMove(index) {
 
   console.log(`[GAME] ✅ Move validated - Proceeding with ${mySymbol} at cell ${index}`);
   playMoveAnimation(index);
-  
+
   roomRef.transaction((room) => {
     try {
       if (!room) {
@@ -233,17 +240,17 @@ function makeMove(index) {
       // Make move
       board[index] = mySymbol;
       console.log(`[GAME] ✅ Move executed: ${mySymbol} placed at cell ${index}`);
-      
+
       // Convert back to Firebase format
       room.board = Object.fromEntries(board.map((val, i) => [i, val]));
       room.turn = opponentSymbol;
       room.winner = checkWinner(board);
-      
+
       console.log(`[GAME] 📤 Updating Firebase:`);
       console.log(`[GAME]   - Board: [${board.map((c, i) => `${i}:${c || '_'}`).join(', ')}]`);
       console.log(`[GAME]   - Next turn: ${opponentSymbol}`);
       console.log(`[GAME]   - Winner: ${room.winner || 'none yet'}`);
-      
+
       return room;
     } catch (error) {
       console.error('[GAME] ❌ Transaction error:', error);
@@ -269,11 +276,11 @@ function listenToGameChanges() {
   console.log('[GAME] 👂 Setting up Firebase listener...');
   roomRef = db.ref('rooms/' + roomCode);
   console.log(`[GAME] 📡 Listening to: rooms/${roomCode}`);
-  
+
   roomRef.on('value', (snapshot) => {
     const listenerStartTime = performance.now();
     console.log('[GAME] 📥 Firebase update received');
-    
+
     try {
       // Skip processing if we're already leaving
       if (isLeavingGame) {
@@ -282,7 +289,7 @@ function listenToGameChanges() {
       }
 
       const room = snapshot.val();
-      
+
       if (!room) {
         console.log('[GAME] ⚠️ Room disappeared from Firebase');
         if (!isLeavingGame) {
@@ -337,22 +344,22 @@ function listenToGameChanges() {
           moveDetected = true;
         }
       }
-      
+
       if (!moveDetected && previousBoard.some(c => c !== null)) {
         console.log('[GAME] ℹ️ No new moves detected in this update');
       }
-      
+
       // Update previousBoard for next comparison
       previousBoard = gameBoard.map(cell => cell);
 
       // Update game state
       const wasMy Turn = isMyTurn;
       isMyTurn = room.turn === mySymbol;
-      
+
       if (wasMyTurn !== isMyTurn) {
         console.log(`[GAME] 🔄 Turn changed: ${wasMyTurn ? 'My turn' : 'Opponent turn'} -> ${isMyTurn ? 'My turn' : 'Opponent turn'}`);
       }
-      
+
       updateBoard();
       updateTurnHighlight();
 
@@ -360,7 +367,7 @@ function listenToGameChanges() {
       if (room.winner) {
         gameActive = false;
         console.log(`[GAME] 🏁 Game ended! Result: ${room.winner}`);
-        
+
         if (room.winner === 'draw') {
           result.textContent = "It's a draw!";
           console.log('[GAME] 🤝 Game result: DRAW');
@@ -374,7 +381,7 @@ function listenToGameChanges() {
         result.textContent = isMyTurn ? 'Your turn' : "Opponent's turn";
         console.log(`[GAME] ➡️ Game continues - ${isMyTurn ? 'Your turn' : "Opponent's turn"}`);
       }
-      
+
       const listenerEndTime = performance.now();
       console.log(`[GAME] ✅ Firebase update processed in ${(listenerEndTime - listenerStartTime).toFixed(2)}ms`);
     } catch (error) {
@@ -383,7 +390,7 @@ function listenToGameChanges() {
   }, (error) => {
     console.error('[GAME] ❌ Firebase listener error:', error);
   });
-  
+
   console.log('[GAME] ✅ Firebase listener active');
 }
 
@@ -394,25 +401,25 @@ function resetGame() {
   const startTime = performance.now();
   console.log('[GAME] 🔄 Reset button clicked');
   console.log(`[GAME] 🔄 Resetting game... First player: ${isHost ? mySymbol : opponentSymbol}`);
-  
+
   try {
     const firstPlayer = isHost ? mySymbol : opponentSymbol;
     const emptyBoard = Object.fromEntries(
       Array.from({ length: 9 }, (_, i) => [i, null])
     );
-    
+
     console.log('[GAME] 📤 Sending reset to Firebase...');
     roomRef.update({
       board: emptyBoard,
       turn: firstPlayer,
       winner: null
     });
-    
+
     gameBoard = Array(9).fill(null);
     previousBoard = Array(9).fill(null);
     isMyTurn = isHost;
     gameActive = true;
-    
+
     const endTime = performance.now();
     console.log(`[GAME] ✅ Game reset complete in ${(endTime - startTime).toFixed(2)}ms`);
     console.log(`[GAME] 🎮 New game started - First turn: ${firstPlayer}`);
@@ -427,7 +434,7 @@ function resetGame() {
 function goBackToMenu() {
   const startTime = performance.now();
   console.log('[GAME] 🚪 Back to menu button clicked');
-  
+
   try {
     // Prevent re-entrance
     if (isLeavingGame) {
@@ -437,7 +444,7 @@ function goBackToMenu() {
 
     isLeavingGame = true;
     console.log('[GAME] 🛑 Stopping Firebase listener...');
-    
+
     // Stop listening BEFORE updating Firebase
     roomRef.off('value');
     console.log('[GAME] ✅ Listener stopped');
@@ -451,7 +458,7 @@ function goBackToMenu() {
       console.log(`[GAME] ✅ Opponent notified in ${(endTime - startTime).toFixed(2)}ms`);
       console.log('[GAME] 🗑️ Clearing session storage...');
       sessionStorage.clear();
-      
+
       // Give opponent time to see notification before we completely leave
       console.log('[GAME] 🚀 Redirecting to home in 500ms...');
       setTimeout(() => {

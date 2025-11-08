@@ -335,11 +335,11 @@ joinRoomBtn.addEventListener('click', () => {
       return;
     }
 
-    // 🐛 FIX: Validate emoji uniqueness - <--- This is where your code should go
+    // 🐛 FIX: Validate emoji uniqueness
     if (room.hostEmoji === selectedEmoji) {
     const endTime = performance.now();
     console.log(`[MULTIPLAYER] ❌ Emoji conflict: Guest selected ${selectedEmoji} but host is already using it (checked in ${(endTime - startTime).toFixed(2)}ms)`);
-    joinStatus.textContent = 'Please choose a different emoji';
+    joinStatus.textContent = 'Please choose a different emoji. Opponent selected that one.';
     joinStatus.style.color = 'var(--danger)';
     joinRoomBtn.disabled = false;
     console.log('[MULTIPLAYER] 🔓 Join button re-enabled');

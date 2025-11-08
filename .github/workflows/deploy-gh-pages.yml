@@ -1,4 +1,4 @@
-name: Deploy Main to GitHub Pages
+name: Deploy Beta to GitHub Pages
 
 permissions:
   contents: read
@@ -8,7 +8,7 @@ permissions:
 on:
   push:
     branches:
-      - main
+      - beta
 
 jobs:
   build-and-deploy:
@@ -20,11 +20,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Deploy to GitHub Pages (main)
+      - name: Prepare beta directory
+        run: |
+          mkdir -p beta
+          rsync -av --exclude 'beta' --exclude '.git' . beta/
+
+      - name: Deploy to GitHub Pages (beta)
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.PERSONAL_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: ./
-          destination_dir: .
+          publish_dir: ./beta
+          destination_dir: beta
           keep_files: true

@@ -26,7 +26,7 @@ A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces and pl
 
 ## 🚀 Quick Start
 
-### Prerequisites
+---
 
 - Modern web browser (Chrome, Firefox, Safari, Edge)
 - Internet connection

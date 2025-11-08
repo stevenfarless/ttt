@@ -386,3 +386,4 @@ console.log('[MULTIPLAYER] 🔓 Join button re-enabled');
 
 console.log('[MULTIPLAYER] ✅ All event listeners attached successfully');
 console.log('[MULTIPLAYER] 🎮 Multiplayer lobby ready!');
+ 

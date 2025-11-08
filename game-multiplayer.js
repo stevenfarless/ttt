@@ -349,16 +349,17 @@ function listenToGameChanges() {
         console.log('[GAME] ℹ️ No new moves detected in this update');
       }
 
-      // Update previousBoard for next comparison
+            // Update previousBoard for next comparison
       previousBoard = gameBoard.map(cell => cell);
 
       // Update game state
-      const wasMy Turn = isMyTurn;
+      const wasMyTurn = isMyTurn;  // ✅ FIXED - removed space
       isMyTurn = room.turn === mySymbol;
 
       if (wasMyTurn !== isMyTurn) {
         console.log(`[GAME] 🔄 Turn changed: ${wasMyTurn ? 'My turn' : 'Opponent turn'} -> ${isMyTurn ? 'My turn' : 'Opponent turn'}`);
       }
+
 
       updateBoard();
       updateTurnHighlight();

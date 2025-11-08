@@ -1,5 +1,8 @@
 name: Auto-Restore Beta Workflow
 
+permissions:
+  contents: write
+
 on:
   push:
     branches:

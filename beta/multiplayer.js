@@ -335,6 +335,17 @@ joinRoomBtn.addEventListener('click', () => {
       return;
     }
 
+    // 🐛 FIX: Validate emoji uniqueness - <--- This is where your code should go
+    if (room.hostEmoji === selectedEmoji) {
+    const endTime = performance.now();
+    console.log(`[MULTIPLAYER] ❌ Emoji conflict: Guest selected ${selectedEmoji} but host is already using it (checked in ${(endTime - startTime).toFixed(2)}ms)`);
+    joinStatus.textContent = 'Please choose a different emoji';
+    joinStatus.style.color = 'var(--danger)';
+    joinRoomBtn.disabled = false;
+    console.log('[MULTIPLAYER] 🔓 Join button re-enabled');
+    return;
+  }
+
     console.log(`[MULTIPLAYER] 📤 Joining game ${code}...`);
     console.log(`[MULTIPLAYER] 🎮 Matchup: Host ${room.hostEmoji} vs Guest ${selectedEmoji}`);
 
@@ -387,3 +398,4 @@ joinRoomBtn.addEventListener('click', () => {
 
 console.log('[MULTIPLAYER] ✅ All event listeners attached successfully');
 console.log('[MULTIPLAYER] 🎮 Multiplayer lobby ready!');
+

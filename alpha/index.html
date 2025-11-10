@@ -11,7 +11,7 @@
 
 <body>
   <div id="container">
-    <h1>Tic Tac Toe<br>1.1.0</h1>
+    <h1>Tic Tac Toe<br>1.2.1 Alpha</h1>
 
     <!-- Emoji Picker Section -->
     <div class="emoji-section">
@@ -42,7 +42,14 @@
           <div class="code-container">
             <span class="label">Your Code:</span>
             <span id="roomCodeDisplay" class="room-code">XXXX</span>
-            <button id="copyCodeBtn" class="copy-btn" title="Copy to clipboard">📋</button>
+            <button id="copyCodeBtn" class="copy-btn" type="button" aria-label="Copy room code"
+              title="Copy to clipboard">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
           </div>
         </div>
         <p id="createStatus" class="status-text"></p>
@@ -56,7 +63,13 @@
           <div class="code-container">
             <span class="label">Enter Code:</span>
             <input id="roomCodeInput" type="text" maxlength="4" class="room-code-input">
-            <button id="pasteCodeBtn" class="paste-btn" title="Paste from clipboard">📋</button>
+            <button id="pasteCodeBtn" class="paste-btn" type="button" title="Paste from clipboard">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+              </svg>
+            </button>
           </div>
         </div>
         <p id="joinStatus" class="status-text"></p>

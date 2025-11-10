@@ -119,24 +119,88 @@ roomCodeInput.addEventListener('input', (e) => {
   joinStatus.textContent = '';
 });
 
-// Copy room code
+// // Copy room code
+// copyCodeBtn?.addEventListener('click', async () => {
+//   try {
+//     const code = roomCodeDisplay.textContent;
+//     await navigator.clipboard.writeText(code);
+    
+//     const originalText = copyCodeBtn.textContent;
+//     copyCodeBtn.textContent = '✓';
+//     copyCodeBtn.style.background = 'var(--success)';
+    
+//     setTimeout(() => {
+//       copyCodeBtn.textContent = originalText;
+//       copyCodeBtn.style.background = '';
+//     }, 1500);
+//   } catch (error) {
+//     console.error('[MULTIPLAYER] Copy failed:', error);
+//   }
+// });
+
+// Copy room code with fallback support for unsupported browsers
 copyCodeBtn?.addEventListener('click', async () => {
   try {
     const code = roomCodeDisplay.textContent;
-    await navigator.clipboard.writeText(code);
     
-    const originalText = copyCodeBtn.textContent;
-    copyCodeBtn.textContent = '✓';
+    if (code === 'XXXX') {
+      console.warn('[MULTIPLAYER] Cannot copy placeholder');
+      return;
+    }
+    
+    // Try modern Clipboard API first
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(code);
+    } else {
+      // Fallback for older browsers (creates temporary textarea)
+      const textArea = document.createElement('textarea');
+      textArea.value = code;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-9999px';  // Move off-screen
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');  // Legacy copy method
+      document.body.removeChild(textArea);
+    }
+    
+    // Success feedback (same as before)
+    const originalHTML = copyCodeBtn.innerHTML;
+    copyCodeBtn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    `;
     copyCodeBtn.style.background = 'var(--success)';
+    copyCodeBtn.setAttribute('aria-label', 'Copied!');
     
     setTimeout(() => {
-      copyCodeBtn.textContent = originalText;
+      copyCodeBtn.innerHTML = originalHTML;
       copyCodeBtn.style.background = '';
-    }, 1500);
+      copyCodeBtn.setAttribute('aria-label', 'Copy room code');
+    }, 2000);
+    
   } catch (error) {
     console.error('[MULTIPLAYER] Copy failed:', error);
+    
+    // Error feedback (same as before)
+    const originalHTML = copyCodeBtn.innerHTML;
+    copyCodeBtn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    `;
+    copyCodeBtn.style.background = 'var(--danger)';
+    copyCodeBtn.setAttribute('aria-label', 'Copy failed');
+    
+    setTimeout(() => {
+      copyCodeBtn.innerHTML = originalHTML;
+      copyCodeBtn.style.background = '';
+      copyCodeBtn.setAttribute('aria-label', 'Copy room code');
+    }, 2000);
   }
 });
+
 
 // Paste room code
 pasteCodeBtn?.addEventListener('click', async () => {

@@ -42,7 +42,6 @@ h1 {
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
-/* Emoji Toggle Button */
 .emoji-section {
   text-align: center;
   margin-bottom: 30px;
@@ -79,7 +78,6 @@ h1 {
   letter-spacing: 0.5px;
 }
 
-/* Emoji Modal Overlay */
 .emoji-modal {
   position: fixed;
   top: 0;
@@ -142,7 +140,7 @@ h1 {
   box-shadow: 0 4px 8px rgba(255, 85, 85, 0.3);
 }
 
-/* Emoji Grid - 4 EMOJIS PER ROW (ALL SCREENS) */
+/* Emoji Grid - 4 Emojis per row no matter the size */
 .emoji-picker {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -207,7 +205,6 @@ h1 {
   transform: translateY(0);
 }
 
-/* Room Module - Attached BELOW button */
 .room-module {
   margin: 0;
   animation: slideDown 0.3s ease;
@@ -238,7 +235,6 @@ h1 {
   overflow: hidden;
 }
 
-/* Code Container - EXACT SAME FOR BOTH */
 .code-container {
   display: flex;
   align-items: center;
@@ -252,7 +248,6 @@ h1 {
   white-space: nowrap;
 }
 
-/* Room Code Display (Create) and Input (Join) - IDENTICAL STYLING */
 .room-code,
 .room-code-input {
   background: var(--secondary);
@@ -288,7 +283,6 @@ h1 {
   opacity: 0.5;
 }
 
-/* Buttons - EXACT SAME FOR BOTH */
 .copy-btn,
 .paste-btn {
   background: var(--info);
@@ -304,6 +298,14 @@ h1 {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  padding: 8px;
+}
+
+.copy-btn svg,
+.paste-btn svg {
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
 }
 
 .copy-btn:hover,
@@ -331,7 +333,6 @@ h1 {
   margin-bottom: 0;
 }
 
-/* Responsive - Container adjusts width, grid stays 4 columns */
 @media (max-width: 480px) {
   #container {
     padding: 25px 20px;

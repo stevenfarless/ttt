@@ -42,6 +42,7 @@
           <div class="code-container">
             <span class="label">Your Code:</span>
             <span id="roomCodeDisplay" class="room-code">XXXX</span>
+
             <!-- Replacing this line with an experimental better solution -->
             <!-- <button id="copyCodeBtn" class="copy-btn" title="Copy to clipboard">📋</button> -->
             <button id="copyCodeBtn" class="copy-btn" type="button" aria-label="Copy room code"
@@ -66,7 +67,19 @@
           <div class="code-container">
             <span class="label">Enter Code:</span>
             <input id="roomCodeInput" type="text" maxlength="4" class="room-code-input">
-            <button id="pasteCodeBtn" class="paste-btn" title="Paste from clipboard">📋</button>
+
+            <!-- Replacing this with an SVG button -->
+            <!-- <button id="pasteCodeBtn" class="paste-btn" title="Paste from clipboard">📋</button> -->
+
+            <!-- New SVG button -->
+            <button id="pasteCodeBtn" class="paste-btn" type="button" title="Paste from clipboard">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+              </svg>
+            </button>
+
           </div>
         </div>
         <p id="joinStatus" class="status-text"></p>

@@ -1,0 +1,48 @@
+name: Feature Request
+about: Suggest an idea, improvement, or new emoji/gameplay feature!
+title: "[FEATURE] "
+labels: enhancement, discussion
+assignees: stevenfarless
+
+body:
+  - type: markdown
+    attributes:
+      value: "## 💡 Feature Request\nWant something new? Suggest it here!"
+
+  - type: input
+    id: feature-summary
+    attributes:
+      label: Feature summary
+      description: Briefly describe your idea.
+      placeholder: "Add two-player chat, support for custom emojis"
+    validations:
+      required: true
+
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Why is this feature important?
+      placeholder: "It will help players talk between rounds and improve game engagement."
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Possible implementation details
+      description: Share any code, design, or reference material.
+
+  - type: checkboxes
+    id: compatibility
+    attributes:
+      label: I checked for duplicate requests
+      description: Please search Issues before submitting!
+      options:
+        - label: "Yes, this is a new idea."
+          required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Anything else, designs, screenshots, related links.

@@ -1,5 +1,5 @@
 name: Bug Report
-about: Report a bug, gameplay issue, or technical problem
+description: Report a bug, gameplay issue, or technical problem
 title: "[BUG] "
 labels: bug, needs-triage
 assignees: stevenfarless

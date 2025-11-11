@@ -1,0 +1,73 @@
+name: Bug Report
+about: Report a bug, gameplay issue, or technical problem
+title: "[BUG] "
+labels: bug, needs-triage
+assignees: stevenfarless
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🐞 Thanks for reporting a bug!
+        Please provide details so we can reproduce and fix this.
+
+  - type: input
+    id: summary
+    attributes:
+      label: Bug summary
+      description: Briefly state the problem you encountered.
+      placeholder: "Emoji picker shows blank, multiplayer disconnects after 1 round"
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Step-by-step instructions so we can trigger the bug.
+      value: "1. \n2. \n3. "
+    validations:
+      required: true
+
+  - type: input
+    id: expected
+    attributes:
+      label: Expected behavior
+      placeholder: "Game should reconnect users after brief disconnect"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Which browser did you use?
+      options:
+        - Chrome
+        - Firefox
+        - Edge
+        - Safari
+        - Other
+      description: If "Other," specify in Additional context.
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating System
+      placeholder: "Windows 11, macOS Sonoma, Android 14, etc."
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error logs or screenshots
+      description: Paste relevant console logs, errors, or attach images.
+      render: bash
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Anything else that could help us reproduce or diagnose the issue.

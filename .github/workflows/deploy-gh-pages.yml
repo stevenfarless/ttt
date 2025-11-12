@@ -17,12 +17,19 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      - name: Deploy to GitHub Pages (experimental subdirectory)
+      - name: Prepare experimental directory
+        run: |
+          mkdir -p experimental
+          rsync -av --exclude 'experimental' --exclude '.git' . experimental/
+
+      - name: Deploy to GitHub Pages (experimental)
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PERSONAL_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: ./
+          publish_dir: ./experimental
           destination_dir: experimental
           keep_files: true

@@ -1,6 +1,5 @@
 // game-multiplayer.js
-
-import { firebaseConfig, replayStoredLogs } from "./utils.js";
+import { firebaseConfig, replayStoredLogs, setupFirebaseCleanup } from './utils.js';
 
 // Constants
 const ANIMATION_DURATION = 600;
@@ -18,7 +17,7 @@ const roomCode = sessionStorage.getItem("roomCode");
 const isHost = sessionStorage.getItem("isHost") === "true";
 const mySymbol = sessionStorage.getItem("mySymbol");
 const opponentSymbol = sessionStorage.getItem("opponentSymbol");
-const myRole = isHost ? "host" : "guest"; // ✅ NEW: Determine player role
+const myRole = isHost ? "host" : "guest";
 
 console.log("[GAME] 💾 Loading session data...");
 console.log(`[GAME] 📋 Room Code: ${roomCode}`);
@@ -44,6 +43,9 @@ if (!firebase.apps.length) {
 
 const db = firebase.database();
 console.log("[GAME] ✅ Database connection established");
+
+// Setup Firebase cleanup handlers
+setupFirebaseCleanup();
 
 // DOM References
 const player1Indicator = document.querySelector(
@@ -140,7 +142,7 @@ function checkWinner(board) {
           endTime - startTime
         ).toFixed(2)}ms`
       );
-      return board[a]; // Returns 'host' or 'guest'
+      return board[a];
     }
   }
 
@@ -164,14 +166,13 @@ function checkWinner(board) {
 
 /**
  * Updates the visual board display
- * ✅ UPDATED: Now sets data-player attribute for gradient effects
  */
 function updateBoard() {
   const startTime = performance.now();
   console.log("[GAME] 🎨 Updating board display...");
   try {
     cells.forEach((cell, index) => {
-      const role = gameBoard[index]; // 'host', 'guest', or null
+      const role = gameBoard[index];
 
       // Translate role to emoji for display
       let displaySymbol = "";
@@ -185,7 +186,7 @@ function updateBoard() {
       cell.classList.remove("my-move", "opponent-move");
       cell.style.color = "";
 
-      // ✅ NEW: Set data-player attribute for gradient effect
+      // Set data-player attribute for gradient effect
       if (role === myRole) {
         cell.setAttribute("data-player", "self");
         cell.style.color = "#3B82F6";
@@ -276,7 +277,6 @@ function makeMove(index) {
         }
 
         if (room.turn !== myRole) {
-          // ✅ CHANGED: Check role instead of emoji
           console.log(
             `[GAME] ⚠️ Transaction aborted: Turn mismatch (expected ${myRole}, got ${room.turn})`
           );
@@ -301,14 +301,14 @@ function makeMove(index) {
         }
 
         // Make move - store role instead of emoji
-        board[index] = myRole; // ✅ CHANGED: Store 'host' or 'guest'
+        board[index] = myRole;
         console.log(
           `[GAME] ✅ Move executed: ${myRole} placed at cell ${index}`
         );
 
         // Convert back to Firebase format
         room.board = Object.fromEntries(board.map((val, i) => [i, val]));
-        room.turn = isHost ? "guest" : "host"; // ✅ CHANGED: Toggle between roles
+        room.turn = isHost ? "guest" : "host";
         room.winner = checkWinner(board);
 
         console.log(`[GAME] 📤 Updating Firebase:`);
@@ -442,7 +442,7 @@ function listenToGameChanges() {
 
         // Update game state
         const wasMyTurn = isMyTurn;
-        isMyTurn = room.turn === myRole; // ✅ CHANGED: Compare with role
+        isMyTurn = room.turn === myRole;
 
         if (wasMyTurn !== isMyTurn) {
           console.log(
@@ -464,7 +464,7 @@ function listenToGameChanges() {
             result.textContent = "It's a draw!";
             console.log("[GAME] 🤝 Game result: DRAW");
           } else {
-            const iWon = room.winner === myRole; // ✅ CHANGED: Compare with role
+            const iWon = room.winner === myRole;
             result.textContent = iWon ? "You win! 🎉" : "You lose";
             console.log(
               `[GAME] ${iWon ? "🎉" : "😢"} Game result: ${
@@ -516,7 +516,7 @@ function resetGame() {
     console.log("[GAME] 📤 Sending reset to Firebase...");
     roomRef.update({
       board: emptyBoard,
-      turn: "host", // ✅ CHANGED: Always start with host
+      turn: "host",
       winner: null,
     });
 
@@ -624,9 +624,3 @@ console.log(`[GAME] 🎮 ${mySymbol} (You) vs ${opponentSymbol} (Opponent)`);
 console.log(
   `[GAME] 🎮 ${isMyTurn ? "Your turn to start!" : "Waiting for opponent..."}`
 );
-
-// In game-multiplayer.js after game ends
-setTimeout(() => {
-  db.ref('rooms/' + roomCode).remove();
-}, 1000); // 1 seconds after game finish
-

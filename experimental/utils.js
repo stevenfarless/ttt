@@ -181,3 +181,24 @@ export function sanitizeEmojiChoice(choice, allowedEmojis) {
 }
 
 console.log('[UTILS] ✅ Utils module loaded successfully');
+
+/**
+ * Clean Firebase connection handling
+ */
+export function setupFirebaseCleanup() {
+  // Force disconnect on unload
+  window.addEventListener('beforeunload', () => {
+    firebase.database().goOffline();
+  });
+
+  // Handle visibility changes
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      firebase.database().goOffline();
+    } else {
+      firebase.database().goOnline();
+    }
+  });
+
+  console.log('[UTILS] ✅ Firebase cleanup handlers registered');
+}

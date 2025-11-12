@@ -142,7 +142,34 @@ h1 {
   transition: transform 0.2s ease;
   min-height: 100px;
   outline: none;
+  position: relative;
 }
+
+/* Radial gradient behind game pieces */
+.cell::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cell[data-player="self"]::before {
+  background: radial-gradient(circle, rgba(80, 150, 255, 0.35) 0%, transparent 70%);
+}
+
+.cell[data-player="opponent"]::before {
+  background: radial-gradient(circle, rgba(255, 80, 80, 0.35) 0%, transparent 70%);
+}
+
+.cell::after {
+  content: attr(data-content);
+  position: relative;
+  z-index: 1;
+}
+
 
 /* Hover state - only applies to the hovered cell */
 .cell:hover {

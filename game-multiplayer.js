@@ -164,7 +164,7 @@ function checkWinner(board) {
 
 /**
  * Updates the visual board display
- * ✅ CHANGED: Now displays emojis but board internally uses 'host'/'guest'
+ * ✅ UPDATED: Now sets data-player attribute for gradient effects
  */
 function updateBoard() {
   const startTime = performance.now();
@@ -185,12 +185,17 @@ function updateBoard() {
       cell.classList.remove("my-move", "opponent-move");
       cell.style.color = "";
 
+      // ✅ NEW: Set data-player attribute for gradient effect
       if (role === myRole) {
+        cell.setAttribute("data-player", "self");
         cell.style.color = "#3B82F6";
         cell.classList.add("my-move");
       } else if (role && role !== myRole) {
+        cell.setAttribute("data-player", "opponent");
         cell.style.color = "#EF4444";
         cell.classList.add("opponent-move");
+      } else {
+        cell.removeAttribute("data-player");
       }
     });
 

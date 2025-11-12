@@ -1,4 +1,4 @@
-name: Deploy Alpha to GitHub Pages
+name: Deploy experimental to GitHub Pages
 
 permissions:
   contents: read
@@ -8,7 +8,7 @@ permissions:
 on:
   push:
     branches:
-      - alpha
+      - experimental
 
 jobs:
   build-and-deploy:
@@ -20,16 +20,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Prepare alpha directory
+      - name: Prepare experimental directory
         run: |
-          mkdir -p alpha
-          rsync -av --exclude 'alpha' --exclude '.git' . alpha/
+          mkdir -p experimental
+          rsync -av --exclude 'experimental' --exclude '.git' . experimental/
 
-      - name: Deploy to GitHub Pages (alpha)
+      - name: Deploy to GitHub Pages (experimental)
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.PERSONAL_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: ./alpha
-          destination_dir: alpha
+          publish_dir: ./experimental
+          destination_dir: experimental
           keep_files: true

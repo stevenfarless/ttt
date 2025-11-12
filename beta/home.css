@@ -336,48 +336,47 @@ h1 {
 }
 
 #env-nav {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 1.5rem;
-    padding-top: 1rem;
-    border-top: 1px solid rgba(68, 71, 90, 0.3);
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(68, 71, 90, 0.3);
 }
 
 .env-btn {
-    background: rgba(68, 71, 90, 0.4);
-    color: rgba(248, 248, 242, 0.6);
-    text-decoration: none;
-    padding: 0.35rem 0.65rem;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: 400;
-    transition: all 0.2s ease;
-    border: 1px solid transparent;
-    letter-spacing: 0.3px;
+  background: rgba(68, 71, 90, 0.4);
+  color: rgba(248, 248, 242, 0.6);
+  text-decoration: none;
+  padding: 0.35rem 0.65rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 400;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  letter-spacing: 0.3px;
 }
 
 .env-btn:hover {
-    background: rgba(68, 71, 90, 0.6);
-    color: var(--light);
-    transform: translateY(-1px);
+  background: rgba(68, 71, 90, 0.6);
+  color: var(--light);
+  transform: translateY(-1px);
 }
 
 .env-btn:active {
-    transform: translateY(0);
+  transform: translateY(0);
 }
 
-/* Very subtle environment-specific accent colors on hover */
 .env-main:hover {
-    border-color: rgba(80, 250, 123, 0.3);
+  border-color: rgba(80, 250, 123, 0.3);
 }
 
 .env-beta:hover {
-    border-color: rgba(241, 250, 140, 0.3);
+  border-color: rgba(241, 250, 140, 0.3);
 }
 
 .env-alpha:hover {
-    border-color: rgba(139, 233, 253, 0.3);
+  border-color: rgba(139, 233, 253, 0.3);
 }
 
 @media (max-width: 480px) {
@@ -409,5 +408,16 @@ h1 {
   .room-code,
   .room-code-input {
     font-size: 1.1rem;
+  }
+
+  #env-nav {
+    gap: 0.4rem;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+  }
+
+  .env-btn {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.65rem;
   }
 }

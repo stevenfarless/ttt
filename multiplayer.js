@@ -1,6 +1,5 @@
 // multiplayer.js
-
-import { firebaseConfig, clearStoredLogs } from "./utils.js";
+import { firebaseConfig, clearStoredLogs, setupFirebaseCleanup } from './utils.js';
 
 // Initialize Firebase
 if (!firebase.apps.length) {
@@ -9,6 +8,10 @@ if (!firebase.apps.length) {
 
 const DEBUG = true;
 const db = firebase.database();
+
+// Setup Firebase cleanup handlers
+setupFirebaseCleanup();
+
 console.log("[MULTIPLAYER] Script loaded at", new Date().toISOString());
 
 // Emojis array
@@ -287,7 +290,7 @@ createRoomBtn.addEventListener("click", () => {
       7: null,
       8: null,
     },
-    turn: "host", // ✅ CHANGED: Now using 'host' instead of emoji
+    turn: "host",
     winner: null,
   };
 
@@ -419,8 +422,6 @@ joinRoomBtn.addEventListener("click", () => {
         return;
       }
 
-      // ✅ REMOVED: Emoji uniqueness validation - players can now choose the same emoji!
-
       console.log(`[MULTIPLAYER] 📤 Joining game ${code}...`);
       console.log(
         `[MULTIPLAYER] 🎮 Matchup: Host ${room.hostEmoji} vs Guest ${selectedEmoji}`
@@ -449,7 +450,7 @@ joinRoomBtn.addEventListener("click", () => {
       }
 
       if (!room.turn) {
-        updateData.turn = "host"; // ✅ CHANGED: Using 'host' instead of emoji
+        updateData.turn = "host";
         console.log(`[MULTIPLAYER] ⚠️ Room missing turn, setting turn to host`);
       }
 

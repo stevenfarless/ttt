@@ -143,9 +143,83 @@ h1 {
   min-height: 100px;
   outline: none;
   position: relative;
+  /* ✅ REQUIRED - Creates stacking context */
+  overflow: hidden;
+  /* ✅ Prevents gradient from bleeding outside */
 }
 
-/* Radial gradient behind game pieces */
+/* Gradient layer - BEHIND emojis */
+.cell::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 0;
+  /* ✅ BEHIND */
+}
+
+.cell[data-player="self"]::before {
+  background: radial-gradient(circle, rgba(80, 150, 255, 0.35) 0%, transparent 70%);
+}
+
+.cell[data-player="opponent"]::before {
+  background: radial-gradient(circle, rgba(255, 80, 80, 0.35) 0%, transparent 70%);
+}
+
+/* Hover state - only applies to the hovered cell */
+.cell:hover {
+  transform: scale(1.05);
+  animation: borderFadeInOut 0.6s ease-in-out;
+}
+
+.cell:active {
+  transform: scale(0.98);
+}
+
+/* Click animation - only applies to clicked cell with .clicked class */
+.cell.clicked {
+  animation: borderExpand 0.6s ease-out forwards;
+}
+
+.cell.my-move {
+  color: #3B82F6 !important;
+  font-weight: bold;
+  position: relative;
+  /* ✅ Creates stacking context for text */
+  z-index: 1;
+  /* ✅ Text goes ABOVE gradient */
+}
+
+.cell.opponent-move {
+  color: #EF4444 !important;
+  font-weight: bold;
+  position: relative;
+  /* ✅ Creates stacking context for text */
+  z-index: 1;
+  /* ✅ Text goes ABOVE gradient */
+}
+
+/* .cell {
+  aspect-ratio: 1 / 1;
+  background: var(--secondary);
+  border: 2px solid var(--light);
+  border-radius: 8px;
+  font-size: 3rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s ease;
+  min-height: 100px;
+  outline: none;
+  position: relative;
+}
+
 .cell::before {
   content: '';
   position: absolute;
@@ -170,8 +244,6 @@ h1 {
   z-index: 1;
 }
 
-
-/* Hover state - only applies to the hovered cell */
 .cell:hover {
   transform: scale(1.05);
   animation: borderFadeInOut 0.6s ease-in-out;
@@ -181,7 +253,6 @@ h1 {
   transform: scale(0.98);
 }
 
-/* Click animation - only applies to clicked cell with .clicked class */
 .cell.clicked {
   animation: borderExpand 0.6s ease-out forwards;
 }
@@ -195,6 +266,11 @@ h1 {
   color: #EF4444 !important;
   font-weight: bold;
 }
+
+  .cell {
+    font-size: 2.5rem;
+    min-height: 80px;
+  } */
 
 #result {
   text-align: center;
@@ -247,11 +323,6 @@ button:disabled {
   h1 {
     font-size: 1.75rem;
     margin-bottom: 1rem;
-  }
-
-  .cell {
-    font-size: 2.5rem;
-    min-height: 80px;
   }
 
   button {

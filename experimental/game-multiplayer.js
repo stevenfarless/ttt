@@ -624,3 +624,8 @@ console.log(`[GAME] 🎮 ${mySymbol} (You) vs ${opponentSymbol} (Opponent)`);
 console.log(
   `[GAME] 🎮 ${isMyTurn ? "Your turn to start!" : "Waiting for opponent..."}`
 );
+
+// In game-multiplayer.js after game ends
+setTimeout(() => {
+  db.ref('rooms/' + roomCode).remove();
+}, 30000); // 30 seconds after game finish

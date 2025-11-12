@@ -24,8 +24,12 @@ A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces, visua
 
 ## 📷 Screenshots
 
-<img height="600" alt="homescreen" src="https://github.com/user-attachments/assets/72f15ab0-e795-4de7-8191-cee53e5eb81d" />
-<img height="600" alt="gameboard" src="https://github.com/user-attachments/assets/7d1ee014-7a7c-4fef-aea8-9204b98f56f8" />
+<img height="500" alt="image" src="https://github.com/user-attachments/assets/2be32ba4-c4c5-43a6-b0ec-9dc76ba95536" />
+
+<img height="500" alt="image" src="https://github.com/user-attachments/assets/ec9cec66-785b-4324-ad91-bb75a88800a2" />
+
+<img height="500" alt="image" src="https://github.com/user-attachments/assets/d839cca0-b27f-4023-ac32-592ef677358f" />
+
 
 ---
 
@@ -127,6 +131,8 @@ Choose any of these 20 emojis as your game piece (both players can use the same 
 🐶 😺 💩 🦐  
 🍕 🍣 🍓 🍤  
 🌙 ☀️ ⭐ 🚀
+
+![Recording 2025-11-12 041408](https://github.com/user-attachments/assets/351a60d8-7326-4ad2-af55-bfe272376687)
 
 ---
 

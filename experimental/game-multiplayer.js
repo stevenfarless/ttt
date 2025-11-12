@@ -628,4 +628,5 @@ console.log(
 // In game-multiplayer.js after game ends
 setTimeout(() => {
   db.ref('rooms/' + roomCode).remove();
-}, 30000); // 30 seconds after game finish
+}, 1000); // 1 seconds after game finish
+

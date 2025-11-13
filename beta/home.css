@@ -333,6 +333,7 @@ h1 {
   border-left: 4px solid var(--success);
   border-radius: 0 0 8px 8px;
   margin-bottom: 0;
+  white-space: pre-line;
 }
 
 #env-nav {
@@ -419,5 +420,85 @@ h1 {
   .env-btn {
     padding: 0.3rem 0.5rem;
     font-size: 0.65rem;
+  }
+}
+
+/* Action Button Styles */
+.action-btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.action-btn.secondary {
+  background: var(--info);
+  color: var(--dark);
+}
+
+.action-btn.secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(139, 233, 253, 0.3);
+}
+
+.action-btn.secondary:active {
+  transform: translateY(0);
+}
+
+
+/* ============================================ */
+/* SHAREABLE LINK STYLES */
+/* ============================================ */
+
+.share-link-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.invite-link-container {
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 0.75rem 0;
+  word-break: break-all;
+}
+
+.invite-link {
+  font-family: "Courier New", monospace;
+  font-size: 0.9rem;
+  color: var(--info);
+  text-align: center;
+  line-height: 1.4;
+}
+
+.share-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.share-buttons .action-btn {
+  flex: 1;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 480px) {
+  .invite-link {
+    font-size: 0.75rem;
+  }
+
+  .share-buttons {
+    flex-direction: column;
+  }
+
+  .share-buttons .action-btn {
+    width: 100%;
   }
 }

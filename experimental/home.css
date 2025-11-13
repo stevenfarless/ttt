@@ -333,6 +333,7 @@ h1 {
   border-left: 4px solid var(--success);
   border-radius: 0 0 8px 8px;
   margin-bottom: 0;
+  white-space: pre-line;
 }
 
 #env-nav {

@@ -90,7 +90,7 @@ function checkForRoomInURL() {
       roomCodeInput.dispatchEvent(new Event("input"));
 
       // Update status
-      joinStatus.textContent = "Room code loaded from link. Ready to join!";
+      joinStatus.textContent = "Room code loaded from link.\nReady to join!";
       joinStatus.style.color = "var(--success)";
 
       // Clean URL (optional)

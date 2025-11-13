@@ -1,7 +1,7 @@
-name: Deploy main to GitHub Pages
+name: Deploy Main to GitHub Pages
 
 permissions:
-  contents: write  # CHANGED from 'read' to 'write'
+  contents: read
   pages: write
   id-token: write
 
@@ -20,18 +20,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Prepare main directory
-        run: |
-          mkdir -p main
-          rsync -av --exclude 'main' --exclude '.git' --exclude '.github' . main/
-
       - name: Deploy to GitHub Pages (main)
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.PERSONAL_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: ./main
-          destination_dir: main
+          publish_dir: ./
+          destination_dir: .
           keep_files: true
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'

@@ -1,7 +1,7 @@
 name: Deploy alpha to GitHub Pages
 
 permissions:
-  contents: write  # CHANGED from 'read' to 'write'
+  contents: read
   pages: write
   id-token: write
 
@@ -23,7 +23,7 @@ jobs:
       - name: Prepare alpha directory
         run: |
           mkdir -p alpha
-          rsync -av --exclude 'alpha' --exclude '.git' --exclude '.github' . alpha/
+          rsync -av --exclude 'alpha' --exclude '.git' . alpha/
 
       - name: Deploy to GitHub Pages (alpha)
         uses: peaceiris/actions-gh-pages@v4
@@ -33,5 +33,3 @@ jobs:
           publish_dir: ./alpha
           destination_dir: alpha
           keep_files: true
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'

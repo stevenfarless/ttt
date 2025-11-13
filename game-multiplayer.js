@@ -1,5 +1,6 @@
 // game-multiplayer.js
-import { firebaseConfig, replayStoredLogs, setupFirebaseCleanup } from './utils.js';
+
+import { firebaseConfig, replayStoredLogs } from "./utils.js";
 
 // Constants
 const ANIMATION_DURATION = 600;
@@ -17,7 +18,7 @@ const roomCode = sessionStorage.getItem("roomCode");
 const isHost = sessionStorage.getItem("isHost") === "true";
 const mySymbol = sessionStorage.getItem("mySymbol");
 const opponentSymbol = sessionStorage.getItem("opponentSymbol");
-const myRole = isHost ? "host" : "guest";
+const myRole = isHost ? "host" : "guest"; // ✅ NEW: Determine player role
 
 console.log("[GAME] 💾 Loading session data...");
 console.log(`[GAME] 📋 Room Code: ${roomCode}`);
@@ -43,9 +44,6 @@ if (!firebase.apps.length) {
 
 const db = firebase.database();
 console.log("[GAME] ✅ Database connection established");
-
-// Setup Firebase cleanup handlers
-setupFirebaseCleanup();
 
 // DOM References
 const player1Indicator = document.querySelector(
@@ -142,7 +140,7 @@ function checkWinner(board) {
           endTime - startTime
         ).toFixed(2)}ms`
       );
-      return board[a];
+      return board[a]; // Returns 'host' or 'guest'
     }
   }
 
@@ -166,13 +164,14 @@ function checkWinner(board) {
 
 /**
  * Updates the visual board display
+ * ✅ UPDATED: Now sets data-player attribute for gradient effects
  */
 function updateBoard() {
   const startTime = performance.now();
   console.log("[GAME] 🎨 Updating board display...");
   try {
     cells.forEach((cell, index) => {
-      const role = gameBoard[index];
+      const role = gameBoard[index]; // 'host', 'guest', or null
 
       // Translate role to emoji for display
       let displaySymbol = "";
@@ -186,7 +185,7 @@ function updateBoard() {
       cell.classList.remove("my-move", "opponent-move");
       cell.style.color = "";
 
-      // Set data-player attribute for gradient effect
+      // ✅ NEW: Set data-player attribute for gradient effect
       if (role === myRole) {
         cell.setAttribute("data-player", "self");
         cell.style.color = "#3B82F6";
@@ -277,6 +276,7 @@ function makeMove(index) {
         }
 
         if (room.turn !== myRole) {
+          // ✅ CHANGED: Check role instead of emoji
           console.log(
             `[GAME] ⚠️ Transaction aborted: Turn mismatch (expected ${myRole}, got ${room.turn})`
           );
@@ -301,14 +301,14 @@ function makeMove(index) {
         }
 
         // Make move - store role instead of emoji
-        board[index] = myRole;
+        board[index] = myRole; // ✅ CHANGED: Store 'host' or 'guest'
         console.log(
           `[GAME] ✅ Move executed: ${myRole} placed at cell ${index}`
         );
 
         // Convert back to Firebase format
         room.board = Object.fromEntries(board.map((val, i) => [i, val]));
-        room.turn = isHost ? "guest" : "host";
+        room.turn = isHost ? "guest" : "host"; // ✅ CHANGED: Toggle between roles
         room.winner = checkWinner(board);
 
         console.log(`[GAME] 📤 Updating Firebase:`);
@@ -442,7 +442,7 @@ function listenToGameChanges() {
 
         // Update game state
         const wasMyTurn = isMyTurn;
-        isMyTurn = room.turn === myRole;
+        isMyTurn = room.turn === myRole; // ✅ CHANGED: Compare with role
 
         if (wasMyTurn !== isMyTurn) {
           console.log(
@@ -464,7 +464,7 @@ function listenToGameChanges() {
             result.textContent = "It's a draw!";
             console.log("[GAME] 🤝 Game result: DRAW");
           } else {
-            const iWon = room.winner === myRole;
+            const iWon = room.winner === myRole; // ✅ CHANGED: Compare with role
             result.textContent = iWon ? "You win! 🎉" : "You lose";
             console.log(
               `[GAME] ${iWon ? "🎉" : "😢"} Game result: ${
@@ -516,7 +516,7 @@ function resetGame() {
     console.log("[GAME] 📤 Sending reset to Firebase...");
     roomRef.update({
       board: emptyBoard,
-      turn: "host",
+      turn: "host", // ✅ CHANGED: Always start with host
       winner: null,
     });
 

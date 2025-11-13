@@ -145,7 +145,6 @@ h1 {
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  /* ✅ KEY FIX: Creates new stacking context */
 }
 
 /* Gradient layer - BEHIND emojis */
@@ -159,7 +158,6 @@ h1 {
   border-radius: 8px;
   pointer-events: none;
   z-index: -1;
-  /* ✅ Behind the cell content */
 }
 
 .cell[data-player="self"]::before {

@@ -248,7 +248,7 @@ function makeMove(index) {
   console.log(`[GAME] 🎯 Player clicked cell ${index}`);
   console.log(
     `[GAME] 🎮 Move context: gameActive=${gameActive}, isMyTurn=${isMyTurn}, cellEmpty=${!gameBoard[
-      index
+    index
     ]}`
   );
 
@@ -446,8 +446,7 @@ function listenToGameChanges() {
 
         if (wasMyTurn !== isMyTurn) {
           console.log(
-            `[GAME] 🔄 Turn changed: ${
-              wasMyTurn ? "My turn" : "Opponent turn"
+            `[GAME] 🔄 Turn changed: ${wasMyTurn ? "My turn" : "Opponent turn"
             } -> ${isMyTurn ? "My turn" : "Opponent turn"}`
           );
         }
@@ -467,8 +466,7 @@ function listenToGameChanges() {
             const iWon = room.winner === myRole; // ✅ CHANGED: Compare with role
             result.textContent = iWon ? "You win! 🎉" : "You lose";
             console.log(
-              `[GAME] ${iWon ? "🎉" : "😢"} Game result: ${
-                iWon ? "YOU WIN!" : "YOU LOSE"
+              `[GAME] ${iWon ? "🎉" : "😢"} Game result: ${iWon ? "YOU WIN!" : "YOU LOSE"
               } (Winner: ${room.winner})`
             );
           }
@@ -476,8 +474,7 @@ function listenToGameChanges() {
           gameActive = true;
           result.textContent = isMyTurn ? "Your turn" : "Opponent's turn";
           console.log(
-            `[GAME] ➡️ Game continues - ${
-              isMyTurn ? "Your turn" : "Opponent's turn"
+            `[GAME] ➡️ Game continues - ${isMyTurn ? "Your turn" : "Opponent's turn"
             }`
           );
         }
@@ -624,3 +621,13 @@ console.log(`[GAME] 🎮 ${mySymbol} (You) vs ${opponentSymbol} (Opponent)`);
 console.log(
   `[GAME] 🎮 ${isMyTurn ? "Your turn to start!" : "Waiting for opponent..."}`
 );
+
+// Capture console.log and display in the pseudo console
+const originalLog = console.log;
+console.log = function (...args) {
+  originalLog.apply(console, args);
+  const consoleLine = document.getElementById('console-line');
+  if (consoleLine) {
+    consoleLine.textContent = args.join(' ');
+  }
+};

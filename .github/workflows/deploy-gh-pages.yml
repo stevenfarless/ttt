@@ -1,4 +1,4 @@
-name: Deploy Main to GitHub Pages
+name: Deploy main to GitHub Pages
 
 permissions:
   contents: read
@@ -20,11 +20,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Prepare main directory
+        run: |
+          mkdir -p main
+          rsync -av --exclude 'main' --exclude '.git' . main/
+
       - name: Deploy to GitHub Pages (main)
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.PERSONAL_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: ./
-          destination_dir: .
+          publish_dir: ./main
+          destination_dir: main
           keep_files: true

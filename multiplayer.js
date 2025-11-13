@@ -655,3 +655,13 @@ joinRoomBtn.addEventListener("click", () => {
 
 console.log("[MULTIPLAYER] ✅ All event listeners attached successfully");
 console.log("[MULTIPLAYER] 🎮 Multiplayer lobby ready!");
+
+// Capture console.log and display in the pseudo console
+const originalLog = console.log;
+console.log = function (...args) {
+  originalLog.apply(console, args);
+  const consoleLine = document.getElementById('console-line');
+  if (consoleLine) {
+    consoleLine.textContent = args.join(' ');
+  }
+};

@@ -11,7 +11,7 @@
 
 <body>
   <div id="container">
-    <h1>Tic Tac Toe<br>2.0.0</h1>
+    <h1>Tic Tac Toe<br>2.1.0 Beta</h1>
 
     <!-- Emoji Picker Section -->
     <div class="emoji-section">
@@ -37,13 +37,14 @@
     <!-- Create Game Section -->
     <div class="section">
       <button id="createRoomBtn" class="btn btn-primary">Create Game</button>
+
+      <!-- Create Game Module -->
       <div id="createModule" class="room-module hidden">
         <div class="code-display">
           <div class="code-container">
-            <span class="label">Your Code:</span>
-            <span id="roomCodeDisplay" class="room-code">XXXX</span>
-            <button id="copyCodeBtn" class="copy-btn" type="button" aria-label="Copy room code"
-              title="Copy to clipboard">
+            <span class="label">Room Code:</span>
+            <div id="roomCodeDisplay" class="room-code">XXXX</div>
+            <button id="copyCodeBtn" class="copy-btn">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -52,6 +53,28 @@
             </button>
           </div>
         </div>
+
+        <!-- Shareable Link Section -->
+        <div class="share-link-section">
+          <p class="instruction"
+            style="margin-top: 1rem; margin-bottom: 0.5rem; text-align: center; color: var(--info); font-size: 0.85rem;">
+            Or share this link:
+          </p>
+          <div class="invite-link-container">
+            <div id="inviteLinkDisplay" class="invite-link">
+              Link will appear here...
+            </div>
+          </div>
+          <div class="share-buttons">
+            <button id="copyLinkBtn" class="action-btn secondary">
+              📋 Copy Link
+            </button>
+            <button id="shareLinkBtn" class="action-btn secondary">
+              🔗 Share
+            </button>
+          </div>
+        </div>
+
         <p id="createStatus" class="status-text"></p>
       </div>
     </div>

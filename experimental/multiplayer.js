@@ -52,11 +52,129 @@ const createStatus = document.getElementById("createStatus");
 const joinStatus = document.getElementById("joinStatus");
 const copyCodeBtn = document.getElementById("copyCodeBtn");
 const pasteCodeBtn = document.getElementById("pasteCodeBtn");
+const copyLinkBtn = document.getElementById("copyLinkBtn");
+const shareLinkBtn = document.getElementById("shareLinkBtn");
+const inviteLinkDisplay = document.getElementById("inviteLinkDisplay");
+
 
 console.log("[MULTIPLAYER] ✅ DOM elements loaded successfully");
 
 // Track generated room code
 let generatedRoomCode = null;
+
+// ============================================
+// URL PARAMETER HANDLING (NEW)
+// ============================================
+
+/**
+ * Parses URL parameters and auto-joins room if present
+ */
+function checkForRoomInURL() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const roomCode = urlParams.get("room");
+
+  if (roomCode && roomCode.length === 4) {
+    const sanitizedCode = roomCode.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    if (sanitizedCode.length === 4) {
+      console.log(
+        `[MULTIPLAYER] 🔗 Room code detected in URL: ${sanitizedCode}`
+      );
+      console.log("[MULTIPLAYER] 🚀 Auto-populating join module...");
+
+      // Show join module
+      joinModule.classList.remove("hidden");
+      createModule.classList.add("hidden");
+
+      // Pre-populate room code
+      roomCodeInput.value = sanitizedCode;
+      roomCodeInput.dispatchEvent(new Event("input"));
+
+      // Update status
+      joinStatus.textContent = "Room code loaded from link. Ready to join!";
+      joinStatus.style.color = "var(--success)";
+
+      // Clean URL (optional)
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Generates shareable invitation link
+ */
+function generateInviteLink(roomCode) {
+  const baseUrl = window.location.origin + window.location.pathname;
+  return `${baseUrl}?room=${roomCode}`;
+}
+
+/**
+ * Copies invite link to clipboard
+ */
+async function copyInviteLink(roomCode) {
+  const startTime = performance.now();
+  const link = generateInviteLink(roomCode);
+
+  try {
+    await navigator.clipboard.writeText(link);
+    const endTime = performance.now();
+    console.log(
+      `[MULTIPLAYER] ✅ Invite link copied: ${link} (took ${(
+        endTime - startTime
+      ).toFixed(2)}ms)`
+    );
+
+    // Visual feedback
+    const originalText = copyLinkBtn.textContent;
+    copyLinkBtn.textContent = "✓ Copied!";
+    copyLinkBtn.style.background = "var(--success)";
+
+    setTimeout(() => {
+      copyLinkBtn.textContent = originalText;
+      copyLinkBtn.style.background = "";
+    }, 2000);
+
+    return true;
+  } catch (error) {
+    console.error("[MULTIPLAYER] ❌ Failed to copy invite link:", error);
+    copyLinkBtn.textContent = "❌ Failed";
+    setTimeout(() => {
+      copyLinkBtn.textContent = "📋 Copy Link";
+    }, 2000);
+    return false;
+  }
+}
+
+/**
+ * Shares invite link using Web Share API (mobile-friendly)
+ */
+async function shareInviteLink(roomCode) {
+  const link = generateInviteLink(roomCode);
+  const hostEmoji = emojiDisplay.textContent;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: "Join my Tic Tac Toe game!",
+        text: `Join ${hostEmoji} for a game of Tic Tac Toe! Room code: ${roomCode}`,
+        url: link,
+      });
+      console.log("[MULTIPLAYER] ✅ Shared via Web Share API");
+      return true;
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        console.error("[MULTIPLAYER] ❌ Share failed:", error);
+      }
+      return false;
+    }
+  } else {
+    console.log("[MULTIPLAYER] ⚠️ Web Share API not supported, copying instead");
+    return await copyInviteLink(roomCode);
+  }
+}
+
 
 // Initialize emoji picker
 function initEmojiPicker() {
@@ -76,8 +194,7 @@ function initEmojiPicker() {
   });
   const endTime = performance.now();
   console.log(
-    `[MULTIPLAYER] ✅ Emoji picker initialized with ${
-      emojis.length
+    `[MULTIPLAYER] ✅ Emoji picker initialized with ${emojis.length
     } emojis in ${(endTime - startTime).toFixed(2)}ms`
   );
 }
@@ -101,6 +218,10 @@ emojiDisplay.textContent = initialEmoji;
 console.log(`[MULTIPLAYER] 🎨 Initial player emoji set to: ${initialEmoji}`);
 
 initEmojiPicker();
+
+// Check for room code in URL on page load
+checkForRoomInURL();
+
 
 // Emoji modal toggle
 emojiToggle.addEventListener("click", () => {
@@ -140,11 +261,15 @@ createRoomBtn.addEventListener("click", (e) => {
   // Display existing code or placeholder
   if (generatedRoomCode) {
     roomCodeDisplay.textContent = generatedRoomCode;
+    inviteLinkDisplay.textContent = generateInviteLink(generatedRoomCode);
+
     console.log(
       `[MULTIPLAYER] 📋 Displaying existing room code: ${generatedRoomCode}`
     );
   } else {
     roomCodeDisplay.textContent = "XXXX";
+    inviteLinkDisplay.textContent = "Link will appear here...";
+
     console.log("[MULTIPLAYER] 📋 Displaying placeholder room code");
   }
 });
@@ -217,16 +342,42 @@ copyCodeBtn?.addEventListener("click", async () => {
   }
 });
 
+// Copy invite link button (NEW)
+copyLinkBtn?.addEventListener("click", async () => {
+  if (generatedRoomCode) {
+    await copyInviteLink(generatedRoomCode);
+  }
+});
+
+// Share invite link button (NEW)
+shareLinkBtn?.addEventListener("click", async () => {
+  if (generatedRoomCode) {
+    await shareInviteLink(generatedRoomCode);
+  }
+});
+
+
 // Paste room code
 pasteCodeBtn?.addEventListener("click", async () => {
   const startTime = performance.now();
   console.log("[MULTIPLAYER] 📋 Paste button clicked");
   try {
     const text = await navigator.clipboard.readText();
-    const sanitized = text
+
+    // Check if it's a full URL
+    let sanitized;
+    if (text.includes("?room=")) {
+      const urlParams = new URLSearchParams(text.split("?")[1]);
+      sanitized = urlParams.get("room") || "";
+    } else {
+      sanitized = text;
+    }
+
+    sanitized = sanitized
       .toUpperCase()
       .substring(0, 4)
       .replace(/[^A-Z0-9]/g, "");
+
     roomCodeInput.value = sanitized;
     const endTime = performance.now();
     console.log(
@@ -240,6 +391,7 @@ pasteCodeBtn?.addEventListener("click", async () => {
     console.error("[MULTIPLAYER] ❌ Paste failed:", error);
   }
 });
+
 
 // Create game
 createRoomBtn.addEventListener("click", () => {
@@ -310,6 +462,9 @@ createRoomBtn.addEventListener("click", () => {
       );
 
       roomCodeDisplay.textContent = code;
+      const inviteLink = generateInviteLink(code);
+      inviteLinkDisplay.textContent = inviteLink;
+
       createStatus.textContent = "Waiting for opponent...";
       createStatus.style.color = "var(--warning)";
 

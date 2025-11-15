@@ -65,11 +65,42 @@ h1 {
   text-align: center;
   transition: all 0.3s ease;
   border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
 }
 
-.player-indicator.active {
-  border: 2px solid var(--success);
-  filter: drop-shadow(0 0 8px rgba(80, 250, 123, 0.4));
+/* Gradient layer for player indicators */
+.player-indicator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Blue border and gradient for active "self" player */
+.player-indicator.active[data-player="self"] {
+  --player-color: 80, 150, 255;
+  border: 2px solid rgb(var(--player-color));
+}
+
+.player-indicator.active[data-player="self"]::before {
+  background: radial-gradient(circle, rgba(var(--player-color), 0.35) 0%, transparent 70%);
+}
+
+/* Red border and gradient for active "opponent" player */
+.player-indicator.active[data-player="opponent"] {
+  --player-color: 255, 80, 80;
+  border: 2px solid rgb(var(--player-color));
+}
+
+.player-indicator.active[data-player="opponent"]::before {
+  background: radial-gradient(circle, rgba(var(--player-color), 0.20) 0%, transparent 70%);
 }
 
 .player-indicator span:first-child {

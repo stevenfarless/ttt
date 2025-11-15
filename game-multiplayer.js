@@ -102,11 +102,14 @@ function updateBoard() {
       cell.textContent = symbol || '';
       cell.classList.remove('my-move', 'opponent-move');
       cell.style.color = '';
-      
+      cell.removeAttribute('data-player');  // ← ADD THIS LINE
+
       if (symbol === mySymbol) {
+        cell.setAttribute('data-player', 'self');  // ← ADD THIS LINE
         cell.style.color = '#3B82F6';
         cell.classList.add('my-move');
       } else if (symbol === opponentSymbol) {
+        cell.setAttribute('data-player', 'opponent');  // ← ADD THIS LINE
         cell.style.color = '#EF4444';
         cell.classList.add('opponent-move');
       }
@@ -115,6 +118,7 @@ function updateBoard() {
     console.error('Error updating board:', error);
   }
 }
+
 
 /**
  * Plays animation for a cell move

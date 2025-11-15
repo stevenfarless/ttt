@@ -10,28 +10,7 @@ if (!firebase.apps.length) {
 const db = firebase.database();
 
 // Emojis array
-const emojis = [
-  "❌",
-  "⭕",
-  "❤️",
-  "💲",
-  "😀",
-  "💀",
-  "🤖",
-  "👽",
-  "🐶",
-  "😺",
-  "💩",
-  "🦐",
-  "🍕",
-  "🍣",
-  "🍓",
-  "🍤",
-  "🌙",
-  "☀️",
-  "⭐",
-  "🚀",
-];
+const emojis = ['❌', '⭕', '❤️', '💲', '😀', '💀', '🤖', '👽', '🐶', '😺', '💩', '🦐', '🍕', '🍣', '🍓', '🍤', '🌙', '☀️', '⭐', '🚀'];
 
 // DOM Elements
 const emojiDisplay = document.getElementById('emojiDisplay');
@@ -97,11 +76,14 @@ emojiModal.addEventListener('click', (e) => {
   }
 });
 
-// Toggle modules when buttons clicked
+// Toggle create module when button clicked
 createRoomBtn.addEventListener('click', (e) => {
+  // If module is already visible, don't toggle it
   if (!createModule.classList.contains('hidden')) {
     return;
   }
+  
+  // Show create module, hide join module
   createModule.classList.remove('hidden');
   joinModule.classList.add('hidden');
   joinRoomBtn.disabled = false;
@@ -116,10 +98,14 @@ createRoomBtn.addEventListener('click', (e) => {
   }
 });
 
+// Toggle join module when button clicked
 joinRoomBtn.addEventListener('click', (e) => {
+  // If module is already visible, don't toggle it
   if (!joinModule.classList.contains('hidden')) {
     return;
   }
+  
+  // Show join module, hide create module
   joinModule.classList.remove('hidden');
   createModule.classList.add('hidden');
   createRoomBtn.disabled = false;
@@ -143,27 +129,20 @@ roomCodeInput.addEventListener('input', (e) => {
 
 // Copy room code
 copyCodeBtn?.addEventListener('click', async () => {
-  const startTime = performance.now();
-  console.log('[MULTIPLAYER] 📋 Copy button clicked');
   try {
     const code = roomCodeDisplay.textContent;
     await navigator.clipboard.writeText(code);
-    const endTime = performance.now();
-    console.log(`[MULTIPLAYER] ✅ Room code copied to clipboard: ${code} (took ${(endTime - startTime).toFixed(2)}ms)`);
     const originalText = copyCodeBtn.textContent;
     copyCodeBtn.textContent = '✓';
     copyCodeBtn.style.background = 'var(--success)';
-    console.log('[MULTIPLAYER] ✅ Copy button feedback displayed');
     setTimeout(() => {
       copyCodeBtn.textContent = originalText;
       copyCodeBtn.style.background = '';
-      console.log('[MULTIPLAYER] ✅ Copy button reset to original state');
     }, 1500);
   } catch (error) {
-    console.error('[MULTIPLAYER] ❌ Copy failed:', error);
+    console.error('Copy failed:', error);
   }
 });
-
 
 // Paste room code
 pasteCodeBtn?.addEventListener('click', async () => {
@@ -178,11 +157,10 @@ pasteCodeBtn?.addEventListener('click', async () => {
   }
 });
 
-// Create game
+// Create game - SECOND LISTENER for actual room creation
 createRoomBtn.addEventListener('click', () => {
-  // If code already exists, just show the module
-  if (generatedRoomCode) {
-    createModule.classList.remove('hidden');
+  // If code already exists and module is visible, don't recreate
+  if (generatedRoomCode && !createModule.classList.contains('hidden')) {
     return;
   }
 
@@ -310,4 +288,3 @@ joinRoomBtn.addEventListener('click', () => {
     });
   });
 });
-

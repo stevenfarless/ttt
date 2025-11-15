@@ -82,6 +82,8 @@ function checkForRoomInURL() {
 
       // ✅ FIXED: Manually apply button styling for invite link
       joinRoomBtn.textContent = "START GAME";
+      joinRoomBtn.classList.add("glow"); // ✅ ADD GLOW EFFECT
+
       createRoomBtn.disabled = true;
       createRoomBtn.style.opacity = "0.4";
       createRoomBtn.style.cursor = "not-allowed";
@@ -260,6 +262,7 @@ roomCodeInput.addEventListener("input", (e) => {
   if (e.target.value.length === 4) {
     // ✅ Valid code entered - dim/disable Create Game button
     joinRoomBtn.textContent = "START GAME";
+    joinRoomBtn.classList.add("glow"); // ✅ ADD GLOW EFFECT
     createRoomBtn.disabled = true;
     createRoomBtn.style.opacity = "0.4";
     createRoomBtn.style.cursor = "not-allowed";
@@ -267,6 +270,7 @@ roomCodeInput.addEventListener("input", (e) => {
   } else {
     // ✅ Invalid or incomplete code - re-enable Create Game button
     joinRoomBtn.textContent = "Join Game";
+    joinRoomBtn.classList.remove("glow"); // ✅ REMOVE GLOW EFFECT
     createRoomBtn.disabled = false;
     createRoomBtn.style.opacity = "1";
     createRoomBtn.style.cursor = "pointer";
@@ -276,6 +280,7 @@ roomCodeInput.addEventListener("input", (e) => {
   // Clear status when user is typing
   joinStatus.textContent = "";
 });
+
 
 // Copy room code
 copyCodeBtn?.addEventListener("click", async () => {

@@ -10,7 +10,28 @@ if (!firebase.apps.length) {
 const db = firebase.database();
 
 // Emojis array
-const emojis = ['\u274c', '\u2b55', '\u2764\ufe0f', '\U0001f4b2', '\U0001f600', '\U0001f480', '\U0001f916', '\U0001f47d', '\U0001f436', '\U0001f63a', '\U0001f4a9', '\U0001f990', '\U0001f355', '\U0001f363', '\U0001f353', '\U0001f364', '\U0001f319', '\u2600\ufe0f', '\u2b50', '\U0001f680'];
+const emojis = [
+  "❌",
+  "⭕",
+  "❤️",
+  "💲",
+  "😀",
+  "💀",
+  "🤖",
+  "👽",
+  "🐶",
+  "😺",
+  "💩",
+  "🦐",
+  "🍕",
+  "🍣",
+  "🍓",
+  "🍤",
+  "🌙",
+  "☀️",
+  "⭐",
+  "🚀",
+];
 
 // DOM Elements
 const emojiDisplay = document.getElementById('emojiDisplay');
@@ -282,3 +303,4 @@ joinRoomBtn.addEventListener('click', () => {
     });
   });
 });
+

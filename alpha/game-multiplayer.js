@@ -65,16 +65,20 @@ if (player2Emoji) {
 }
 
 /**
-* Updates the turn indicator highlight
-*/
+ * Updates the turn indicator highlight
+ */
 function updateTurnHighlight() {
   try {
     if (isMyTurn) {
       player1Indicator.classList.add("active");
+      player1Indicator.setAttribute("data-player", "self");
       player2Indicator.classList.remove("active");
+      player2Indicator.removeAttribute("data-player");
     } else {
       player1Indicator.classList.remove("active");
+      player1Indicator.removeAttribute("data-player");
       player2Indicator.classList.add("active");
+      player2Indicator.setAttribute("data-player", "opponent");
     }
   } catch (error) {
     console.error("[GAME] ❌ Error updating turn highlight:", error);

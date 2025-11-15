@@ -45,7 +45,8 @@ h1 {
 
 .emoji-section {
   text-align: center;
-  margin-bottom: 30px;
+  /* margin-bottom: 30px; */
+  margin-bottom: 20px;
 }
 
 .emoji-toggle-btn {
@@ -174,7 +175,8 @@ h1 {
 
 /* Sections - Flex container to keep module + button together */
 .section {
-  margin-bottom: 25px;
+  /* margin-bottom: 25px; */
+  margin-bottom: 15px;
   display: flex;
   flex-direction: column;
 }
@@ -382,13 +384,16 @@ h1 {
 
 @media (max-width: 480px) {
   #container {
-    padding: 25px 20px;
+    /* padding: 25px 20px; */
+    padding: 20px 15px;
     max-width: 100%;
   }
 
   h1 {
-    font-size: 2rem;
-    margin-bottom: 20px;
+    /* font-size: 2rem; */
+    font-size: 1.75rem;
+    /* margin-bottom: 20px; */
+    margin-bottom: 15px;
   }
 
   .emoji-picker {
@@ -455,8 +460,10 @@ h1 {
 /* ============================================ */
 
 .share-link-section {
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
+  /* margin-top: 1.5rem; */
+  margin-top: 0.75rem;
+  /* padding-top: 1.5rem; */
+  padding-top: 0.75rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -464,23 +471,29 @@ h1 {
   background: rgba(0, 0, 0, 0.3);
   border: 2px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  padding: 1rem;
-  margin: 0.75rem 0;
+  /* padding: 1rem; */
+  padding: 0.75rem;
+  /* margin: 0.75rem 0; */
+  margin: 0.5rem 0;
   word-break: break-all;
 }
 
 .invite-link {
   font-family: "Courier New", monospace;
-  font-size: 0.9rem;
+  /* font-size: 0.9rem; */
+  font-size: 0.85rem;
   color: var(--info);
   text-align: center;
-  line-height: 1.4;
+  /* line-height: 1.4; */
+  line-height: 1.3;
 }
 
 .share-buttons {
   display: flex;
-  gap: 0.75rem;
-  margin-top: 0.75rem;
+  /* gap: 0.75rem; */
+  gap: 0.5rem;
+  /* margin-top: 0.75rem; */
+  margin-top: 0.5rem;
 }
 
 .share-buttons .action-btn {
@@ -510,6 +523,15 @@ h1 {
   -webkit-animation: simpleGlow 2s ease-in-out infinite;
   /* Add this for iOS */
 }
+
+.instruction {
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+  text-align: center;
+  color: var(--info);
+  font-size: 0.85rem;
+}
+
 
 @keyframes simpleGlow {
 

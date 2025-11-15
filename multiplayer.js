@@ -28,9 +28,112 @@ const createStatus = document.getElementById('createStatus');
 const joinStatus = document.getElementById('joinStatus');
 const copyCodeBtn = document.getElementById('copyCodeBtn');
 const pasteCodeBtn = document.getElementById('pasteCodeBtn');
+const copyLinkBtn = document.getElementById('copyLinkBtn');
+const shareLinkBtn = document.getElementById('shareLinkBtn');
+const inviteLinkDisplay = document.getElementById('inviteLinkDisplay');
 
 // Track generated room code
 let generatedRoomCode = null;
+
+// ============================================
+// URL PARAMETER HANDLING
+// ============================================
+
+/**
+ * Parses URL parameters and auto-joins room if present
+ */
+function checkForRoomInURL() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const roomCode = urlParams.get('room');
+
+  if (roomCode && roomCode.length === 4) {
+    const sanitizedCode = roomCode.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (sanitizedCode.length === 4) {
+      // Show join module
+      joinModule.classList.remove('hidden');
+      createModule.classList.add('hidden');
+
+      // Pre-populate room code
+      roomCodeInput.value = sanitizedCode;
+      roomCodeInput.dispatchEvent(new Event('input'));
+
+      // Update status
+      joinStatus.textContent = 'Room code loaded from link.\nReady to join!';
+      joinStatus.style.color = 'var(--success)';
+
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Generates shareable invitation link
+ */
+function generateInviteLink(roomCode) {
+  const baseUrl = window.location.origin + window.location.pathname;
+  return `${baseUrl}?room=${roomCode}`;
+}
+
+/**
+ * Copies invite link to clipboard
+ */
+async function copyInviteLink(roomCode) {
+  const link = generateInviteLink(roomCode);
+
+  try {
+    await navigator.clipboard.writeText(link);
+
+    // Visual feedback
+    const originalText = copyLinkBtn.textContent;
+    copyLinkBtn.textContent = '✓ Copied!';
+    copyLinkBtn.style.background = 'var(--success)';
+
+    setTimeout(() => {
+      copyLinkBtn.textContent = originalText;
+      copyLinkBtn.style.background = '';
+    }, 2000);
+
+    return true;
+  } catch (error) {
+    console.error('Failed to copy invite link:', error);
+    copyLinkBtn.textContent = '❌ Failed';
+    setTimeout(() => {
+      copyLinkBtn.textContent = '📋 Copy Link';
+    }, 2000);
+    return false;
+  }
+}
+
+/**
+ * Shares invite link using Web Share API (mobile-friendly)
+ */
+async function shareInviteLink(roomCode) {
+  const link = generateInviteLink(roomCode);
+  const hostEmoji = emojiDisplay.textContent;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'Join my Tic Tac Toe game!',
+        text: `Join ${hostEmoji} for a game of Tic Tac Toe! Room code: ${roomCode}`,
+        url: link,
+      });
+      return true;
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        console.error('Share failed:', error);
+      }
+      return false;
+    }
+  } else {
+    // Fallback to copy
+    return await copyInviteLink(roomCode);
+  }
+}
 
 // Initialize emoji picker
 function initEmojiPicker() {
@@ -61,6 +164,9 @@ function getRandomEmoji() {
 emojiDisplay.textContent = getRandomEmoji();
 initEmojiPicker();
 
+// Check for room code in URL on page load
+checkForRoomInURL();
+
 // Emoji modal toggle
 emojiToggle.addEventListener('click', () => {
   emojiModal.classList.remove('hidden');
@@ -76,36 +182,33 @@ emojiModal.addEventListener('click', (e) => {
   }
 });
 
-// Toggle create module when button clicked
+// Toggle modules when buttons clicked
 createRoomBtn.addEventListener('click', (e) => {
-  // If module is already visible, don't toggle it
   if (!createModule.classList.contains('hidden')) {
     return;
   }
-  
-  // Show create module, hide join module
+
   createModule.classList.remove('hidden');
   joinModule.classList.add('hidden');
   joinRoomBtn.disabled = false;
   joinStatus.textContent = '';
   roomCodeInput.value = '';
-  
+
   // Display existing code or placeholder
   if (generatedRoomCode) {
     roomCodeDisplay.textContent = generatedRoomCode;
+    inviteLinkDisplay.textContent = generateInviteLink(generatedRoomCode);
   } else {
     roomCodeDisplay.textContent = 'XXXX';
+    inviteLinkDisplay.textContent = 'Link will appear here...';
   }
 });
 
-// Toggle join module when button clicked
 joinRoomBtn.addEventListener('click', (e) => {
-  // If module is already visible, don't toggle it
   if (!joinModule.classList.contains('hidden')) {
     return;
   }
-  
-  // Show join module, hide create module
+
   joinModule.classList.remove('hidden');
   createModule.classList.add('hidden');
   createRoomBtn.disabled = false;
@@ -144,11 +247,35 @@ copyCodeBtn?.addEventListener('click', async () => {
   }
 });
 
+// Copy invite link button
+copyLinkBtn?.addEventListener('click', async () => {
+  if (generatedRoomCode) {
+    await copyInviteLink(generatedRoomCode);
+  }
+});
+
+// Share invite link button
+shareLinkBtn?.addEventListener('click', async () => {
+  if (generatedRoomCode) {
+    await shareInviteLink(generatedRoomCode);
+  }
+});
+
 // Paste room code
 pasteCodeBtn?.addEventListener('click', async () => {
   try {
     const text = await navigator.clipboard.readText();
-    const sanitized = text.toUpperCase().substring(0, 4).replace(/[^A-Z0-9]/g, '');
+
+    // Check if it's a full URL
+    let sanitized;
+    if (text.includes('?room=')) {
+      const urlParams = new URLSearchParams(text.split('?')[1]);
+      sanitized = urlParams.get('room') || '';
+    } else {
+      sanitized = text;
+    }
+
+    sanitized = sanitized.toUpperCase().substring(0, 4).replace(/[^A-Z0-9]/g, '');
     roomCodeInput.value = sanitized;
     // Trigger input event to update button text
     roomCodeInput.dispatchEvent(new Event('input'));
@@ -157,10 +284,11 @@ pasteCodeBtn?.addEventListener('click', async () => {
   }
 });
 
-// Create game - SECOND LISTENER for actual room creation
+// Create game
 createRoomBtn.addEventListener('click', () => {
-  // If code already exists and module is visible, don't recreate
-  if (generatedRoomCode && !createModule.classList.contains('hidden')) {
+  // If code already exists, just show the module
+  if (generatedRoomCode) {
+    createModule.classList.remove('hidden');
     return;
   }
 
@@ -192,6 +320,9 @@ createRoomBtn.addEventListener('click', () => {
 
   db.ref('rooms/' + code).set(roomData).then(() => {
     roomCodeDisplay.textContent = code;
+    const inviteLink = generateInviteLink(code);
+    inviteLinkDisplay.textContent = inviteLink;
+    
     createStatus.textContent = 'Waiting for opponent...';
     createStatus.style.color = 'var(--warning)';
     

@@ -80,6 +80,13 @@ function checkForRoomInURL() {
       roomCodeInput.value = sanitizedCode;
       roomCodeInput.dispatchEvent(new Event("input"));
 
+      // ✅ FIXED: Manually apply button styling for invite link
+      joinRoomBtn.textContent = "START GAME";
+      createRoomBtn.disabled = true;
+      createRoomBtn.style.opacity = "0.4";
+      createRoomBtn.style.cursor = "not-allowed";
+      createRoomBtn.title = "Clear the room code to create a new game";
+
       // Update status
       joinStatus.textContent = "Room code loaded from link.\nReady to join!";
       joinStatus.style.color = "var(--success)";
@@ -243,7 +250,7 @@ joinRoomBtn.addEventListener("click", (e) => {
 });
 
 // ============================================
-// ✅ NEW: Smart UI feedback for room code input
+// ✅ Smart UI feedback for room code input
 // ============================================
 roomCodeInput.addEventListener("input", (e) => {
   const originalValue = e.target.value;

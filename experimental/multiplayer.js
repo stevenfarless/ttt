@@ -143,20 +143,27 @@ roomCodeInput.addEventListener('input', (e) => {
 
 // Copy room code
 copyCodeBtn?.addEventListener('click', async () => {
+  const startTime = performance.now();
+  console.log('[MULTIPLAYER] 📋 Copy button clicked');
   try {
     const code = roomCodeDisplay.textContent;
     await navigator.clipboard.writeText(code);
+    const endTime = performance.now();
+    console.log(`[MULTIPLAYER] ✅ Room code copied to clipboard: ${code} (took ${(endTime - startTime).toFixed(2)}ms)`);
     const originalText = copyCodeBtn.textContent;
-    copyCodeBtn.textContent = '\u2713';
+    copyCodeBtn.textContent = '✓';
     copyCodeBtn.style.background = 'var(--success)';
+    console.log('[MULTIPLAYER] ✅ Copy button feedback displayed');
     setTimeout(() => {
       copyCodeBtn.textContent = originalText;
       copyCodeBtn.style.background = '';
+      console.log('[MULTIPLAYER] ✅ Copy button reset to original state');
     }, 1500);
   } catch (error) {
-    console.error('Copy failed:', error);
+    console.error('[MULTIPLAYER] ❌ Copy failed:', error);
   }
 });
+
 
 // Paste room code
 pasteCodeBtn?.addEventListener('click', async () => {

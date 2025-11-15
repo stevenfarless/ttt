@@ -59,7 +59,7 @@ const inviteLinkDisplay = document.getElementById("inviteLinkDisplay");
 let generatedRoomCode = null;
 
 // ============================================
-// URL PARAMETER HANDLING (NEW)
+// URL PARAMETER HANDLING
 // ============================================
 
 /**
@@ -214,6 +214,10 @@ createRoomBtn.addEventListener("click", (e) => {
   joinStatus.textContent = "";
   roomCodeInput.value = "";
 
+  // ✅ Re-enable create button when switching back
+  createRoomBtn.disabled = false;
+  createRoomBtn.style.opacity = "1";
+
   // Display existing code or placeholder
   if (generatedRoomCode) {
     roomCodeDisplay.textContent = generatedRoomCode;
@@ -233,18 +237,33 @@ joinRoomBtn.addEventListener("click", (e) => {
   createModule.classList.add("hidden");
   createRoomBtn.disabled = false;
   createStatus.textContent = "";
+
+  // ✅ Reset create button styling when joining
+  createRoomBtn.style.opacity = "1";
 });
 
-// Room code input validation and button text update
+// ============================================
+// ✅ NEW: Smart UI feedback for room code input
+// ============================================
 roomCodeInput.addEventListener("input", (e) => {
   const originalValue = e.target.value;
   e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
 
-  // Update button text based on input length
+  // Update button text and disable Create Game when valid code entered
   if (e.target.value.length === 4) {
+    // ✅ Valid code entered - dim/disable Create Game button
     joinRoomBtn.textContent = "START GAME";
+    createRoomBtn.disabled = true;
+    createRoomBtn.style.opacity = "0.4";
+    createRoomBtn.style.cursor = "not-allowed";
+    createRoomBtn.title = "Clear the room code to create a new game";
   } else {
+    // ✅ Invalid or incomplete code - re-enable Create Game button
     joinRoomBtn.textContent = "Join Game";
+    createRoomBtn.disabled = false;
+    createRoomBtn.style.opacity = "1";
+    createRoomBtn.style.cursor = "pointer";
+    createRoomBtn.title = "";
   }
 
   // Clear status when user is typing
@@ -270,14 +289,14 @@ copyCodeBtn?.addEventListener("click", async () => {
   }
 });
 
-// Copy invite link button (NEW)
+// Copy invite link button
 copyLinkBtn?.addEventListener("click", async () => {
   if (generatedRoomCode) {
     await copyInviteLink(generatedRoomCode);
   }
 });
 
-// Share invite link button (NEW)
+// Share invite link button
 shareLinkBtn?.addEventListener("click", async () => {
   if (generatedRoomCode) {
     await shareInviteLink(generatedRoomCode);
@@ -305,7 +324,7 @@ pasteCodeBtn?.addEventListener("click", async () => {
 
     roomCodeInput.value = sanitized;
 
-    // Trigger input event to update button text
+    // Trigger input event to update button text and UI state
     roomCodeInput.dispatchEvent(new Event("input"));
   } catch (error) {
     console.error("[MULTIPLAYER] ❌ Paste failed:", error);
@@ -314,6 +333,11 @@ pasteCodeBtn?.addEventListener("click", async () => {
 
 // Create game
 createRoomBtn.addEventListener("click", () => {
+  // ✅ Prevent creating if button is disabled (valid code entered in join field)
+  if (createRoomBtn.disabled) {
+    return;
+  }
+
   // If code already exists, just show the module
   if (generatedRoomCode) {
     createModule.classList.remove("hidden");
@@ -348,7 +372,7 @@ createRoomBtn.addEventListener("click", () => {
       7: null,
       8: null,
     },
-    turn: "host", // ✅ CHANGED: Now using 'host' instead of emoji
+    turn: "host",
     winner: null,
   };
 
@@ -436,7 +460,7 @@ joinRoomBtn.addEventListener("click", () => {
       }
 
       if (!room.turn) {
-        updateData.turn = "host"; // ✅ CHANGED: Using 'host' instead of emoji
+        updateData.turn = "host";
       }
 
       db.ref("rooms/" + code)

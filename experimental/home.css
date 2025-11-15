@@ -502,20 +502,25 @@ h1 {
   }
 }
 
-/* console at bottom of screen */
-.console-line {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background-color: #111;
-  color: #0f0;
-  font-family: monospace;
-  font-size: 12px;
-  padding: 2px 10px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  z-index: 1000;
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
+/* Glow animation for Start Game button */
+@keyframes pulseGlow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(80, 250, 123, 0.6),
+      0 0 40px rgba(80, 250, 123, 0.4),
+      0 0 60px rgba(80, 250, 123, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 0 30px rgba(80, 250, 123, 0.8),
+      0 0 60px rgba(80, 250, 123, 0.6),
+      0 0 90px rgba(80, 250, 123, 0.4);
+  }
+}
+
+/* Apply glow to Start Game button */
+.btn-primary.glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+  border: 2px solid var(--success);
 }

@@ -1,26 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- game.html -->
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TTT - Game</title>
+  <title>Tic Tac Toe - Game</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
   <div id="game-container">
     <h1>Tic Tac Toe</h1>
-    
+
     <div id="player-indicators">
-      <div class="player-indicator active">
-        <span id="player1-emoji"></span>
-        <span class="player-label">You</span>
+      <div class="player-indicator">
+        <span id="player1-emoji">❌</span>
+        <div class="player-label">You</div>
       </div>
       <div class="player-indicator">
-        <span id="player2-emoji"></span>
-        <span class="player-label">Opponent</span>
+        <span id="player2-emoji">⭕</span>
+        <div class="player-label">Opponent</div>
       </div>
     </div>
 
@@ -36,18 +35,23 @@
       <div class="cell"></div>
     </div>
 
-    <p id="result">Connecting...</p>
+    <div id="result"></div>
 
     <div id="button-container">
-      <button id="reset">Reset Game</button>
-      <button id="backToMenu">Quit Game</button>
+      <button id="reset">Play Again</button>
+      <button id="backToMenu">Back to Menu</button>
     </div>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <!-- ✅ NEW: Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+
+  <!-- Game Logic -->
   <script type="module" src="game-multiplayer.js"></script>
 </body>
-
 
 </html>

@@ -450,6 +450,7 @@ h1 {
   transform: translateY(0);
 }
 
+
 /* ============================================ */
 /* SHAREABLE LINK STYLES */
 /* ============================================ */
@@ -501,59 +502,3 @@ h1 {
     width: 100%;
   }
 }
-
-/* Simpler glow - better iOS compatibility */
-.btn-primary.glow {
-  border: 2px solid var(--success);
-  box-shadow: 0 0 20px rgba(80, 250, 123, 0.6);
-  animation: simpleGlow 2s ease-in-out infinite;
-  -webkit-animation: simpleGlow 2s ease-in-out infinite;
-  /* Add this for iOS */
-}
-
-@keyframes simpleGlow {
-
-  0%,
-  100% {
-    box-shadow: 0 0 20px rgba(80, 250, 123, 0.6);
-    transform: scale(1);
-  }
-
-  50% {
-    box-shadow: 0 0 30px rgba(80, 250, 123, 0.9);
-    transform: scale(1.02);
-  }
-}
-
-/* Add webkit prefix for better iOS support */
-@-webkit-keyframes simpleGlow {
-
-  0%,
-  100% {
-    box-shadow: 0 0 20px rgba(80, 250, 123, 0.6);
-    -webkit-transform: scale(1);
-  }
-
-  50% {
-    box-shadow: 0 0 30px rgba(80, 250, 123, 0.9);
-    -webkit-transform: scale(1.02);
-  }
-}
-
-/* OLD VERSION - Commented out for reference */
-/* 
-@keyframes pulseGlow {
-  0%,
-  100% {
-    box-shadow: 0 0 20px rgba(80, 250, 123, 0.6),
-      0 0 40px rgba(80, 250, 123, 0.4),
-      0 0 60px rgba(80, 250, 123, 0.2);
-  }
-
-  50% {
-    box-shadow: 0 0 30px rgba(80, 250, 123, 0.8),
-      0 0 60px rgba(80, 250, 123, 0.6),
-      0 0 90px rgba(80, 250, 123, 0.4);
-  }
-}
-*/

@@ -428,114 +428,111 @@ function listenToGameChanges() {
             const iWon = room.winner === myRole;
             result.textContent = iWon ? "You win! 🎉" : "You lose";
 
-            // ✅ Draw win line and trigger confetti
+            // ✅ NEW: Draw win line and trigger confetti
             if (room.winningLine) {
               drawWinLine(room.winningLine, iWon);
-            } else if (winLineOverlay) {
-              // Remove winning line overlay if winningLine is cleared (e.g. on reset)
-              winLineOverlay.remove();
-              winLineOverlay = null;
             }
             triggerConfetti(iWon);
           }
-
         } else {
           gameActive = true;
           result.textContent = isMyTurn ? "Your turn" : "Opponent's turn";
-
-          // Also remove winning line overlay if exists and game is active
-          if (winLineOverlay) {
-            winLineOverlay.remove();
-            winLineOverlay = null;
-          }
         }
+      } catch (error) {
+        console.error("[GAME] ❌ Error in listener:", error);
+      }
+    },
+    (error) => {
+      console.error("[GAME] ❌ Firebase listener error:", error);
+    }
+  );
+}
 
+/**
+ * Resets the game state
+ */
+function resetGame() {
+  try {
+    // Remove win line overlay
+    if (winLineOverlay) {
+      winLineOverlay.remove();
+      winLineOverlay = null;
+    }
 
-        /**
-         * Resets the game state
-         */
-        function resetGame() {
-          try {
-            // Remove win line overlay
-            if (winLineOverlay) {
-              winLineOverlay.remove();
-              winLineOverlay = null;
-            }
+    const emptyBoard = Object.fromEntries(
+      Array.from({ length: 9 }, (_, i) => [i, null])
+    );
+    roomRef.update({
+      board: emptyBoard,
+      turn: "host",
+      winner: null,
+      winningLine: null,
+    });
+    gameBoard = Array(9).fill(null);
+    previousBoard = Array(9).fill(null);
+    isMyTurn = isHost;
+    gameActive = true;
+  } catch (error) {
+    console.error("[GAME] ❌ Reset error:", error);
+  }
+}
 
-            const emptyBoard = Object.fromEntries(
-              Array.from({ length: 9 }, (_, i) => [i, null])
-            );
-            roomRef.update({
-              board: emptyBoard,
-              turn: "host",
-              winner: null,
-              winningLine: null,
-            });
-            gameBoard = Array(9).fill(null);
-            previousBoard = Array(9).fill(null);
-            isMyTurn = isHost;
-            gameActive = true;
-          } catch (error) {
-            console.error("[GAME] ❌ Reset error:", error);
-          }
-        }
+/**
+ * Navigates back to menu and notifies opponent
+ */
+function goBackToMenu() {
+  try {
+    // Prevent re-entrance
+    if (isLeavingGame) {
+      return;
+    }
 
-        /**
-         * Navigates back to menu and notifies opponent
-         */
-        function goBackToMenu() {
-          try {
-            // Prevent re-entrance
-            if (isLeavingGame) {
-              return;
-            }
+    isLeavingGame = true;
 
-            isLeavingGame = true;
+    // Stop listening BEFORE updating Firebase
+    roomRef.off("value");
 
-            // Stop listening BEFORE updating Firebase
-            roomRef.off("value");
+    // Set flag to notify opponent
+    roomRef
+      .update({
+        playerLeftRequested: true,
+      })
+      .then(() => {
+        sessionStorage.clear();
+        // Give opponent time to see notification before we completely leave
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 500);
+      })
+      .catch((error) => {
+        console.error("[GAME] ❌ Error notifying opponent:", error);
+        // Leave anyway if notification fails
+        sessionStorage.clear();
+        window.location.href = "index.html";
+      });
+  } catch (error) {
+    console.error("[GAME] ❌ Navigation error:", error);
+    sessionStorage.clear();
+    window.location.href = "index.html";
+  }
+}
 
-            // Set flag to notify opponent
-            roomRef
-              .update({
-                playerLeftRequested: true,
-              })
-              .then(() => {
-                sessionStorage.clear();
-                // Give opponent time to see notification before we completely leave
-                setTimeout(() => {
-                  window.location.href = "index.html";
-                }, 500);
-              })
-              .catch((error) => {
-                console.error("[GAME] ❌ Error notifying opponent:", error);
-                // Leave anyway if notification fails
-                sessionStorage.clear();
-                window.location.href = "index.html";
-              });
-          } catch (error) {
-            console.error("[GAME] ❌ Navigation error:", error);
-            sessionStorage.clear();
-            window.location.href = "index.html";
-          }
-        }
+// Event Listeners
+cells.forEach((cell, index) => {
+  cell.setAttribute("role", "button");
+  cell.setAttribute("tabindex", "0");
+  cell.addEventListener("click", () => makeMove(index));
+  cell.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      makeMove(index);
+    }
+  });
+});
 
-        // Event Listeners
-        cells.forEach((cell, index) => {
-          cell.setAttribute("role", "button");
-          cell.setAttribute("tabindex", "0");
-          cell.addEventListener("click", () => makeMove(index));
-          cell.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              makeMove(index);
-            }
-          });
-        });
+resetButton?.addEventListener("click", resetGame);
+backToMenuBtn?.addEventListener("click", goBackToMenu);
 
-        resetButton?.addEventListener("click", resetGame);
-        backToMenuBtn?.addEventListener("click", goBackToMenu);
-
-        // Initialize
-        listenToGameChanges();
-        updateTurnHighlight();
+// Initialize
+listenToGameChanges();
+updateTurnHighlight();

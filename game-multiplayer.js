@@ -15,11 +15,7 @@ const roomCode = sessionStorage.getItem("roomCode");
 const isHost = sessionStorage.getItem("isHost") === "true";
 const mySymbol = sessionStorage.getItem("mySymbol");
 const opponentSymbol = sessionStorage.getItem("opponentSymbol");
-<<<<<<< HEAD
-const myRole = isHost ? "host" : "guest"; // ✅ NEW: Determine player role
-=======
 const myRole = isHost ? "host" : "guest";
->>>>>>> d96bfca (enhance: win/lose animations)
 
 if (!roomCode || !mySymbol || !opponentSymbol) {
   console.error("[GAME] ❌ Missing session data - redirecting to home");
@@ -38,27 +34,15 @@ if (!firebase.apps.length) {
 const db = firebase.database();
 
 // DOM References
-<<<<<<< HEAD
-const player1Indicator = document.querySelector(
-  ".player-indicator:nth-child(1)"
-);
-const player2Indicator = document.querySelector(
-  ".player-indicator:nth-child(2)"
-);
-=======
 const player1Indicator = document.querySelector(".player-indicator:nth-child(1)");
 const player2Indicator = document.querySelector(".player-indicator:nth-child(2)");
->>>>>>> d96bfca (enhance: win/lose animations)
 const player1Emoji = document.getElementById("player1-emoji");
 const player2Emoji = document.getElementById("player2-emoji");
 const cells = document.querySelectorAll(".cell");
 const result = document.getElementById("result");
 const resetButton = document.getElementById("reset");
 const backToMenuBtn = document.getElementById("backToMenu");
-<<<<<<< HEAD
-=======
 const board = document.getElementById("board");
->>>>>>> d96bfca (enhance: win/lose animations)
 
 // Game State
 let gameBoard = Array(9).fill(null);
@@ -67,10 +51,7 @@ let gameActive = false;
 let isMyTurn = isHost;
 let roomRef = null;
 let isLeavingGame = false;
-<<<<<<< HEAD
-=======
 let winLineOverlay = null;
->>>>>>> d96bfca (enhance: win/lose animations)
 
 // Set player emojis
 if (player1Emoji) {
@@ -103,22 +84,6 @@ function updateTurnHighlight() {
 }
 
 /**
-<<<<<<< HEAD
-* Checks for a winner on the board
-* @param {Array} board - The game board with 'host'/'guest' values
-* @returns {string|null} Winner role ('host'/'guest'), 'draw', or null
-*/
-function checkWinner(board) {
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-=======
  * Checks for a winner on the board
  * @param {Array} board - The game board with 'host'/'guest' values
  * @returns {Object|null} Object with winner role and winning line, or null
@@ -133,53 +98,30 @@ function checkWinner(board) {
     [2, 5, 8], // Right column
     [0, 4, 8], // Diagonal top-left to bottom-right
     [2, 4, 6], // Diagonal top-right to bottom-left
->>>>>>> d96bfca (enhance: win/lose animations)
   ];
 
   for (let line of lines) {
     const [a, b, c] = line;
     if (board[a] && board[a] === board[b] && board[b] === board[c]) {
-<<<<<<< HEAD
-      return board[a]; // Returns 'host' or 'guest'
-=======
       return { winner: board[a], winningLine: line };
->>>>>>> d96bfca (enhance: win/lose animations)
     }
   }
 
   const isDraw = board.every((cell) => cell !== null);
-<<<<<<< HEAD
-
-  if (isDraw) {
-    return "draw";
-=======
   if (isDraw) {
     return { winner: "draw", winningLine: null };
->>>>>>> d96bfca (enhance: win/lose animations)
   }
 
   return null;
 }
 
 /**
-<<<<<<< HEAD
-* Updates the visual board display
-* ✅ UPDATED: Now sets data-player attribute for gradient effects
-*/
-function updateBoard() {
-  try {
-    cells.forEach((cell, index) => {
-      const role = gameBoard[index]; // 'host', 'guest', or null
-
-      // Translate role to emoji for display
-=======
  * Updates the visual board display
  */
 function updateBoard() {
   try {
     cells.forEach((cell, index) => {
       const role = gameBoard[index];
->>>>>>> d96bfca (enhance: win/lose animations)
       let displaySymbol = "";
       if (role === "host") {
         displaySymbol = isHost ? mySymbol : opponentSymbol;
@@ -191,10 +133,6 @@ function updateBoard() {
       cell.classList.remove("my-move", "opponent-move");
       cell.style.color = "";
 
-<<<<<<< HEAD
-      // ✅ NEW: Set data-player attribute for gradient effect
-=======
->>>>>>> d96bfca (enhance: win/lose animations)
       if (role === myRole) {
         cell.setAttribute("data-player", "self");
         cell.style.color = "#3B82F6";
@@ -363,10 +301,6 @@ function makeMove(index) {
   }
 
   playMoveAnimation(index);
-<<<<<<< HEAD
-
-=======
->>>>>>> d96bfca (enhance: win/lose animations)
   roomRef.transaction(
     (room) => {
       try {
@@ -398,16 +332,12 @@ function makeMove(index) {
         // Convert back to Firebase format
         room.board = Object.fromEntries(board.map((val, i) => [i, val]));
         room.turn = isHost ? "guest" : "host";
-<<<<<<< HEAD
-        room.winner = checkWinner(board);
-=======
 
         const winResult = checkWinner(board);
         if (winResult) {
           room.winner = winResult.winner;
           room.winningLine = winResult.winningLine;
         }
->>>>>>> d96bfca (enhance: win/lose animations)
 
         return room;
       } catch (error) {
@@ -424,18 +354,10 @@ function makeMove(index) {
 }
 
 /**
-<<<<<<< HEAD
-* Listens to Firebase game changes and updates local state
-*/
-function listenToGameChanges() {
-  roomRef = db.ref("rooms/" + roomCode);
-
-=======
  * Listens to Firebase game changes and updates local state
  */
 function listenToGameChanges() {
   roomRef = db.ref("rooms/" + roomCode);
->>>>>>> d96bfca (enhance: win/lose animations)
   roomRef.on(
     "value",
     (snapshot) => {
@@ -446,10 +368,6 @@ function listenToGameChanges() {
         }
 
         const room = snapshot.val();
-<<<<<<< HEAD
-
-=======
->>>>>>> d96bfca (enhance: win/lose animations)
         if (!room) {
           if (!isLeavingGame) {
             result.textContent = "Opponent left the game";
@@ -497,10 +415,6 @@ function listenToGameChanges() {
 
         // Update game state
         isMyTurn = room.turn === myRole;
-<<<<<<< HEAD
-
-=======
->>>>>>> d96bfca (enhance: win/lose animations)
         updateBoard();
         updateTurnHighlight();
 
@@ -513,15 +427,12 @@ function listenToGameChanges() {
           } else {
             const iWon = room.winner === myRole;
             result.textContent = iWon ? "You win! 🎉" : "You lose";
-<<<<<<< HEAD
-=======
 
             // ✅ NEW: Draw win line and trigger confetti
             if (room.winningLine) {
               drawWinLine(room.winningLine, iWon);
             }
             triggerConfetti(iWon);
->>>>>>> d96bfca (enhance: win/lose animations)
           }
         } else {
           gameActive = true;
@@ -538,16 +449,6 @@ function listenToGameChanges() {
 }
 
 /**
-<<<<<<< HEAD
-* Resets the game state
-*/
-function resetGame() {
-  try {
-    const emptyBoard = Object.fromEntries(
-      Array.from({ length: 9 }, (_, i) => [i, null])
-    );
-
-=======
  * Resets the game state
  */
 function resetGame() {
@@ -561,18 +462,12 @@ function resetGame() {
     const emptyBoard = Object.fromEntries(
       Array.from({ length: 9 }, (_, i) => [i, null])
     );
->>>>>>> d96bfca (enhance: win/lose animations)
     roomRef.update({
       board: emptyBoard,
       turn: "host",
       winner: null,
-<<<<<<< HEAD
-    });
-
-=======
       winningLine: null,
     });
->>>>>>> d96bfca (enhance: win/lose animations)
     gameBoard = Array(9).fill(null);
     previousBoard = Array(9).fill(null);
     isMyTurn = isHost;
@@ -583,13 +478,8 @@ function resetGame() {
 }
 
 /**
-<<<<<<< HEAD
-* Navigates back to menu and notifies opponent
-*/
-=======
  * Navigates back to menu and notifies opponent
  */
->>>>>>> d96bfca (enhance: win/lose animations)
 function goBackToMenu() {
   try {
     // Prevent re-entrance
@@ -609,10 +499,6 @@ function goBackToMenu() {
       })
       .then(() => {
         sessionStorage.clear();
-<<<<<<< HEAD
-
-=======
->>>>>>> d96bfca (enhance: win/lose animations)
         // Give opponent time to see notification before we completely leave
         setTimeout(() => {
           window.location.href = "index.html";

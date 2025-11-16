@@ -316,9 +316,6 @@ button:disabled {
   text-overflow: ellipsis;
   z-index: 1000;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
-<<<<<<< HEAD
-}
-=======
 }
 
 /* Win Line Animation Styles */
@@ -364,4 +361,3 @@ button:disabled {
   0%,100% { filter: grayscale(0) brightness(1); }
   50% { filter: grayscale(1) brightness(0.7); }
 }
->>>>>>> d96bfca (enhance: win/lose animations)

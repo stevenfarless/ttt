@@ -123,7 +123,6 @@ function updateBoard() {
     cells.forEach((cell, index) => {
       const role = gameBoard[index];
       let displaySymbol = "";
-
       if (role === "host") {
         displaySymbol = isHost ? mySymbol : opponentSymbol;
       } else if (role === "guest") {
@@ -197,6 +196,7 @@ function drawWinLine(winningLine, iWon) {
   // Calculate start and end positions
   const startCell = cells[winningLine[0]];
   const endCell = cells[winningLine[2]];
+
   const startRect = startCell.getBoundingClientRect();
   const endRect = endCell.getBoundingClientRect();
 
@@ -301,7 +301,6 @@ function makeMove(index) {
   }
 
   playMoveAnimation(index);
-
   roomRef.transaction(
     (room) => {
       try {
@@ -359,11 +358,11 @@ function makeMove(index) {
  */
 function listenToGameChanges() {
   roomRef = db.ref("rooms/" + roomCode);
-
   roomRef.on(
     "value",
     (snapshot) => {
       try {
+        // Skip processing if we're already leaving
         if (isLeavingGame) {
           return;
         }
@@ -381,7 +380,17 @@ function listenToGameChanges() {
           return;
         }
 
-        // Other listener logic continues here...
+        // Check if opponent wants to go back to menu
+        if (room.playerLeftRequested) {
+          if (!isLeavingGame) {
+            isLeavingGame = true;
+            roomRef.off("value");
+            alert("Your opponent quit the game.");
+            sessionStorage.clear();
+            window.location.href = "index.html";
+          }
+          return;
+        }
 
         // Normalize board
         if (room.board) {
@@ -392,7 +401,7 @@ function listenToGameChanges() {
           gameBoard = Array(9).fill(null);
         }
 
-        // Detect moves & animate
+        // Detect opponent move and play animation
         for (let i = 0; i < 9; i++) {
           const changed = previousBoard[i] !== gameBoard[i];
           const isNewMove = gameBoard[i] !== null && gameBoard[i] !== undefined;
@@ -401,24 +410,25 @@ function listenToGameChanges() {
           }
         }
 
-        previousBoard = gameBoard.slice();
+        // Update previousBoard for next comparison
+        previousBoard = gameBoard.map((cell) => cell);
 
+        // Update game state
         isMyTurn = room.turn === myRole;
         updateBoard();
         updateTurnHighlight();
 
+        // Check for winner
         if (room.winner) {
           gameActive = false;
+
           if (room.winner === "draw") {
             result.textContent = "It's a draw!";
-            if (winLineOverlay) {
-              winLineOverlay.remove();
-              winLineOverlay = null;
-            }
           } else {
             const iWon = room.winner === myRole;
             result.textContent = iWon ? "You win! 🎉" : "You lose";
 
+            // ✅ NEW: Draw win line and trigger confetti
             if (room.winningLine) {
               drawWinLine(room.winningLine, iWon);
             }
@@ -427,12 +437,6 @@ function listenToGameChanges() {
         } else {
           gameActive = true;
           result.textContent = isMyTurn ? "Your turn" : "Opponent's turn";
-
-          // Clear win line if exists (IMPORTANT for reset case)
-          if (winLineOverlay) {
-            winLineOverlay.remove();
-            winLineOverlay = null;
-          }
         }
       } catch (error) {
         console.error("[GAME] ❌ Error in listener:", error);
@@ -443,7 +447,6 @@ function listenToGameChanges() {
     }
   );
 }
-
 
 /**
  * Resets the game state
@@ -459,21 +462,16 @@ function resetGame() {
     const emptyBoard = Object.fromEntries(
       Array.from({ length: 9 }, (_, i) => [i, null])
     );
-
     roomRef.update({
       board: emptyBoard,
       turn: "host",
       winner: null,
       winningLine: null,
     });
-
     gameBoard = Array(9).fill(null);
     previousBoard = Array(9).fill(null);
     isMyTurn = isHost;
     gameActive = true;
-
-    // ✅ FIX: Immediately update local result text for the player who pressed reset
-    result.textContent = isMyTurn ? "Your turn" : "Opponent's turn";
   } catch (error) {
     console.error("[GAME] ❌ Reset error:", error);
   }

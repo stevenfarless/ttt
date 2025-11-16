@@ -234,7 +234,15 @@ function drawWinLine(winningLine, iWon) {
  * @param {boolean} iWon - Whether the current player won
  */
 function triggerConfetti(iWon) {
-  // Only trigger confetti if canvas-confetti is loaded
+  if (!iWon) {
+    // Add a subtle losing effect, e.g. red board glow or fade
+    board.classList.add("loser-effect");
+    setTimeout(() => {
+      board.classList.remove("loser-effect");
+    }, 3000);
+    return;
+  }
+
   if (typeof confetti === "undefined") {
     console.warn("[GAME] ⚠️ canvas-confetti library not loaded");
     return;

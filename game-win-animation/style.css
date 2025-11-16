@@ -352,3 +352,12 @@ button:disabled {
 .win-line {
   animation: winLinePulse 2s ease-in-out infinite;
 }
+
+.loser-effect {
+  animation: losePulse 3s ease-in-out forwards;
+}
+
+@keyframes losePulse {
+  0%,100% { filter: grayscale(0) brightness(1); }
+  50% { filter: grayscale(1) brightness(0.7); }
+}

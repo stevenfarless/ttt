@@ -1,23 +1,26 @@
 # 🎮 TTT - 2 Player Emoji Tic Tac Toe
 
-**Version:** 2.1.0 | **Release Date:** November 13, 2025
+**Version:** 2.2.2 | **Release Date:** November 15, 2025
 
 A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces, visual gradients, role-based player tracking, and enhanced multiplayer sharing features, built with vanilla JavaScript and Firebase.
 
 ---
 
-## 🆕 What's New in v2.1.0
+## 🆕 What's New in v2.2.2
 
-### Major Features
+### Major Improvements
 
-- **🔗 Game Sharing**  
-  Easily share your multiplayer game via invite links or room codes to quickly start matches with friends.
+- **✨ Enhanced Visual Effects**  
+  Improved gradient effects with blue glow for your moves and red glow for opponent moves, now applied to both game cells and player indicators.
 
-- **🚀 Automatic Joining**  
-  Players who click an invite link or enter a shared code are automatically placed into the game lobby without manual searching or delays.
+- **🎯 Smarter UI Feedback**  
+  The interface now intelligently disables "Create Game" when you enter a valid room code in the join field, and adds a glowing "START GAME" button for better user experience.
 
-- **🖥️ Enhanced Multiplayer Navigation**  
-  URL-based room joining streamlines the process and improves user experience.
+- **📱 Improved Mobile Experience**  
+  Optimized spacing, font sizes, and button layouts for better mobile usability with tighter, more efficient spacing.
+
+- **⚡ Performance Optimization**  
+  Removed extensive debug logging for cleaner, faster code execution in production.
 
 ---
 
@@ -25,12 +28,13 @@ A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces, visua
 
 - **🎯 Classic Tic Tac Toe Gameplay** – The timeless 3x3 grid game you know and love  
 - **👥 Real-Time Multiplayer** – Live game sync powered by Firebase  
-- **🎨 Custom Emoji Pieces** – Choose from 20+ emojis  
-- **🌈 Visual Gradient Effects** – Blue glow for your moves, red glow for opponent's moves  
+- **🎨 Custom Emoji Pieces** – Choose from 20+ emojis (both players can use the same emoji!)  
+- **🌈 Enhanced Visual Effects** – Blue glow for your moves, red glow for opponent's moves on both cells and player indicators  
 - **🏠 Room Codes & Invite Links** – Share a 4-character room code or invite link with your opponent to join a game  
 - **⚡ Real-Time Sync** – Moves sync instantly across both players' screens  
 - **🔄 Role-Based Player Tracking** – Host and Guest roles for reliable game state management  
-- **📱 Mobile Friendly & Responsive** – Play on desktop, tablet, or mobile seamlessly  
+- **🎮 Smart UI Feedback** – Intuitive button states and visual cues guide players through the game flow  
+- **📱 Mobile Friendly & Responsive** – Optimized for desktop, tablet, and mobile devices  
 
 ---
 
@@ -62,10 +66,10 @@ A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces, visua
    - Create a new project  
    - Enable Realtime Database  
    - Copy your Firebase config from Project Settings  
-   - Update the Firebase configuration in `multiplayer.js` with your credentials:
+   - Update the Firebase configuration in `utils.js` with your credentials:
 
    ```
-   const firebaseConfig = {
+   export const firebaseConfig = {
      apiKey: "YOUR_API_KEY",
      authDomain: "YOUR_AUTH_DOMAIN",
      databaseURL: "YOUR_DATABASE_URL",
@@ -89,17 +93,17 @@ A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces, visua
 
 ### Player 2 (Guest)
 
-1. Open `index.html`  
+1. Open `index.html` or click the invite link from Player 1
 2. Select your emoji piece (can be the same as Player 1!)  
 3. Enter the room code or use the invite link from Player 1  
-4. Click **"Join Game"**
+4. Click **"START GAME"** (button glows when ready!)
 
 ### Playing
 
 - Players take turns clicking cells on the 3x3 grid  
 - Host (Player 1) always goes first  
-- **Your moves appear with BLUE text + blue gradient glow**  
-- **Opponent's moves appear with RED text + red gradient glow**  
+- **Your moves and turn indicator appear with BLUE gradient glow**  
+- **Opponent's moves and turn indicator appear with RED gradient glow**  
 - Win by getting three in a row (horizontal, vertical, or diagonal)  
 - Game ends with a win or draw  
 - Use **"Reset Game"** to start a new match  
@@ -111,10 +115,10 @@ A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces, visua
 
 Choose any of these 20 emojis as your game piece (both players can use the same emoji!):
 
-❌ ⭕ ❤️ 💲
-😀 💀 🤖 👽
-🐶 😺 💩 🦐
-🍕 🍣 🍓 🍤
+❌ ⭕ ❤️ 💲  
+😀 💀 🤖 👽  
+🐶 😺 💩 🦐  
+🍕 🍣 🍓 🍤  
 🌙 ☀️ ⭐ 🚀  
 
 ---
@@ -125,7 +129,7 @@ Choose any of these 20 emojis as your game piece (both players can use the same 
 ttt/
 ├── index.html              # Main menu/lobby
 ├── game.html               # Game board interface
-├── style.css               # UI styling
+├── style.css               # Game board UI styling
 ├── home.css                # Lobby styling
 ├── multiplayer.js          # Room creation, joining & invite link handling
 ├── game-multiplayer.js     # Game logic and Firebase sync
@@ -138,15 +142,25 @@ ttt/
 
 ## 🛠️ Technologies Used
 
-- HTML5 - Semantic markup and structure  
-- CSS3 - Modern styling with Flexbox, Grid, animations, and gradients  
-- Vanilla JavaScript (ES6+) - No frameworks, pure JS with ES6 modules  
-- Firebase Realtime Database - Real-time multiplayer synchronization  
-- Emoji Support - Dynamic emoji rendering and display  
+- **HTML5** - Semantic markup and structure  
+- **CSS3** - Modern styling with Flexbox, Grid, animations, and gradient effects  
+- **Vanilla JavaScript (ES6+)** - No frameworks, pure JS with ES6 modules  
+- **Firebase Realtime Database** - Real-time multiplayer synchronization  
+- **Emoji Support** - Dynamic emoji rendering and display  
 
 ---
 
-## 🐛 Bug Fixes & Improvements
+## 🐛 Recent Bug Fixes & Improvements
+
+### v2.2.2
+
+- Enhanced gradient visual effects for better player distinction
+- Improved mobile UI spacing and responsiveness
+- Added smart button states (glow effect on "START GAME")
+- Optimized code by removing debug logging
+- Fixed invite link auto-join button styling
+
+### v2.1.0
 
 - Fixed multiplayer synchronization issues  
 - Stabilized automatic joining and room code retrieval  

@@ -350,14 +350,38 @@ button:disabled {
 }
 
 .win-line {
-  animation: winLinePulse 2s ease-in-out infinite;
+  /* animation: winLinePulse 2s ease-in-out infinite;*/
+  animation: winLinePulse 2s ease-in-out infinite, fadeOut 1s ease forwards;
+  animation-delay: 0s, 4s;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
 }
 
 .loser-effect {
-  animation: losePulse 3s ease-in-out forwards;
+  /* animation: losePulse 3s ease-in-out forwards; */
+  animation: losePulse 3s ease-in-out forwards, fadeOut 1s ease forwards;
+  animation-delay: 0s, 4s;
+  /* first animation starts immediately, second starts after 4s */
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes losePulse {
-  0%,100% { filter: grayscale(0) brightness(1); }
-  50% { filter: grayscale(1) brightness(0.7); }
+
+  0%,
+  100% {
+    filter: grayscale(0) brightness(1);
+  }
+
+  50% {
+    filter: grayscale(1) brightness(0.7);
+  }
 }

@@ -316,4 +316,52 @@ button:disabled {
   text-overflow: ellipsis;
   z-index: 1000;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
+<<<<<<< HEAD
 }
+=======
+}
+
+/* Win Line Animation Styles */
+.win-line-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.win-line {
+  filter: drop-shadow(0 0 8px currentColor);
+  opacity: 0.9;
+}
+
+/* Optional: Pulse animation for win line */
+@keyframes winLinePulse {
+
+  0%,
+  100% {
+    opacity: 0.9;
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 16px currentColor);
+  }
+}
+
+.win-line {
+  animation: winLinePulse 2s ease-in-out infinite;
+}
+
+.loser-effect {
+  animation: losePulse 3s ease-in-out forwards;
+}
+
+@keyframes losePulse {
+  0%,100% { filter: grayscale(0) brightness(1); }
+  50% { filter: grayscale(1) brightness(0.7); }
+}
+>>>>>>> d96bfca (enhance: win/lose animations)

@@ -364,13 +364,11 @@ function listenToGameChanges() {
     "value",
     (snapshot) => {
       try {
-        // Skip processing if we're already leaving
         if (isLeavingGame) {
           return;
         }
 
         const room = snapshot.val();
-
         if (!room) {
           if (!isLeavingGame) {
             result.textContent = "Opponent left the game";
@@ -383,17 +381,7 @@ function listenToGameChanges() {
           return;
         }
 
-        // Check if opponent wants to go back to menu
-        if (room.playerLeftRequested) {
-          if (!isLeavingGame) {
-            isLeavingGame = true;
-            roomRef.off("value");
-            alert("Your opponent quit the game.");
-            sessionStorage.clear();
-            window.location.href = "index.html";
-          }
-          return;
-        }
+        // Other listener logic continues here...
 
         // Normalize board
         if (room.board) {
@@ -404,7 +392,7 @@ function listenToGameChanges() {
           gameBoard = Array(9).fill(null);
         }
 
-        // Detect opponent move and play animation
+        // Detect moves & animate
         for (let i = 0; i < 9; i++) {
           const changed = previousBoard[i] !== gameBoard[i];
           const isNewMove = gameBoard[i] !== null && gameBoard[i] !== undefined;
@@ -413,33 +401,38 @@ function listenToGameChanges() {
           }
         }
 
-        // Update previousBoard for next comparison
-        previousBoard = gameBoard.map((cell) => cell);
+        previousBoard = gameBoard.slice();
 
-        // Update game state
         isMyTurn = room.turn === myRole;
         updateBoard();
         updateTurnHighlight();
 
-        // Check for winner
         if (room.winner) {
           gameActive = false;
           if (room.winner === "draw") {
             result.textContent = "It's a draw!";
+            if (winLineOverlay) {
+              winLineOverlay.remove();
+              winLineOverlay = null;
+            }
           } else {
             const iWon = room.winner === myRole;
             result.textContent = iWon ? "You win! 🎉" : "You lose";
 
-            // ✅ NEW: Draw win line and trigger confetti
             if (room.winningLine) {
               drawWinLine(room.winningLine, iWon);
             }
             triggerConfetti(iWon);
           }
         } else {
-          // ✅ FIX: Clear result text when no winner (game reset or ongoing)
           gameActive = true;
           result.textContent = isMyTurn ? "Your turn" : "Opponent's turn";
+
+          // Clear win line if exists (IMPORTANT for reset case)
+          if (winLineOverlay) {
+            winLineOverlay.remove();
+            winLineOverlay = null;
+          }
         }
       } catch (error) {
         console.error("[GAME] ❌ Error in listener:", error);
@@ -450,6 +443,7 @@ function listenToGameChanges() {
     }
   );
 }
+
 
 /**
  * Resets the game state

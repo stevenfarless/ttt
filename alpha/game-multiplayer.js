@@ -123,6 +123,7 @@ function updateBoard() {
     cells.forEach((cell, index) => {
       const role = gameBoard[index];
       let displaySymbol = "";
+
       if (role === "host") {
         displaySymbol = isHost ? mySymbol : opponentSymbol;
       } else if (role === "guest") {
@@ -196,7 +197,6 @@ function drawWinLine(winningLine, iWon) {
   // Calculate start and end positions
   const startCell = cells[winningLine[0]];
   const endCell = cells[winningLine[2]];
-
   const startRect = startCell.getBoundingClientRect();
   const endRect = endCell.getBoundingClientRect();
 
@@ -301,6 +301,7 @@ function makeMove(index) {
   }
 
   playMoveAnimation(index);
+
   roomRef.transaction(
     (room) => {
       try {
@@ -358,6 +359,7 @@ function makeMove(index) {
  */
 function listenToGameChanges() {
   roomRef = db.ref("rooms/" + roomCode);
+
   roomRef.on(
     "value",
     (snapshot) => {
@@ -368,6 +370,7 @@ function listenToGameChanges() {
         }
 
         const room = snapshot.val();
+
         if (!room) {
           if (!isLeavingGame) {
             result.textContent = "Opponent left the game";
@@ -421,7 +424,6 @@ function listenToGameChanges() {
         // Check for winner
         if (room.winner) {
           gameActive = false;
-
           if (room.winner === "draw") {
             result.textContent = "It's a draw!";
           } else {
@@ -435,6 +437,7 @@ function listenToGameChanges() {
             triggerConfetti(iWon);
           }
         } else {
+          // ✅ FIX: Clear result text when no winner (game reset or ongoing)
           gameActive = true;
           result.textContent = isMyTurn ? "Your turn" : "Opponent's turn";
         }
@@ -462,16 +465,21 @@ function resetGame() {
     const emptyBoard = Object.fromEntries(
       Array.from({ length: 9 }, (_, i) => [i, null])
     );
+
     roomRef.update({
       board: emptyBoard,
       turn: "host",
       winner: null,
       winningLine: null,
     });
+
     gameBoard = Array(9).fill(null);
     previousBoard = Array(9).fill(null);
     isMyTurn = isHost;
     gameActive = true;
+
+    // ✅ FIX: Immediately update local result text for the player who pressed reset
+    result.textContent = isMyTurn ? "Your turn" : "Opponent's turn";
   } catch (error) {
     console.error("[GAME] ❌ Reset error:", error);
   }

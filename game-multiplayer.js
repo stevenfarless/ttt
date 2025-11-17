@@ -275,7 +275,12 @@ function makeMove(index) {
   roomRef.transaction(room => {
     try {
       if (!room) return;
-      if (room.turn !== myRole) return;
+
+      // Log current turn and player role for debugging
+      console.log("Transaction attempt - room.turn:", room.turn, "myRole:", myRole);
+
+      // Normalize turn and role to lower case and trim whitespace before comparing
+      if ((room.turn || '').toLowerCase().trim() !== (myRole || '').toLowerCase().trim()) return;
 
       let board = room.board ? Object.values(room.board) : Array(9).fill(null);
 
@@ -300,163 +305,163 @@ function makeMove(index) {
   }, (error, committed) => {
     if (error) console.error("[GAME] ❌ Transaction failed:", error);
   });
-}
 
-/**
- * Listen for real-time changes in game room and update UI accordingly.
- */
-function listenToGameChanges() {
-  roomRef = db.ref("rooms/" + roomCode);
-  roomRef.on("value", snapshot => {
+
+  /**
+   * Listen for real-time changes in game room and update UI accordingly.
+   */
+  function listenToGameChanges() {
+    roomRef = db.ref("rooms/" + roomCode);
+    roomRef.on("value", snapshot => {
+      try {
+        if (isLeavingGame) return;
+
+        const room = snapshot.val();
+
+        if (!room) {
+          if (!isLeavingGame) {
+            result.textContent = "Opponent left the game";
+            setTimeout(() => {
+              isLeavingGame = true;
+              roomRef.off("value");
+              window.location.href = "index.html";
+            }, 2000);
+          }
+          return;
+        }
+
+        if (room.playerLeftRequested) {
+          if (!isLeavingGame) {
+            isLeavingGame = true;
+            roomRef.off("value");
+            alert("Your opponent quit the game.");
+            sessionStorage.clear();
+            window.location.href = "index.html";
+          }
+          return;
+        }
+
+        // gameBoard = Array.isArray(room.board) ? room.board : Array.from({ length: 9 }, (_, i) => room.board[i] || null);
+
+        gameBoard = Array.isArray(room.board)
+          ? room.board
+          : room.board
+            ? Array.from({ length: 9 }, (_, i) => room.board[i] || null)
+            : Array(9).fill(null);
+
+
+        for (let i = 0; i < 9; i++) {
+          const changed = previousBoard[i] !== gameBoard[i];
+          const isNewMove = gameBoard[i] !== null && gameBoard[i] !== undefined;
+          if (changed && isNewMove) {
+            playMoveAnimation(i);
+          }
+        }
+
+        previousBoard = [...gameBoard];
+
+        isMyTurn = room.turn === myRole;
+        updateBoard();
+        updateTurnHighlight();
+
+        if (room.winner) {
+          gameActive = false;
+
+          if (room.winner === "draw") {
+            result.textContent = "It's a draw!";
+          } else {
+            const iWon = room.winner === myRole;
+            result.textContent = iWon ? "You win! 🎉" : "You lose";
+
+            if (room.winningLine) drawWinLine(room.winningLine, iWon);
+            triggerConfetti(iWon);
+          }
+        } else {
+          gameActive = true;
+          result.textContent = isMyTurn ? "Your turn" : "Opponent's turn";
+        }
+      } catch (error) {
+        console.error("[GAME] ❌ Error in listener:", error);
+      }
+    }, error => {
+      console.error("[GAME] ❌ Firebase listener error:", error);
+    });
+  }
+
+  /**
+   * Reset game state on Firebase and locally.
+   */
+  function resetGame() {
+    try {
+      if (winLineOverlay) {
+        winLineOverlay.remove();
+        winLineOverlay = null;
+      }
+
+      const emptyBoard = Object.fromEntries(Array.from({ length: 9 }, (_, i) => [i, null]));
+
+      roomRef.update({
+        board: emptyBoard,
+        turn: "host",
+        winner: null,
+        winningLine: null,
+      });
+
+      gameBoard = Array(9).fill(null);
+      previousBoard = Array(9).fill(null);
+      isMyTurn = isHost;
+      gameActive = true;
+    } catch (error) {
+      console.error("[GAME] ❌ Reset error:", error);
+    }
+  }
+
+  /**
+   * Handle user going back to menu, notifying opponent with flag in Firebase.
+   */
+  function goBackToMenu() {
     try {
       if (isLeavingGame) return;
 
-      const room = snapshot.val();
+      isLeavingGame = true;
 
-      if (!room) {
-        if (!isLeavingGame) {
-          result.textContent = "Opponent left the game";
-          setTimeout(() => {
-            isLeavingGame = true;
-            roomRef.off("value");
-            window.location.href = "index.html";
-          }, 2000);
-        }
-        return;
-      }
+      roomRef.off("value");
 
-      if (room.playerLeftRequested) {
-        if (!isLeavingGame) {
-          isLeavingGame = true;
-          roomRef.off("value");
-          alert("Your opponent quit the game.");
-          sessionStorage.clear();
+      roomRef.update({
+        playerLeftRequested: true,
+      }).then(() => {
+        sessionStorage.clear();
+        setTimeout(() => {
           window.location.href = "index.html";
-        }
-        return;
-      }
-
-      // gameBoard = Array.isArray(room.board) ? room.board : Array.from({ length: 9 }, (_, i) => room.board[i] || null);
-
-      gameBoard = Array.isArray(room.board)
-        ? room.board
-        : room.board
-          ? Array.from({ length: 9 }, (_, i) => room.board[i] || null)
-          : Array(9).fill(null);
-
-
-      for (let i = 0; i < 9; i++) {
-        const changed = previousBoard[i] !== gameBoard[i];
-        const isNewMove = gameBoard[i] !== null && gameBoard[i] !== undefined;
-        if (changed && isNewMove) {
-          playMoveAnimation(i);
-        }
-      }
-
-      previousBoard = [...gameBoard];
-
-      isMyTurn = room.turn === myRole;
-      updateBoard();
-      updateTurnHighlight();
-
-      if (room.winner) {
-        gameActive = false;
-
-        if (room.winner === "draw") {
-          result.textContent = "It's a draw!";
-        } else {
-          const iWon = room.winner === myRole;
-          result.textContent = iWon ? "You win! 🎉" : "You lose";
-
-          if (room.winningLine) drawWinLine(room.winningLine, iWon);
-          triggerConfetti(iWon);
-        }
-      } else {
-        gameActive = true;
-        result.textContent = isMyTurn ? "Your turn" : "Opponent's turn";
-      }
-    } catch (error) {
-      console.error("[GAME] ❌ Error in listener:", error);
-    }
-  }, error => {
-    console.error("[GAME] ❌ Firebase listener error:", error);
-  });
-}
-
-/**
- * Reset game state on Firebase and locally.
- */
-function resetGame() {
-  try {
-    if (winLineOverlay) {
-      winLineOverlay.remove();
-      winLineOverlay = null;
-    }
-
-    const emptyBoard = Object.fromEntries(Array.from({ length: 9 }, (_, i) => [i, null]));
-
-    roomRef.update({
-      board: emptyBoard,
-      turn: "host",
-      winner: null,
-      winningLine: null,
-    });
-
-    gameBoard = Array(9).fill(null);
-    previousBoard = Array(9).fill(null);
-    isMyTurn = isHost;
-    gameActive = true;
-  } catch (error) {
-    console.error("[GAME] ❌ Reset error:", error);
-  }
-}
-
-/**
- * Handle user going back to menu, notifying opponent with flag in Firebase.
- */
-function goBackToMenu() {
-  try {
-    if (isLeavingGame) return;
-
-    isLeavingGame = true;
-
-    roomRef.off("value");
-
-    roomRef.update({
-      playerLeftRequested: true,
-    }).then(() => {
-      sessionStorage.clear();
-      setTimeout(() => {
+        }, 500);
+      }).catch((error) => {
+        console.error("[GAME] ❌ Error notifying opponent:", error);
+        sessionStorage.clear();
         window.location.href = "index.html";
-      }, 500);
-    }).catch((error) => {
-      console.error("[GAME] ❌ Error notifying opponent:", error);
+      });
+    } catch (error) {
+      console.error("[GAME] ❌ Navigation error:", error);
       sessionStorage.clear();
       window.location.href = "index.html";
-    });
-  } catch (error) {
-    console.error("[GAME] ❌ Navigation error:", error);
-    sessionStorage.clear();
-    window.location.href = "index.html";
-  }
-}
-
-// Setup event listeners for each cell for click and keyboard navigation
-cells.forEach((cell, index) => {
-  cell.setAttribute("role", "button");
-  cell.setAttribute("tabindex", "0");
-  cell.addEventListener("click", () => makeMove(index));
-  cell.addEventListener("keydown", e => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      makeMove(index);
     }
+  }
+
+  // Setup event listeners for each cell for click and keyboard navigation
+  cells.forEach((cell, index) => {
+    cell.setAttribute("role", "button");
+    cell.setAttribute("tabindex", "0");
+    cell.addEventListener("click", () => makeMove(index));
+    cell.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        makeMove(index);
+      }
+    });
   });
-});
 
-resetButton?.addEventListener("click", resetGame);
-backToMenuBtn?.addEventListener("click", goBackToMenu);
+  resetButton?.addEventListener("click", resetGame);
+  backToMenuBtn?.addEventListener("click", goBackToMenu);
 
-// Initialize game state and event listeners on load
-listenToGameChanges();
-updateTurnHighlight();
+  // Initialize game state and event listeners on load
+  listenToGameChanges();
+  updateTurnHighlight();

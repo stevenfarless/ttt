@@ -80,7 +80,7 @@ h1 {
   text-align: center;
   color: var(--info);
   /* Info color text */
-  margin-bottom: 30px;
+  margin-bottom: 10px;
   /* Space below heading */
   font-size: 1rem;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);

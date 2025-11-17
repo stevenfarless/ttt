@@ -2,22 +2,40 @@
 
 import { firebaseConfig, clearStoredLogs } from "./utils.js";
 
-// Initialize Firebase App if not already initialized to avoid duplicate initializations
+// Initialize Firebase
+
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-const DEBUG = true; // Debug flag for console logs
-const db = firebase.database(); // Firebase Realtime Database instance
+const DEBUG = true;
+const db = firebase.database();
 
-// Define an array of available emoji icons for players to select
+// Emojis array
 const emojis = [
-  "❌", "⭕", "❤️", "💲", "😀", "💀", "🤖",
-  "👽", "🐶", "😺", "💩", "🦐", "🍕", "🍣",
-  "🍓", "🍤", "🌙", "☀️", "⭐", "🚀",
+  "❌",
+  "⭕",
+  "❤️",
+  "💲",
+  "😀",
+  "💀",
+  "🤖",
+  "👽",
+  "🐶",
+  "😺",
+  "💩",
+  "🦐",
+  "🍕",
+  "🍣",
+  "🍓",
+  "🍤",
+  "🌙",
+  "☀️",
+  "⭐",
+  "🚀",
 ];
 
-// Cache references to DOM elements used for UI interaction
+// DOM Elements
 const emojiDisplay = document.getElementById("emojiDisplay");
 const emojiToggle = document.getElementById("emojiToggle");
 const emojiModal = document.getElementById("emojiModal");
@@ -37,41 +55,45 @@ const copyLinkBtn = document.getElementById("copyLinkBtn");
 const shareLinkBtn = document.getElementById("shareLinkBtn");
 const inviteLinkDisplay = document.getElementById("inviteLinkDisplay");
 
-// Store the generated room code globally here
+// Track generated room code
 let generatedRoomCode = null;
 
-// Function: Checks URL query parameters for a room code to enable instant joining
+// ============================================
+// URL PARAMETER HANDLING
+// ============================================
+
+/**
+* Parses URL parameters and auto-joins room if present
+*/
 function checkForRoomInURL() {
   const urlParams = new URLSearchParams(window.location.search);
   const roomCode = urlParams.get("room");
 
   if (roomCode && roomCode.length === 4) {
-    // Sanitize to uppercase alphanumeric only to avoid injection or invalid chars
     const sanitizedCode = roomCode.toUpperCase().replace(/[^A-Z0-9]/g, "");
     if (sanitizedCode.length === 4) {
-      // Show join UI, hide create UI
+      // Show join module
       joinModule.classList.remove("hidden");
       createModule.classList.add("hidden");
 
-      // Pre-fill room code in input box for joining
+      // Pre-populate room code
       roomCodeInput.value = sanitizedCode;
       roomCodeInput.dispatchEvent(new Event("input"));
 
-      // Update join button UI to emphasize action
+      // ✅ FIXED: Manually apply button styling for invite link
       joinRoomBtn.textContent = "START GAME";
-      joinRoomBtn.classList.add("glow");
+      joinRoomBtn.classList.add("glow"); // ✅ ADD GLOW EFFECT
 
-      // Disable create button to prevent conflict while joining
       createRoomBtn.disabled = true;
       createRoomBtn.style.opacity = "0.4";
       createRoomBtn.style.cursor = "not-allowed";
       createRoomBtn.title = "Clear the room code to create a new game";
 
-      // Inform user the room code was loaded from the URL link
+      // Update status
       joinStatus.textContent = "Room code loaded from link.\nReady to join!";
       joinStatus.style.color = "var(--success)";
 
-      // Optionally remove room parameter from URL after processing
+      // Clean URL (optional)
       window.history.replaceState({}, document.title, window.location.pathname);
       return true;
     }
@@ -79,19 +101,23 @@ function checkForRoomInURL() {
   return false;
 }
 
-// Function: Generate shareable invite link with room code as query parameter
+/**
+* Generates shareable invitation link
+*/
 function generateInviteLink(roomCode) {
   const baseUrl = window.location.origin + window.location.pathname;
   return `${baseUrl}?room=${roomCode}`;
 }
 
-// Function: Copy invite link to clipboard with visual feedback on success/failure
+/**
+* Copies invite link to clipboard
+*/
 async function copyInviteLink(roomCode) {
   const link = generateInviteLink(roomCode);
   try {
     await navigator.clipboard.writeText(link);
 
-    // Temporary UI change on successful copy
+    // Visual feedback
     const originalText = copyLinkBtn.textContent;
     copyLinkBtn.textContent = "✓ Copied!";
     copyLinkBtn.style.background = "var(--success)";
@@ -110,7 +136,9 @@ async function copyInviteLink(roomCode) {
   }
 }
 
-// Function: Use Web Share API to share invite link on supported platforms (mobile friendly fallback)
+/**
+* Shares invite link using Web Share API (mobile-friendly)
+*/
 async function shareInviteLink(roomCode) {
   const link = generateInviteLink(roomCode);
   const hostEmoji = emojiDisplay.textContent;
@@ -130,15 +158,14 @@ async function shareInviteLink(roomCode) {
       return false;
     }
   } else {
-    // Fallback to copy functionality if Web Share API is not supported
     return await copyInviteLink(roomCode);
   }
 }
 
-// Initialize emoji picker UI with available emoji options
+// Initialize emoji picker
 function initEmojiPicker() {
   emojiPicker.innerHTML = "";
-  emojis.forEach((emoji) => {
+  emojis.forEach((emoji, index) => {
     const option = document.createElement("button");
     option.className = "emoji-option";
     option.textContent = emoji;
@@ -151,82 +178,111 @@ function initEmojiPicker() {
   });
 }
 
-// Sets the chosen emoji as current emoji and hides picker modal
 function selectEmoji(emoji) {
   emojiDisplay.textContent = emoji;
   emojiModal.classList.add("hidden");
 }
 
-// Returns a random emoji from the emoji array for initial display
 function getRandomEmoji() {
   const emoji = emojis[Math.floor(Math.random() * emojis.length)];
   return emoji;
 }
 
-// Initialize emoji display and picker on page load
+// Set random emoji on page load
 const initialEmoji = getRandomEmoji();
 emojiDisplay.textContent = initialEmoji;
 initEmojiPicker();
 
-// Automatically load room if present in URL
+// Check for room code in URL on page load
 checkForRoomInURL();
 
-// Toggle emoji picker modal visibility on button click
+// Emoji modal toggle
 emojiToggle.addEventListener("click", () => {
   emojiModal.classList.remove("hidden");
 });
 
-// Close emoji picker modal on close button or clicking outside content
 closeEmojiModal.addEventListener("click", () => {
   emojiModal.classList.add("hidden");
 });
+
 emojiModal.addEventListener("click", (e) => {
   if (e.target === emojiModal) {
     emojiModal.classList.add("hidden");
   }
 });
 
-// Join Room Button: Toggle join module visibility
-joinRoomBtn.addEventListener("click", () => {
+// Toggle modules when buttons clicked
+createRoomBtn.addEventListener("click", (e) => {
+  if (!createModule.classList.contains("hidden")) {
+    return;
+  }
+
+  createModule.classList.remove("hidden");
+  joinModule.classList.add("hidden");
+  joinRoomBtn.disabled = false;
+  joinStatus.textContent = "";
+  roomCodeInput.value = "";
+
+  // ✅ Re-enable create button when switching back
+  createRoomBtn.disabled = false;
+  createRoomBtn.style.opacity = "1";
+
+  // Display existing code or placeholder
+  if (generatedRoomCode) {
+    roomCodeDisplay.textContent = generatedRoomCode;
+    inviteLinkDisplay.textContent = generateInviteLink(generatedRoomCode);
+  } else {
+    roomCodeDisplay.textContent = "XXXX";
+    inviteLinkDisplay.textContent = "Link will appear here...";
+  }
+});
+
+joinRoomBtn.addEventListener("click", (e) => {
   if (!joinModule.classList.contains("hidden")) {
     return;
   }
+
   joinModule.classList.remove("hidden");
   createModule.classList.add("hidden");
-
-  // Reset create button styling when switching to join
   createRoomBtn.disabled = false;
   createStatus.textContent = "";
+
+  // ✅ Reset create button styling when joining
   createRoomBtn.style.opacity = "1";
 });
 
-// Room code input validation and UI state updates on input changes
+// ============================================
+// ✅ Smart UI feedback for room code input
+// ============================================
 roomCodeInput.addEventListener("input", (e) => {
-  // Enforce uppercase letters and digits only, strip invalid chars
+  const originalValue = e.target.value;
   e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
 
-  // Adjust create and join buttons based on valid code input
+  // Update button text and disable Create Game when valid code entered
   if (e.target.value.length === 4) {
+    // ✅ Valid code entered - dim/disable Create Game button
     joinRoomBtn.textContent = "START GAME";
-    joinRoomBtn.classList.add("glow");
+    joinRoomBtn.classList.add("glow"); // ✅ ADD GLOW EFFECT
     createRoomBtn.disabled = true;
     createRoomBtn.style.opacity = "0.4";
     createRoomBtn.style.cursor = "not-allowed";
     createRoomBtn.title = "Clear the room code to create a new game";
   } else {
+    // ✅ Invalid or incomplete code - re-enable Create Game button
     joinRoomBtn.textContent = "Join Game";
-    joinRoomBtn.classList.remove("glow");
+    joinRoomBtn.classList.remove("glow"); // ✅ REMOVE GLOW EFFECT
     createRoomBtn.disabled = false;
     createRoomBtn.style.opacity = "1";
     createRoomBtn.style.cursor = "pointer";
     createRoomBtn.title = "";
   }
 
-  // Clear join status feedback while typing
+  // Clear status when user is typing
   joinStatus.textContent = "";
 });
 
-// Clipboard copy of room code with UI feedback
+
+// Copy room code
 copyCodeBtn?.addEventListener("click", async () => {
   try {
     const code = roomCodeDisplay.textContent;
@@ -245,26 +301,26 @@ copyCodeBtn?.addEventListener("click", async () => {
   }
 });
 
-// Clipboard copy for invite link
+// Copy invite link button
 copyLinkBtn?.addEventListener("click", async () => {
   if (generatedRoomCode) {
     await copyInviteLink(generatedRoomCode);
   }
 });
 
-// Share invite link button for Web Share API or fallback copy
+// Share invite link button
 shareLinkBtn?.addEventListener("click", async () => {
   if (generatedRoomCode) {
     await shareInviteLink(generatedRoomCode);
   }
 });
 
-// Paste clipboard content into room code input, sanitized
+// Paste room code
 pasteCodeBtn?.addEventListener("click", async () => {
   try {
     const text = await navigator.clipboard.readText();
 
-    // Extract room code param if full URL pasted
+    // Check if it's a full URL
     let sanitized;
     if (text.includes("?room=")) {
       const urlParams = new URLSearchParams(text.split("?")[1]);
@@ -280,16 +336,16 @@ pasteCodeBtn?.addEventListener("click", async () => {
 
     roomCodeInput.value = sanitized;
 
-    // Trigger input event to update UI state accordingly
+    // Trigger input event to update button text and UI state
     roomCodeInput.dispatchEvent(new Event("input"));
   } catch (error) {
     console.error("[MULTIPLAYER] ❌ Paste failed:", error);
   }
 });
 
-// Create game button logic - handles both showing module and creating room
+// Create game
 createRoomBtn.addEventListener("click", () => {
-  // Prevent creating if button is disabled (valid code entered in join field)
+  // ✅ Prevent creating if button is disabled (valid code entered in join field)
   if (createRoomBtn.disabled) {
     return;
   }
@@ -297,14 +353,8 @@ createRoomBtn.addEventListener("click", () => {
   // If code already exists, just show the module
   if (generatedRoomCode) {
     createModule.classList.remove("hidden");
-    joinModule.classList.add("hidden");
-    roomCodeDisplay.textContent = generatedRoomCode;
-    inviteLinkDisplay.textContent = generateInviteLink(generatedRoomCode);
     return;
   }
-
-  // Hide join module when creating
-  joinModule.classList.add("hidden");
 
   createRoomBtn.disabled = true;
 
@@ -341,7 +391,6 @@ createRoomBtn.addEventListener("click", () => {
   db.ref("rooms/" + code)
     .set(roomData)
     .then(() => {
-      createModule.classList.remove("hidden");
       roomCodeDisplay.textContent = code;
       const inviteLink = generateInviteLink(code);
       inviteLinkDisplay.textContent = inviteLink;
@@ -372,7 +421,7 @@ createRoomBtn.addEventListener("click", () => {
     });
 });
 
-// Join game button logic - validates and joins existing room
+// Join game
 joinRoomBtn.addEventListener("click", () => {
   const code = roomCodeInput.value.trim().toUpperCase();
 

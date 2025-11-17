@@ -186,30 +186,7 @@ emojiModal.addEventListener("click", (e) => {
   }
 });
 
-// UI toggles between create and join modules for game lobby
-createRoomBtn.addEventListener("click", () => {
-  if (!createModule.classList.contains("hidden")) {
-    return;
-  }
-  createModule.classList.remove("hidden");
-  joinModule.classList.add("hidden");
-  joinRoomBtn.disabled = false;
-  joinStatus.textContent = "";
-
-  // Re-enable create room button styling
-  createRoomBtn.disabled = false;
-  createRoomBtn.style.opacity = "1";
-
-  // Display generated room if exists
-  if (generatedRoomCode) {
-    roomCodeDisplay.textContent = generatedRoomCode;
-    inviteLinkDisplay.textContent = generateInviteLink(generatedRoomCode);
-  } else {
-    roomCodeDisplay.textContent = "XXXX";
-    inviteLinkDisplay.textContent = "Link will appear here...";
-  }
-});
-
+// Join Room Button: Toggle join module visibility
 joinRoomBtn.addEventListener("click", () => {
   if (!joinModule.classList.contains("hidden")) {
     return;
@@ -225,8 +202,6 @@ joinRoomBtn.addEventListener("click", () => {
 
 // Room code input validation and UI state updates on input changes
 roomCodeInput.addEventListener("input", (e) => {
-  const originalValue = e.target.value;
-
   // Enforce uppercase letters and digits only, strip invalid chars
   e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
 
@@ -312,7 +287,7 @@ pasteCodeBtn?.addEventListener("click", async () => {
   }
 });
 
-// Create game button logic
+// Create game button logic - handles both showing module and creating room
 createRoomBtn.addEventListener("click", () => {
   // Prevent creating if button is disabled (valid code entered in join field)
   if (createRoomBtn.disabled) {
@@ -322,8 +297,14 @@ createRoomBtn.addEventListener("click", () => {
   // If code already exists, just show the module
   if (generatedRoomCode) {
     createModule.classList.remove("hidden");
+    joinModule.classList.add("hidden");
+    roomCodeDisplay.textContent = generatedRoomCode;
+    inviteLinkDisplay.textContent = generateInviteLink(generatedRoomCode);
     return;
   }
+
+  // Hide join module when creating
+  joinModule.classList.add("hidden");
 
   createRoomBtn.disabled = true;
 
@@ -360,6 +341,7 @@ createRoomBtn.addEventListener("click", () => {
   db.ref("rooms/" + code)
     .set(roomData)
     .then(() => {
+      createModule.classList.remove("hidden");
       roomCodeDisplay.textContent = code;
       const inviteLink = generateInviteLink(code);
       inviteLinkDisplay.textContent = inviteLink;
@@ -390,7 +372,7 @@ createRoomBtn.addEventListener("click", () => {
     });
 });
 
-// Join game button logic
+// Join game button logic - validates and joins existing room
 joinRoomBtn.addEventListener("click", () => {
   const code = roomCodeInput.value.trim().toUpperCase();
 

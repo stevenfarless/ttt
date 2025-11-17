@@ -82,8 +82,7 @@ h1 {
   /* Info color text */
   margin-bottom: 30px;
   /* Space below heading */
-  font-size: 2.5rem;
-  /* Large font size */
+  font-size: .5rem;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 

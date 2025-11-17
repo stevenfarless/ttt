@@ -46,3 +46,12 @@ export function showError(element, message, timeout = 5000) {
     }, timeout);
   }
 }
+
+// No-op functions for backward compatibility (currently unused)
+export function clearStoredLogs() {
+  // Placeholder function - logs are not stored in current version
+}
+
+export function replayStoredLogs() {
+  // Placeholder function - logs are not stored in current version
+}

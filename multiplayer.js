@@ -1,105 +1,61 @@
-// multiplayer.js
-
-import { firebaseConfig, clearStoredLogs } from "./utils.js";
-
-// Initialize Firebase
-
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-
-const DEBUG = true;
-const db = firebase.database();
-
-// Emojis array
-const emojis = [
-  "❌",
-  "⭕",
-  "❤️",
-  "💲",
-  "😀",
-  "💀",
-  "🤖",
-  "👽",
-  "🐶",
-  "😺",
-  "💩",
-  "🦐",
-  "🍕",
-  "🍣",
-  "🍓",
-  "🍤",
-  "🌙",
-  "☀️",
-  "⭐",
-  "🚀",
-];
-
-// DOM Elements
-const emojiDisplay = document.getElementById("emojiDisplay");
-const emojiToggle = document.getElementById("emojiToggle");
-const emojiModal = document.getElementById("emojiModal");
-const closeEmojiModal = document.getElementById("closeEmojiModal");
-const emojiPicker = document.getElementById("emojiPicker");
-const createRoomBtn = document.getElementById("createRoomBtn");
-const joinRoomBtn = document.getElementById("joinRoomBtn");
-const createModule = document.getElementById("createModule");
-const joinModule = document.getElementById("joinModule");
-const roomCodeInput = document.getElementById("roomCodeInput");
-const roomCodeDisplay = document.getElementById("roomCodeDisplay");
-const createStatus = document.getElementById("createStatus");
-const joinStatus = document.getElementById("joinStatus");
-const copyCodeBtn = document.getElementById("copyCodeBtn");
-const pasteCodeBtn = document.getElementById("pasteCodeBtn");
-const copyLinkBtn = document.getElementById("copyLinkBtn");
-const shareLinkBtn = document.getElementById("shareLinkBtn");
-const inviteLinkDisplay = document.getElementById("inviteLinkDisplay");
-
-// Track generated room code
-let generatedRoomCode = null;
-
-// ============================================
-// URL PARAMETER HANDLING
-// ============================================
-
 /**
-* Parses URL parameters and auto-joins room if present
-*/
+ * Parses URL parameters and auto-joins room if present.
+ * Checks if URL contains a "room" query parameter with a valid 4-character code.
+ * If valid, the join game UI module is shown and pre-filled with the code.
+ * The create game button is disabled to prevent conflicts.
+ * Updates the join status with a success message.
+ * Optionally cleans the URL by removing the query parameters.
+ * 
+ * @returns {boolean} True if a valid room code was found and loaded, else false.
+ */
 function checkForRoomInURL() {
+  // Parse the query parameters from the URL
   const urlParams = new URLSearchParams(window.location.search);
+  // Get the 'room' parameter from URL
   const roomCode = urlParams.get("room");
 
+  // Only proceed if room code exists and is exactly 4 characters
   if (roomCode && roomCode.length === 4) {
+    // Sanitize input: uppercase and keep only letters A-Z and digits 0-9
     const sanitizedCode = roomCode.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    // Confirm sanitized code is still 4 characters
     if (sanitizedCode.length === 4) {
-      // Show join module
+      // Show the "join game" module and hide the "create game" module
       joinModule.classList.remove("hidden");
       createModule.classList.add("hidden");
 
-      // Pre-populate room code
+      // Pre-fill the join room input with the sanitized code
       roomCodeInput.value = sanitizedCode;
+      // Dispatch an 'input' event to trigger any input listeners (e.g., validation)
       roomCodeInput.dispatchEvent(new Event("input"));
 
-      // ✅ FIXED: Manually apply button styling for invite link
+      // Change join button text to indicate ready to start game
       joinRoomBtn.textContent = "START GAME";
-      joinRoomBtn.classList.add("glow"); // ✅ ADD GLOW EFFECT
+      // Add a glowing effect class to the join button to highlight it
+      joinRoomBtn.classList.add("glow");
 
+      // Disable and visually dim the create game button to prevent new room creation
       createRoomBtn.disabled = true;
       createRoomBtn.style.opacity = "0.4";
       createRoomBtn.style.cursor = "not-allowed";
+      // Add tooltip text explaining the button is disabled
       createRoomBtn.title = "Clear the room code to create a new game";
 
-      // Update status
+      // Update join status area with success message in green text
       joinStatus.textContent = "Room code loaded from link.\nReady to join!";
       joinStatus.style.color = "var(--success)";
 
-      // Clean URL (optional)
+      // Optionally replace browser history state to remove URL query parameters from address bar
       window.history.replaceState({}, document.title, window.location.pathname);
       return true;
     }
   }
+  // Return false if no valid room code found in URL
   return false;
 }
+
+// ^^^^^^^^^^ DONE 1 **************************************************************************
+// break section ******************************************************************************
 
 /**
 * Generates shareable invitation link
@@ -195,6 +151,8 @@ initEmojiPicker();
 
 // Check for room code in URL on page load
 checkForRoomInURL();
+
+// break section ******************************************************************************
 
 // Emoji modal toggle
 emojiToggle.addEventListener("click", () => {
@@ -300,6 +258,9 @@ copyCodeBtn?.addEventListener("click", async () => {
     console.error("[MULTIPLAYER] ❌ Copy failed:", error);
   }
 });
+
+// break section ******************************************************************************
+
 
 // Copy invite link button
 copyLinkBtn?.addEventListener("click", async () => {

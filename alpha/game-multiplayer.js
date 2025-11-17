@@ -335,7 +335,14 @@ function listenToGameChanges() {
         return;
       }
 
-      gameBoard = Array.isArray(room.board) ? room.board : Array.from({ length: 9 }, (_, i) => room.board[i] || null);
+      // gameBoard = Array.isArray(room.board) ? room.board : Array.from({ length: 9 }, (_, i) => room.board[i] || null);
+
+      gameBoard = Array.isArray(room.board)
+        ? room.board
+        : room.board
+          ? Array.from({ length: 9 }, (_, i) => room.board[i] || null)
+          : Array(9).fill(null);
+
 
       for (let i = 0; i < 9; i++) {
         const changed = previousBoard[i] !== gameBoard[i];

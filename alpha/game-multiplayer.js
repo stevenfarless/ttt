@@ -2,21 +2,20 @@
 
 import { firebaseConfig, replayStoredLogs } from "./utils.js";
 
-// Constants
+// Duration in ms for cell click animation
 const ANIMATION_DURATION = 600;
 
-// ============================================
-// REPLAY STORED LOGS FROM PREVIOUS PAGE
-// ============================================
+// Replay logs previously stored (used for debugging, currently no-op)
 replayStoredLogs();
 
-// Validate session and initialize Firebase
+// Retrieve session data for this player's game and symbol details
 const roomCode = sessionStorage.getItem("roomCode");
 const isHost = sessionStorage.getItem("isHost") === "true";
 const mySymbol = sessionStorage.getItem("mySymbol");
 const opponentSymbol = sessionStorage.getItem("opponentSymbol");
 const myRole = isHost ? "host" : "guest";
 
+// Redirect to index if mandatory session data missing (user flow validation)
 if (!roomCode || !mySymbol || !opponentSymbol) {
   console.error("[GAME] ❌ Missing session data - redirecting to home");
   console.error("[GAME] Missing:", {
@@ -27,13 +26,14 @@ if (!roomCode || !mySymbol || !opponentSymbol) {
   window.location.href = "index.html";
 }
 
+// Initialize Firebase if not already initialized in this session
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
 const db = firebase.database();
 
-// DOM References
+// Cache DOM elements for interaction
 const player1Indicator = document.querySelector(".player-indicator:nth-child(1)");
 const player2Indicator = document.querySelector(".player-indicator:nth-child(2)");
 const player1Emoji = document.getElementById("player1-emoji");
@@ -44,26 +44,21 @@ const resetButton = document.getElementById("reset");
 const backToMenuBtn = document.getElementById("backToMenu");
 const board = document.getElementById("board");
 
-// Game State
+// Initialize game state variables
 let gameBoard = Array(9).fill(null);
 let previousBoard = Array(9).fill(null);
 let gameActive = false;
-let isMyTurn = isHost;
+let isMyTurn = isHost; // Host always starts
 let roomRef = null;
 let isLeavingGame = false;
 let winLineOverlay = null;
 
-// Set player emojis
-if (player1Emoji) {
-  player1Emoji.textContent = mySymbol;
-}
-
-if (player2Emoji) {
-  player2Emoji.textContent = opponentSymbol;
-}
+// Set player emojis in UI
+if (player1Emoji) player1Emoji.textContent = mySymbol;
+if (player2Emoji) player2Emoji.textContent = opponentSymbol;
 
 /**
- * Updates the turn indicator highlight
+ * Updates the visual highlight on whose turn it is.
  */
 function updateTurnHighlight() {
   try {
@@ -84,20 +79,14 @@ function updateTurnHighlight() {
 }
 
 /**
- * Checks for a winner on the board
- * @param {Array} board - The game board with 'host'/'guest' values
- * @returns {Object|null} Object with winner role and winning line, or null
+ * Checks for a winner or draw given the current board.
+ * Returns an object with winner and winning line indices or null if no win/draw.
  */
 function checkWinner(board) {
   const lines = [
-    [0, 1, 2], // Top row
-    [3, 4, 5], // Middle row
-    [6, 7, 8], // Bottom row
-    [0, 3, 6], // Left column
-    [1, 4, 7], // Middle column
-    [2, 5, 8], // Right column
-    [0, 4, 8], // Diagonal top-left to bottom-right
-    [2, 4, 6], // Diagonal top-right to bottom-left
+    [0, 1, 2], [3, 4, 5], [6, 7, 8],  // rows
+    [0, 3, 6], [1, 4, 7], [2, 5, 8],  // columns
+    [0, 4, 8], [2, 4, 6],          // diagonals
   ];
 
   for (let line of lines) {
@@ -107,22 +96,21 @@ function checkWinner(board) {
     }
   }
 
-  const isDraw = board.every((cell) => cell !== null);
-  if (isDraw) {
-    return { winner: "draw", winningLine: null };
-  }
+  const isDraw = board.every(cell => cell !== null);
+  if (isDraw) return { winner: "draw", winningLine: null };
 
   return null;
 }
 
 /**
- * Updates the visual board display
+ * Updates the board UI cells to reflect current game state.
  */
 function updateBoard() {
   try {
     cells.forEach((cell, index) => {
       const role = gameBoard[index];
       let displaySymbol = "";
+
       if (role === "host") {
         displaySymbol = isHost ? mySymbol : opponentSymbol;
       } else if (role === "guest") {
@@ -135,11 +123,11 @@ function updateBoard() {
 
       if (role === myRole) {
         cell.setAttribute("data-player", "self");
-        cell.style.color = "#3B82F6";
+        cell.style.color = "#3B82F6";  // Blue highlight for self
         cell.classList.add("my-move");
       } else if (role && role !== myRole) {
         cell.setAttribute("data-player", "opponent");
-        cell.style.color = "#EF4444";
+        cell.style.color = "#EF4444";  // Red highlight for opponent
         cell.classList.add("opponent-move");
       } else {
         cell.removeAttribute("data-player");
@@ -151,8 +139,7 @@ function updateBoard() {
 }
 
 /**
- * Plays animation for a cell move
- * @param {number} index - The cell index
+ * Plays a quick animation on a cell when clicked.
  */
 function playMoveAnimation(index) {
   try {
@@ -167,33 +154,26 @@ function playMoveAnimation(index) {
 }
 
 /**
- * Creates and animates the win line overlay
- * @param {Array} winningLine - Array of three cell indices
- * @param {boolean} iWon - Whether the current player won
+ * Draws an SVG line overlay across the winning line on the board.
  */
 function drawWinLine(winningLine, iWon) {
   if (!winningLine || winningLine.length !== 3) return;
 
-  // Remove any existing win line
-  if (winLineOverlay) {
-    winLineOverlay.remove();
-  }
+  if (winLineOverlay) winLineOverlay.remove();
 
-  // Get board position
   const boardRect = board.getBoundingClientRect();
-
-  // Create SVG overlay
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("class", "win-line-overlay");
-  svg.style.position = "absolute";
-  svg.style.top = "0";
-  svg.style.left = "0";
-  svg.style.width = "100%";
-  svg.style.height = "100%";
-  svg.style.pointerEvents = "none";
-  svg.style.zIndex = "10";
+  svg.classList.add("win-line-overlay");
+  Object.assign(svg.style, {
+    position: "absolute",
+    top: "0",
+    left: "0",
+    width: "100%",
+    height: "100%",
+    pointerEvents: "none",
+    zIndex: "10",
+  });
 
-  // Calculate start and end positions
   const startCell = cells[winningLine[0]];
   const endCell = cells[winningLine[2]];
 
@@ -205,7 +185,6 @@ function drawWinLine(winningLine, iWon) {
   const endX = endRect.left + endRect.width / 2 - boardRect.left;
   const endY = endRect.top + endRect.height / 2 - boardRect.top;
 
-  // Create line element
   const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
   line.setAttribute("x1", startX);
   line.setAttribute("y1", startY);
@@ -214,14 +193,13 @@ function drawWinLine(winningLine, iWon) {
   line.setAttribute("stroke", iWon ? "#3B82F6" : "#EF4444");
   line.setAttribute("stroke-width", "6");
   line.setAttribute("stroke-linecap", "round");
-  line.setAttribute("class", "win-line");
+  line.classList.add("win-line");
 
   svg.appendChild(line);
   board.style.position = "relative";
   board.appendChild(svg);
   winLineOverlay = svg;
 
-  // Animate the line drawing
   setTimeout(() => {
     line.style.transition = "all 0.8s cubic-bezier(0.4, 0, 0.2, 1)";
     line.setAttribute("x2", endX);
@@ -230,16 +208,12 @@ function drawWinLine(winningLine, iWon) {
 }
 
 /**
- * Triggers confetti celebration
- * @param {boolean} iWon - Whether the current player won
+ * Trigger confetti celebration effect on win, or red board glow on loss.
  */
 function triggerConfetti(iWon) {
   if (!iWon) {
-    // Add a subtle losing effect, e.g. red board glow or fade
     board.classList.add("loser-effect");
-    setTimeout(() => {
-      board.classList.remove("loser-effect");
-    }, 3000);
+    setTimeout(() => board.classList.remove("loser-effect"), 3000);
     return;
   }
 
@@ -248,12 +222,10 @@ function triggerConfetti(iWon) {
     return;
   }
 
-  // Use player colors for confetti
   const colors = iWon
-    ? ["#3B82F6", "#60A5FA", "#93C5FD", "#DBEAFE"] // Blue gradient for winner
-    : ["#EF4444", "#F87171", "#FCA5A5", "#FEE2E2"]; // Red gradient for loser
+    ? ["#3B82F6", "#60A5FA", "#93C5FD", "#DBEAFE"]
+    : ["#EF4444", "#F87171", "#FCA5A5", "#FEE2E2"];
 
-  // Fire confetti from multiple angles
   const duration = 2500;
   const animationEnd = Date.now() + duration;
   const defaults = {
@@ -261,213 +233,167 @@ function triggerConfetti(iWon) {
     spread: 360,
     ticks: 60,
     zIndex: 1000,
-    colors: colors
+    colors,
   };
 
   function randomInRange(min, max) {
     return Math.random() * (max - min) + min;
   }
 
-  const interval = setInterval(function () {
+  const interval = setInterval(() => {
     const timeLeft = animationEnd - Date.now();
 
     if (timeLeft <= 0) {
-      return clearInterval(interval);
+      clearInterval(interval);
+      return;
     }
 
     const particleCount = 50 * (timeLeft / duration);
 
-    // Fire confetti from random positions
     confetti({
       ...defaults,
       particleCount,
-      origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+      origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
     });
     confetti({
       ...defaults,
       particleCount,
-      origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+      origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
     });
   }, 250);
 }
 
 /**
- * Handles a cell click for making a move
- * @param {number} index - The cell index
+ * Perform a move on the board if valid and update Firebase.
  */
 function makeMove(index) {
-  if (!gameActive || !isMyTurn || gameBoard[index]) {
-    return;
-  }
+  if (!gameActive || !isMyTurn || gameBoard[index]) return;
 
   playMoveAnimation(index);
-  roomRef.transaction(
-    (room) => {
-      try {
-        if (!room) {
-          return;
-        }
 
-        if (room.turn !== myRole) {
-          return;
-        }
+  roomRef.transaction(room => {
+    try {
+      if (!room) return;
+      if (room.turn !== myRole) return;
 
-        // Normalize board from Firebase
-        let board = [];
-        if (room.board) {
-          for (let i = 0; i < 9; i++) {
-            board[i] = room.board[i] || null;
-          }
-        } else {
-          board = Array(9).fill(null);
-        }
+      let board = room.board ? Object.values(room.board) : Array(9).fill(null);
 
-        if (board[index] !== null) {
-          return;
-        }
+      if (board[index] !== null) return;
 
-        // Make move - store role instead of emoji
-        board[index] = myRole;
+      board[index] = myRole;
 
-        // Convert back to Firebase format
-        room.board = Object.fromEntries(board.map((val, i) => [i, val]));
-        room.turn = isHost ? "guest" : "host";
+      room.board = Object.fromEntries(board.map((val, i) => [i, val]));
+      room.turn = isHost ? "guest" : "host";
 
-        const winResult = checkWinner(board);
-        if (winResult) {
-          room.winner = winResult.winner;
-          room.winningLine = winResult.winningLine;
-        }
-
-        return room;
-      } catch (error) {
-        console.error("[GAME] ❌ Transaction error:", error);
-        return;
+      const winResult = checkWinner(board);
+      if (winResult) {
+        room.winner = winResult.winner;
+        room.winningLine = winResult.winningLine;
       }
-    },
-    (error, committed, snapshot) => {
-      if (error) {
-        console.error("[GAME] ❌ Transaction failed:", error);
-      }
+
+      return room;
+    } catch (error) {
+      console.error("[GAME] ❌ Transaction error:", error);
+      return;
     }
-  );
+  }, (error, committed) => {
+    if (error) console.error("[GAME] ❌ Transaction failed:", error);
+  });
 }
 
 /**
- * Listens to Firebase game changes and updates local state
+ * Listen for real-time changes in game room and update UI accordingly.
  */
 function listenToGameChanges() {
   roomRef = db.ref("rooms/" + roomCode);
-  roomRef.on(
-    "value",
-    (snapshot) => {
-      try {
-        // Skip processing if we're already leaving
-        if (isLeavingGame) {
-          return;
-        }
+  roomRef.on("value", snapshot => {
+    try {
+      if (isLeavingGame) return;
 
-        const room = snapshot.val();
-        if (!room) {
-          if (!isLeavingGame) {
-            result.textContent = "Opponent left the game";
-            setTimeout(() => {
-              isLeavingGame = true;
-              roomRef.off("value");
-              window.location.href = "index.html";
-            }, 2000);
-          }
-          return;
-        }
+      const room = snapshot.val();
 
-        // Check if opponent wants to go back to menu
-        if (room.playerLeftRequested) {
-          if (!isLeavingGame) {
+      if (!room) {
+        if (!isLeavingGame) {
+          result.textContent = "Opponent left the game";
+          setTimeout(() => {
             isLeavingGame = true;
             roomRef.off("value");
-            alert("Your opponent quit the game.");
-            sessionStorage.clear();
             window.location.href = "index.html";
-          }
-          return;
+          }, 2000);
         }
-
-        // Normalize board
-        if (room.board) {
-          gameBoard = Array.isArray(room.board)
-            ? room.board
-            : Array.from({ length: 9 }, (_, i) => room.board[i] || null);
-        } else {
-          gameBoard = Array(9).fill(null);
-        }
-
-        // Detect opponent move and play animation
-        for (let i = 0; i < 9; i++) {
-          const changed = previousBoard[i] !== gameBoard[i];
-          const isNewMove = gameBoard[i] !== null && gameBoard[i] !== undefined;
-          if (changed && isNewMove) {
-            playMoveAnimation(i);
-          }
-        }
-
-        // Update previousBoard for next comparison
-        previousBoard = gameBoard.map((cell) => cell);
-
-        // Update game state
-        isMyTurn = room.turn === myRole;
-        updateBoard();
-        updateTurnHighlight();
-
-        // Check for winner
-        if (room.winner) {
-          gameActive = false;
-
-          if (room.winner === "draw") {
-            result.textContent = "It's a draw!";
-          } else {
-            const iWon = room.winner === myRole;
-            result.textContent = iWon ? "You win! 🎉" : "You lose";
-
-            // ✅ NEW: Draw win line and trigger confetti
-            if (room.winningLine) {
-              drawWinLine(room.winningLine, iWon);
-            }
-            triggerConfetti(iWon);
-          }
-        } else {
-          gameActive = true;
-          result.textContent = isMyTurn ? "Your turn" : "Opponent's turn";
-        }
-      } catch (error) {
-        console.error("[GAME] ❌ Error in listener:", error);
+        return;
       }
-    },
-    (error) => {
-      console.error("[GAME] ❌ Firebase listener error:", error);
+
+      if (room.playerLeftRequested) {
+        if (!isLeavingGame) {
+          isLeavingGame = true;
+          roomRef.off("value");
+          alert("Your opponent quit the game.");
+          sessionStorage.clear();
+          window.location.href = "index.html";
+        }
+        return;
+      }
+
+      gameBoard = Array.isArray(room.board) ? room.board : Array.from({ length: 9 }, (_, i) => room.board[i] || null);
+
+      for (let i = 0; i < 9; i++) {
+        const changed = previousBoard[i] !== gameBoard[i];
+        const isNewMove = gameBoard[i] !== null && gameBoard[i] !== undefined;
+        if (changed && isNewMove) {
+          playMoveAnimation(i);
+        }
+      }
+
+      previousBoard = [...gameBoard];
+
+      isMyTurn = room.turn === myRole;
+      updateBoard();
+      updateTurnHighlight();
+
+      if (room.winner) {
+        gameActive = false;
+
+        if (room.winner === "draw") {
+          result.textContent = "It's a draw!";
+        } else {
+          const iWon = room.winner === myRole;
+          result.textContent = iWon ? "You win! 🎉" : "You lose";
+
+          if (room.winningLine) drawWinLine(room.winningLine, iWon);
+          triggerConfetti(iWon);
+        }
+      } else {
+        gameActive = true;
+        result.textContent = isMyTurn ? "Your turn" : "Opponent's turn";
+      }
+    } catch (error) {
+      console.error("[GAME] ❌ Error in listener:", error);
     }
-  );
+  }, error => {
+    console.error("[GAME] ❌ Firebase listener error:", error);
+  });
 }
 
 /**
- * Resets the game state
+ * Reset game state on Firebase and locally.
  */
 function resetGame() {
   try {
-    // Remove win line overlay
     if (winLineOverlay) {
       winLineOverlay.remove();
       winLineOverlay = null;
     }
 
-    const emptyBoard = Object.fromEntries(
-      Array.from({ length: 9 }, (_, i) => [i, null])
-    );
+    const emptyBoard = Object.fromEntries(Array.from({ length: 9 }, (_, i) => [i, null]));
+
     roomRef.update({
       board: emptyBoard,
       turn: "host",
       winner: null,
       winningLine: null,
     });
+
     gameBoard = Array(9).fill(null);
     previousBoard = Array(9).fill(null);
     isMyTurn = isHost;
@@ -478,38 +404,28 @@ function resetGame() {
 }
 
 /**
- * Navigates back to menu and notifies opponent
+ * Handle user going back to menu, notifying opponent with flag in Firebase.
  */
 function goBackToMenu() {
   try {
-    // Prevent re-entrance
-    if (isLeavingGame) {
-      return;
-    }
+    if (isLeavingGame) return;
 
     isLeavingGame = true;
 
-    // Stop listening BEFORE updating Firebase
     roomRef.off("value");
 
-    // Set flag to notify opponent
-    roomRef
-      .update({
-        playerLeftRequested: true,
-      })
-      .then(() => {
-        sessionStorage.clear();
-        // Give opponent time to see notification before we completely leave
-        setTimeout(() => {
-          window.location.href = "index.html";
-        }, 500);
-      })
-      .catch((error) => {
-        console.error("[GAME] ❌ Error notifying opponent:", error);
-        // Leave anyway if notification fails
-        sessionStorage.clear();
+    roomRef.update({
+      playerLeftRequested: true,
+    }).then(() => {
+      sessionStorage.clear();
+      setTimeout(() => {
         window.location.href = "index.html";
-      });
+      }, 500);
+    }).catch((error) => {
+      console.error("[GAME] ❌ Error notifying opponent:", error);
+      sessionStorage.clear();
+      window.location.href = "index.html";
+    });
   } catch (error) {
     console.error("[GAME] ❌ Navigation error:", error);
     sessionStorage.clear();
@@ -517,12 +433,12 @@ function goBackToMenu() {
   }
 }
 
-// Event Listeners
+// Setup event listeners for each cell for click and keyboard navigation
 cells.forEach((cell, index) => {
   cell.setAttribute("role", "button");
   cell.setAttribute("tabindex", "0");
   cell.addEventListener("click", () => makeMove(index));
-  cell.addEventListener("keydown", (e) => {
+  cell.addEventListener("keydown", e => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       makeMove(index);
@@ -533,6 +449,6 @@ cells.forEach((cell, index) => {
 resetButton?.addEventListener("click", resetGame);
 backToMenuBtn?.addEventListener("click", goBackToMenu);
 
-// Initialize
+// Initialize game state and event listeners on load
 listenToGameChanges();
 updateTurnHighlight();

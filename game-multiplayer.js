@@ -465,3 +465,4 @@ function makeMove(index) {
   // Initialize game state and event listeners on load
   listenToGameChanges();
   updateTurnHighlight();
+}

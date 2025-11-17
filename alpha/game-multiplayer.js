@@ -47,7 +47,8 @@ const board = document.getElementById("board");
 // Initialize game state variables
 let gameBoard = Array(9).fill(null);
 let previousBoard = Array(9).fill(null);
-let gameActive = false;
+// let gameActive = false;
+let gameActive = true;  // Start as true since game begins immediately when both join
 let isMyTurn = isHost; // Host always starts
 let roomRef = null;
 let isLeavingGame = false;

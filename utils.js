@@ -55,3 +55,4 @@ export function clearStoredLogs() {
 export function replayStoredLogs() {
   // Placeholder function - logs are not stored in current version
 }
+

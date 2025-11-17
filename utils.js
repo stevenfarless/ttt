@@ -1,7 +1,6 @@
 // utils.js
 
-// Firebase Configuration Object
-// Replace with your own Firebase project configuration details if you fork or reuse this project
+// Firebase Configuration
 export const firebaseConfig = {
   apiKey: "AIzaSyAQO1xbKz5yjo3TAqqU1gFZYrI-qBugRNs",
   authDomain: "tic-tac-toe-80bd7.firebaseapp.com",
@@ -13,12 +12,9 @@ export const firebaseConfig = {
   measurementId: "G-2WC5RPCT3Q"
 };
 
-/**
- * Generates a 4-character uppercase room code consisting of
- * letters and digits, excluding ambiguous characters.
- */
+// Utility Functions
 export function generateRoomCode() {
-  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ123456789'; // Excludes letters like I, L, O, 0 for clarity
+  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ123456789';
   let code = '';
   for (let i = 0; i < 4; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -26,19 +22,9 @@ export function generateRoomCode() {
   return code;
 }
 
-/**
- * Displays an error message on a given DOM element temporarily.
- * Adds 'error' CSS class for styling.
- * Automatically clears message after `timeout` ms (default 5000).
- *
- * @param {HTMLElement} element - The DOM element to display error message in.
- * @param {string} message - The error message text to show.
- * @param {number} timeout - Optional duration in milliseconds before clearing the message.
- */
 export function showError(element, message, timeout = 5000) {
   element.textContent = message;
   element.classList.add('error');
-
   if (timeout) {
     setTimeout(() => {
       element.textContent = '';
@@ -47,12 +33,19 @@ export function showError(element, message, timeout = 5000) {
   }
 }
 
-// No-op functions for backward compatibility (currently unused)
-export function clearStoredLogs() {
-  // Placeholder function - logs are not stored in current version
+export function validateRoomCode(code) {
+  return /^[A-HJ-KM-NP-Z1-9]{4}$/.test(code.trim().toUpperCase());
 }
 
+export function sanitizeEmojiChoice(choice, allowedEmojis) {
+  return allowedEmojis.includes(choice) ? choice : allowedEmojis[0];
+}
+
+// Placeholder functions for backwards compatibility (no-ops)
 export function replayStoredLogs() {
-  // Placeholder function - logs are not stored in current version
+  // Removed: console log persistence system
 }
 
+export function clearStoredLogs() {
+  // Removed: console log persistence system
+}

@@ -1,65 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-<!--
-  game.html - The main Tic Tac Toe game page
-  Displays the game board, player indicators, and result messages.
--->
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tic Tac Toe - Game</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
   <div id="game-container">
-    <!-- Game Title -->
     <h1>Tic Tac Toe</h1>
 
-    <!-- Player Emoji Indicators -->
-    <div id="player-indicators" aria-label="Players">
-      <div class="player-indicator" role="region" aria-live="polite" aria-atomic="true">
-        <span id="player1-emoji" aria-label="Your game piece emoji">❌</span>
+    <div id="player-indicators">
+      <div class="player-indicator">
+        <span id="player1-emoji">❌</span>
         <div class="player-label">You</div>
       </div>
-      <div class="player-indicator" role="region" aria-live="polite" aria-atomic="true">
-        <span id="player2-emoji" aria-label="Opponent game piece emoji">⭕</span>
+      <div class="player-indicator">
+        <span id="player2-emoji">⭕</span>
         <div class="player-label">Opponent</div>
       </div>
     </div>
 
-    <!-- The 3x3 Game Board -->
-    <div id="board" role="grid" aria-label="Tic Tac Toe board" tabindex="0">
-      <div class="cell" role="gridcell" tabindex="-1" aria-label="Top left cell"></div>
-      <div class="cell" role="gridcell" tabindex="-1" aria-label="Top middle cell"></div>
-      <div class="cell" role="gridcell" tabindex="-1" aria-label="Top right cell"></div>
-      <div class="cell" role="gridcell" tabindex="-1" aria-label="Middle left cell"></div>
-      <div class="cell" role="gridcell" tabindex="-1" aria-label="Center cell"></div>
-      <div class="cell" role="gridcell" tabindex="-1" aria-label="Middle right cell"></div>
-      <div class="cell" role="gridcell" tabindex="-1" aria-label="Bottom left cell"></div>
-      <div class="cell" role="gridcell" tabindex="-1" aria-label="Bottom middle cell"></div>
-      <div class="cell" role="gridcell" tabindex="-1" aria-label="Bottom right cell"></div>
+    <div id="board">
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
     </div>
 
-    <!-- Display game result text (win, draw, ongoing) -->
-    <div id="result" aria-live="polite" aria-atomic="true"></div>
+    <div id="result"></div>
 
-    <!-- Control Buttons -->
     <div id="button-container">
-      <button id="reset" aria-label="Play again">Play Again</button>
-      <button id="backToMenu" aria-label="Return to main menu">Back to Menu</button>
+      <button id="reset">Play Again</button>
+      <button id="backToMenu">Back to Menu</button>
     </div>
   </div>
 
-  <!-- Canvas Confetti Library for celebration effects -->
+  <!-- ✅ NEW: Canvas Confetti Library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
-  <!-- Firebase SDK loaded as compatibility mode for existing code -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
 
-  <!-- Main game logic script controlling gameplay and synchronization -->
+  <!-- Game Logic -->
   <script type="module" src="game-multiplayer.js"></script>
 </body>
 

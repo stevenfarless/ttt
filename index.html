@@ -1,66 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
-<!--
-  index.html - Main Lobby Page for Tic Tac Toe Multiplayer
-  Version 2.2.4 Alpha
-  Provides UI for emoji selection, room creation, and joining.
--->
+<!-- index.html -->
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tic Tac Toe - Multiplayer</title>
-  <link rel="stylesheet" href="home.css" />
+  <link rel="stylesheet" href="home.css">
 </head>
 
 <body>
   <div id="container">
-    <!-- Main Title -->
-    <h1>
-      Tic Tac Toe<br />
-      2.3.6 Alpha
-    </h1>
+    <h1>Tic Tac Toe<br>2.2.4 Beta</h1>
 
     <!-- Emoji Picker Section -->
     <div class="emoji-section">
-      <!-- Button toggles the emoji picker modal -->
-      <button id="emojiToggle" class="emoji-toggle-btn" aria-haspopup="dialog" aria-controls="emojiModal"
-        aria-expanded="false">
-        <span id="emojiDisplay" aria-label="Current game piece emoji">🎮</span>
+      <button id="emojiToggle" class="emoji-toggle-btn">
+        <span id="emojiDisplay">🎮</span>
         <span class="label">Select Emoji</span>
       </button>
     </div>
 
-    <!-- Modal Dialog for Emoji Picker -->
-    <div id="emojiModal" class="emoji-modal hidden" role="dialog" aria-modal="true" aria-labelledby="emojiPickerTitle"
-      tabindex="-1">
+    <!-- Modal Emoji Picker -->
+    <div id="emojiModal" class="emoji-modal hidden">
       <div class="emoji-modal-content">
         <div class="emoji-modal-header">
-          <h2 id="emojiPickerTitle">Choose Your Game Piece</h2>
-          <button id="closeEmojiModal" class="close-btn" aria-label="Close emoji picker">✕</button>
+          <h2>Choose Your Game Piece</h2>
+          <button id="closeEmojiModal" class="close-btn">✕</button>
         </div>
-
-        <!-- Emoji picker dynamically populated by JavaScript -->
-        <div id="emojiPicker" class="emoji-picker" aria-live="polite" aria-atomic="true">
-          <!-- Populated dynamically -->
+        <div id="emojiPicker" class="emoji-picker">
+          <!-- Populated by JS -->
         </div>
       </div>
     </div>
 
     <!-- Create Game Section -->
     <div class="section">
-      <!-- Button to create a new game room -->
       <button id="createRoomBtn" class="btn btn-primary">Create Game</button>
 
-      <!-- Module displaying created room info and share options -->
-      <div id="createModule" class="room-module hidden" aria-live="polite">
-        <div class="code-display" role="region" aria-label="Created Room Information">
+      <!-- Create Game Module -->
+      <div id="createModule" class="room-module hidden">
+        <div class="code-display">
           <div class="code-container">
             <span class="label">Room Code:</span>
-            <div id="roomCodeDisplay" class="room-code" aria-live="polite" aria-atomic="true">XXXX</div>
-
-            <!-- Button for copying room code to clipboard -->
-            <button id="copyCodeBtn" class="copy-btn" aria-label="Copy room code to clipboard">
+            <div id="roomCodeDisplay" class="room-code">XXXX</div>
+            <button id="copyCodeBtn" class="copy-btn">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -70,43 +54,39 @@
           </div>
         </div>
 
-        <!-- Shareable invite link section -->
+        <!-- Shareable Link Section -->
         <div class="share-link-section">
           <p class="instruction"
             style="margin-top: 1rem; margin-bottom: 0.5rem; text-align: center; color: var(--info); font-size: 0.85rem;">
             Or share this link:
           </p>
           <div class="invite-link-container">
-            <div id="inviteLinkDisplay" class="invite-link" aria-live="polite" aria-atomic="true">
+            <div id="inviteLinkDisplay" class="invite-link">
               Link will appear here...
             </div>
           </div>
           <div class="share-buttons">
-            <button id="copyLinkBtn" class="action-btn secondary" aria-label="Copy invite link to clipboard">
+            <button id="copyLinkBtn" class="action-btn secondary">
               📋 Copy Link
             </button>
-            <button id="shareLinkBtn" class="action-btn secondary" aria-label="Share invite link">
+            <button id="shareLinkBtn" class="action-btn secondary">
               🔗 Share
             </button>
           </div>
         </div>
 
-        <!-- Status text for creation feedback -->
-        <p id="createStatus" class="status-text" aria-live="assertive"></p>
+        <p id="createStatus" class="status-text"></p>
       </div>
     </div>
 
     <!-- Join Game Section -->
     <div class="section">
-      <!-- Module for entering existing room code -->
-      <div id="joinModule" class="room-module hidden" aria-live="polite">
-        <div class="code-display" role="region" aria-label="Join Existing Room">
+      <div id="joinModule" class="room-module hidden">
+        <div class="code-display">
           <div class="code-container">
             <span class="label">Enter Code:</span>
-            <input id="roomCodeInput" type="text" maxlength="4" class="room-code-input" aria-required="true"
-              aria-describedby="joinStatus" />
-            <button id="pasteCodeBtn" class="paste-btn" type="button" title="Paste from clipboard"
-              aria-label="Paste room code from clipboard">
+            <input id="roomCodeInput" type="text" maxlength="4" class="room-code-input">
+            <button id="pasteCodeBtn" class="paste-btn" type="button" title="Paste from clipboard">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
@@ -115,29 +95,20 @@
             </button>
           </div>
         </div>
-
-        <!-- Status text for join feedback -->
-        <p id="joinStatus" class="status-text" aria-live="assertive"></p>
+        <p id="joinStatus" class="status-text"></p>
       </div>
-
-      <!-- Button to join a game room -->
       <button id="joinRoomBtn" class="btn btn-primary">Join Game</button>
     </div>
-
-    <!-- Navigation links to different environments/branches -->
-    <div id="env-nav" role="navigation" aria-label="Environment Navigation">
-      <a href="/ttt" class="env-btn env-main">Main</a>
-      <a href="/ttt/beta" class="env-btn env-beta">Beta</a>
-      <a href="/ttt/alpha" class="env-btn env-alpha">Alpha</a>
-      <a href="/ttt/experimental" class="env-btn env-experimental">Experimental</a>
+    <div id="env-nav">
+      <a href="https://stevenfarless.github.io/ttt" class="env-btn env-main">Main</a>
+      <a href="https://stevenfarless.github.io/ttt/beta" class="env-btn env-beta">Beta</a>
+      <a href="https://stevenfarless.github.io/ttt/alpha" class="env-btn env-alpha">Alpha</a>
+      <a href="https://stevenfarless.github.io/ttt/experimental" class="env-btn env-experimental">Experimental</a>
     </div>
   </div>
 
-  <!-- Firebase SDKs loaded from CDN -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-  <!-- Main JavaScript module that controls multiplayer lobby and rooms -->
   <script type="module" src="multiplayer.js"></script>
 </body>
 

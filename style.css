@@ -1,76 +1,111 @@
 /* styles.css */
 
+/* Define color variables for consistent theming */
 :root {
   --primary: #282a36;
+  /* Dark blue-ish base color */
   --secondary: #44475a;
+  /* Medium dark background */
   --success: #50fa7b;
+  /* Bright green for positive highlights */
   --danger: #ff5555;
+  /* Bright red for errors or warnings */
   --warning: #f1fa8c;
+  /* Soft yellow for warnings/info */
   --info: #8be9fd;
+  /* Light blue for informational text */
   --light: #f8f8f2;
+  /* Near white for light text */
   --dark: #1e1f29;
+  /* Very dark background */
 }
 
+/* Reset margin/padding and set box-sizing for consistent sizing */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* includes padding/border in width/height */
 }
 
+/* Make html/body take full viewport size */
 html,
 body {
   width: 100%;
   height: 100%;
 }
 
+/* Body style: background gradient, center content with flexbox */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #1e1f29 0%, #282a36 100%);
   color: var(--light);
   min-height: 100vh;
   display: flex;
+  /* Use flexbox layout */
   justify-content: center;
+  /* Horizontally center child */
   align-items: center;
+  /* Vertically center child */
   padding: 1rem;
 }
 
+/* Container for the game UI */
 #game-container {
   background: var(--primary);
   border-radius: 12px;
+  /* Rounded corners */
   padding: 2rem;
+  /* Inner spacing */
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  /* Soft shadow */
   width: 100%;
+  /* Full width up to max-width */
   max-width: 400px;
+  /* Max width constraint */
 }
 
+/* Main heading */
 h1 {
   text-align: center;
   margin-bottom: 1.5rem;
+  /* Space below title */
   color: var(--info);
   font-size: 2rem;
 }
 
+/* Container for player indicators (you vs opponent) */
 #player-indicators {
   display: flex;
+  /* Horizontal flex layout */
   justify-content: space-between;
   gap: 1rem;
+  /* Space between players */
   margin-bottom: 1.5rem;
+  /* Spacing below indicators */
 }
 
+/* Individual player indicator box */
 .player-indicator {
   flex: 1;
+  /* Equal width */
   background: var(--secondary);
   padding: 1rem;
   border-radius: 8px;
   text-align: center;
+  /* Center text inside */
   transition: all 0.3s ease;
+  /* Smooth transitions */
   border: 2px solid transparent;
+  /* Initially no visible border */
   position: relative;
+  /* For gradient pseudo-element */
   overflow: hidden;
   isolation: isolate;
+  /* Creates stacking context to isolate effects */
 }
 
-/* Gradient layer for player indicators */
+/* Gradient background layer behind player indicator */
 .player-indicator::before {
   content: '';
   position: absolute;
@@ -80,41 +115,50 @@ h1 {
   height: 100%;
   border-radius: 8px;
   pointer-events: none;
+  /* Doesn't interfere with mouse events */
   z-index: -1;
+  /* Behind the main content */
 }
 
-/* Blue border and gradient for active "self" player */
+/* Active player indicator style for "self" (blue) */
 .player-indicator.active[data-player="self"] {
   --player-color: 80, 150, 255;
+  /* RGB values for blue */
   border: 2px solid rgb(var(--player-color));
 }
 
+/* Blue radial gradient behind active self player */
 .player-indicator.active[data-player="self"]::before {
   background: radial-gradient(circle, rgba(var(--player-color), 0.35) 0%, transparent 70%);
 }
 
-/* Red border and gradient for active "opponent" player */
+/* Active player indicator style for "opponent" (red) */
 .player-indicator.active[data-player="opponent"] {
   --player-color: 255, 80, 80;
+  /* RGB for red */
   border: 2px solid rgb(var(--player-color));
 }
 
+/* Red radial gradient behind active opponent player */
 .player-indicator.active[data-player="opponent"]::before {
   background: radial-gradient(circle, rgba(var(--player-color), 0.20) 0%, transparent 70%);
 }
 
+/* Emoji inside player indicator */
 .player-indicator span:first-child {
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
   display: block;
 }
 
+/* Label under the emoji */
 .player-label {
   font-size: 0.85rem;
   color: var(--warning);
+  /* Soft yellow color */
 }
 
-/* Hover border fade animation */
+/* Animation to fade border color in and out on hover */
 @keyframes borderFadeInOut {
   0% {
     border-color: var(--light);
@@ -124,6 +168,7 @@ h1 {
   50% {
     border-color: var(--success);
     box-shadow: 0 0 15px rgba(80, 250, 123, 0.5);
+    /* Green glow */
   }
 
   100% {
@@ -132,7 +177,7 @@ h1 {
   }
 }
 
-/* Click expansion animation */
+/* Animation to expand border outline on click */
 @keyframes borderExpand {
   0% {
     outline: 2px solid var(--success);
@@ -150,36 +195,48 @@ h1 {
   }
 }
 
+/* Tic Tac Toe board uses CSS grid: 3x3 */
 #board {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  /* 3 equal columns */
   grid-template-rows: repeat(3, 1fr);
+  /* 3 equal rows */
   gap: 0.5rem;
+  /* Space between cells */
   margin: 0 auto 1.5rem;
+  /* Center horizontally, margin-bottom */
   width: 100%;
   max-width: 330px;
+  /* Limit max size */
 }
 
+/* Each cell in the board */
 .cell {
   aspect-ratio: 1 / 1;
+  /* Square cells */
   background: var(--secondary);
   border: 2px solid var(--light);
   border-radius: 8px;
   font-size: 3rem;
+  /* Large marks for X or O */
   font-weight: bold;
   cursor: pointer;
   display: flex;
   justify-content: center;
+  /* Center content horizontally */
   align-items: center;
+  /* Center content vertically */
   transition: transform 0.2s ease;
   min-height: 100px;
+  /* Minimum vertical size */
   outline: none;
   position: relative;
   overflow: hidden;
   isolation: isolate;
 }
 
-/* Gradient layer - BEHIND emojis */
+/* Gradient background layer behind emojis in cells */
 .cell::before {
   content: '';
   position: absolute;
@@ -190,11 +247,13 @@ h1 {
   border-radius: 8px;
   pointer-events: none;
   z-index: -1;
+  /* Behind cell content */
 }
 
-/* Blue gradient and border for your pieces */
+/* Blue border and glow for your own pieces */
 .cell[data-player="self"] {
   --player-color: 80, 150, 255;
+  /* Blue */
   border: 2px solid rgb(var(--player-color));
 }
 
@@ -202,9 +261,10 @@ h1 {
   background: radial-gradient(circle, rgba(var(--player-color), 0.35) 0%, transparent 75%);
 }
 
-/* Red gradient and border for opponent's pieces */
+/* Red border and glow for opponent’s pieces */
 .cell[data-player="opponent"] {
   --player-color: 255, 80, 80;
+  /* Red */
   border: 2px solid rgb(var(--player-color));
 }
 
@@ -212,49 +272,64 @@ h1 {
   background: radial-gradient(circle, rgba(var(--player-color), 0.35) 0%, transparent 75%);
 }
 
-/* Hover state */
+/* Hover effect for cells */
 .cell:hover {
   transform: scale(1.05);
+  /* Slightly bigger */
   animation: borderFadeInOut 0.6s ease-in-out;
+  /* Border glow animation */
 }
 
+/* Active (click) effect */
 .cell:active {
   transform: scale(0.98);
+  /* Slight shrink */
 }
 
-/* Click animation */
+/* Animation for clicked cell */
 .cell.clicked {
   animation: borderExpand 0.6s ease-out forwards;
 }
 
+/* Specific styles for moves */
 .cell.my-move {
   color: #3B82F6 !important;
+  /* Bright blue color */
   font-weight: bold;
 }
 
 .cell.opponent-move {
   color: #EF4444 !important;
+  /* Bright red color */
   font-weight: bold;
 }
 
+/* Result text showing game outcome */
 #result {
   text-align: center;
   font-size: 1.1rem;
   margin-bottom: 1rem;
   color: var(--success);
+  /* Green color for positive result */
   min-height: 1.5rem;
+  /* Reserve vertical space */
   font-weight: bold;
 }
 
+/* Container for the action buttons */
 #button-container {
   display: flex;
   gap: 1rem;
+  /* Space between buttons */
   justify-content: center;
   flex-wrap: wrap;
+  /* Wrap buttons on smaller screens */
 }
 
+/* Button base styles */
 button {
   background: linear-gradient(135deg, var(--info), #44b4d6);
+  /* Gradient blue */
   color: var(--dark);
   border: none;
   padding: 0.8rem 1.5rem;
@@ -265,20 +340,24 @@ button {
   font-size: 1rem;
 }
 
+/* Button hover effect */
 button:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(139, 233, 253, 0.3);
 }
 
+/* Button active (clicked) effect */
 button:active {
   transform: translateY(0);
 }
 
+/* Disabled button style */
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
+/* Responsive styles for smaller screens up to 600px wide */
 @media (max-width: 600px) {
   #game-container {
     padding: 1.5rem;
@@ -300,20 +379,95 @@ button:disabled {
   }
 }
 
-/* console at bottom of the screen */
+/* Mini console bar fixed at bottom for debugging or logs */
 .console-line {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
   background-color: #111;
+  /* Very dark background */
   color: #0f0;
+  /* Bright green text */
   font-family: monospace;
+  /* Fixed-width font */
   font-size: 12px;
   padding: 2px 10px;
   white-space: nowrap;
+  /* No line breaks */
   overflow: hidden;
+  /* Hide overflow */
   text-overflow: ellipsis;
+  /* Show ellipsis if too long */
   z-index: 1000;
+  /* Above other elements */
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
+  /* Shadow on top */
+}
+
+/* Container overlay to display win line animation */
+.win-line-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  /* Doesn't interfere with clicks */
+  z-index: 10;
+  /* Above most elements */
+}
+
+/* Win line SVG or graphic style */
+.win-line {
+  filter: drop-shadow(0 0 8px currentColor);
+  opacity: 0.9;
+}
+
+/* Pulse animation for win line to highlight */
+@keyframes winLinePulse {
+
+  0%,
+  100% {
+    opacity: 0.9;
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 16px currentColor);
+  }
+}
+
+/* Apply pulse and fade-out animations to the win line */
+.win-line {
+  animation: winLinePulse 2s ease-in-out infinite, fadeOut 1s ease forwards;
+  animation-delay: 0s, 4s;
+  /* Start fade after pulse */
+}
+
+/* Fade out animation */
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
+/* Special effect animation for losing pieces */
+.loser-effect {
+  animation: losePulse 3s ease-in-out forwards, fadeOut 1s ease forwards;
+  animation-delay: 0s, 4s;
+}
+
+/* Pulse effect for losing pieces: grayscale and darker */
+@keyframes losePulse {
+
+  0%,
+  100% {
+    filter: grayscale(0) brightness(1);
+  }
+
+  50% {
+    filter: grayscale(1) brightness(0.7);
+  }
 }

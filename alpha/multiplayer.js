@@ -311,3 +311,157 @@ pasteCodeBtn?.addEventListener("click", async () => {
     console.error("[MULTIPLAYER] ❌ Paste failed:", error);
   }
 });
+
+// Create game button logic
+createRoomBtn.addEventListener("click", () => {
+  // Prevent creating if button is disabled (valid code entered in join field)
+  if (createRoomBtn.disabled) {
+    return;
+  }
+
+  // If code already exists, just show the module
+  if (generatedRoomCode) {
+    createModule.classList.remove("hidden");
+    return;
+  }
+
+  createRoomBtn.disabled = true;
+
+  const chars = "ABCDEFGHJKMNPQRSTUVWXYZ123456789";
+  let code = "";
+  for (let i = 0; i < 4; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+
+  generatedRoomCode = code;
+  const selectedEmoji = emojiDisplay.textContent;
+
+  const roomData = {
+    roomCode: code,
+    hostJoined: true,
+    guestJoined: false,
+    hostEmoji: selectedEmoji,
+    guestEmoji: null,
+    board: {
+      0: null,
+      1: null,
+      2: null,
+      3: null,
+      4: null,
+      5: null,
+      6: null,
+      7: null,
+      8: null,
+    },
+    turn: "host",
+    winner: null,
+  };
+
+  db.ref("rooms/" + code)
+    .set(roomData)
+    .then(() => {
+      roomCodeDisplay.textContent = code;
+      const inviteLink = generateInviteLink(code);
+      inviteLinkDisplay.textContent = inviteLink;
+      createStatus.textContent = "Waiting for opponent...";
+      createStatus.style.color = "var(--warning)";
+
+      sessionStorage.setItem("roomCode", code);
+      sessionStorage.setItem("isHost", "true");
+      sessionStorage.setItem("mySymbol", selectedEmoji);
+
+      const roomRef = db.ref("rooms/" + code);
+
+      roomRef.on("value", (snapshot) => {
+        const room = snapshot.val();
+        if (room && room.guestJoined && room.guestEmoji) {
+          sessionStorage.setItem("opponentSymbol", room.guestEmoji);
+          roomRef.off("value");
+          setTimeout(() => (window.location.href = "game.html"), 300);
+        }
+      });
+    })
+    .catch((err) => {
+      console.error("[MULTIPLAYER] ❌ Error creating game:", err);
+      createStatus.textContent = "Error creating game";
+      createStatus.style.color = "var(--danger)";
+      createRoomBtn.disabled = false;
+      generatedRoomCode = null;
+    });
+});
+
+// Join game button logic
+joinRoomBtn.addEventListener("click", () => {
+  const code = roomCodeInput.value.trim().toUpperCase();
+
+  if (code.length !== 4) {
+    return;
+  }
+
+  joinRoomBtn.disabled = true;
+
+  const selectedEmoji = emojiDisplay.textContent;
+
+  db.ref("rooms/" + code)
+    .once("value")
+    .then((snapshot) => {
+      if (!snapshot.exists()) {
+        joinStatus.textContent = "Game not found";
+        joinStatus.style.color = "var(--danger)";
+        joinRoomBtn.disabled = false;
+        return;
+      }
+
+      const room = snapshot.val();
+
+      if (room.guestJoined) {
+        joinStatus.textContent = "Game is full";
+        joinStatus.style.color = "var(--danger)";
+        joinRoomBtn.disabled = false;
+        return;
+      }
+
+      const updateData = {
+        guestJoined: true,
+        guestEmoji: selectedEmoji,
+      };
+
+      if (!room.board) {
+        updateData.board = {
+          0: null,
+          1: null,
+          2: null,
+          3: null,
+          4: null,
+          5: null,
+          6: null,
+          7: null,
+          8: null,
+        };
+      }
+
+      if (!room.turn) {
+        updateData.turn = "host";
+      }
+
+      db.ref("rooms/" + code)
+        .update(updateData)
+        .then(() => {
+          joinStatus.textContent = "Joined! Starting game...";
+          joinStatus.style.color = "var(--success)";
+
+          sessionStorage.setItem("roomCode", code);
+          sessionStorage.setItem("isHost", "false");
+          sessionStorage.setItem("mySymbol", selectedEmoji);
+          sessionStorage.setItem("opponentSymbol", room.hostEmoji);
+
+          setTimeout(() => (window.location.href = "game.html"), 300);
+        })
+        .catch((err) => {
+          console.error("[MULTIPLAYER] ❌ Error joining:", err);
+          joinStatus.textContent = "Error joining game";
+          joinStatus.style.color = "var(--danger)";
+          joinRoomBtn.disabled = false;
+        });
+    });
+});

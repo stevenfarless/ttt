@@ -76,7 +76,7 @@ h1 {
 
 
 /* Version heading style */
-.version {
+.relver {
   text-align: center;
   color: var(--info);
   /* Info color text */

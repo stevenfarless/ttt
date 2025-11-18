@@ -3,21 +3,13 @@
 /* Define CSS custom properties (variables) for consistent color scheme */
 :root {
   --primary: #282a36;
-  /* Dark base color */
   --secondary: #44475a;
-  /* Secondary background color */
   --success: #50fa7b;
-  /* Bright green for success states */
   --danger: #ff5555;
-  /* Red for danger or error states */
   --warning: #f1fa8c;
-  /* Yellow for warnings */
   --info: #8be9fd;
-  /* Light blue for informational text */
   --light: #f8f8f2;
-  /* Near white for light text */
   --dark: #1e1f29;
-  /* Darker background color */
 }
 
 /* Reset margin and padding for all elements and set box-sizing for easier sizing */
@@ -30,10 +22,8 @@
 
 /* General styles for the page body */
 body {
-  /* Background is a diagonal gradient from primary to dark color */
   background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
   min-height: 100vh;
-  /* Full viewport height */
   display: flex;
   /* Use flexbox for centering content */
   justify-content: center;
@@ -41,51 +31,44 @@ body {
   align-items: center;
   /* Vertically center */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  /* Clean sans-serif font */
   padding: 20px;
-  /* Internal spacing */
 }
 
 /* Main container where the UI components live */
 #container {
   background: var(--secondary);
   border-radius: 16px;
-  /* Rounded corners */
   padding: 40px 30px;
-  /* Vertical and horizontal padding */
   max-width: 400px;
-  /* Maximum width constraint */
   width: 100%;
-  /* Full width within max */
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  /* Soft shadow for depth */
 }
 
-/* Main heading style */
 h1 {
   text-align: center;
   color: var(--info);
-  /* Info color text */
-  margin-bottom: 30px;
-  /* Space below heading */
+  margin-bottom: 0px;
   font-size: 2.5rem;
-  /* Large font size */
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-  /* Soft text shadow for readability */
 }
 
-/* Section that contains the emoji toggle button */
+.version-number {
+  text-align: center;
+  color: var(--info);
+  margin-bottom: 20px;
+  margin-top: 2px;
+  font-size: 1rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
 .emoji-section {
   text-align: center;
-  /* Center align contents */
   margin-bottom: 20px;
-  /* Space below section */
 }
 
 /* Emoji toggle button styles */
 .emoji-toggle-btn {
   display: flex;
-  /* Use flexbox */
   flex-direction: column;
   /* Stack children vertically */
   align-items: center;
@@ -93,15 +76,11 @@ h1 {
   gap: 8px;
   /* Space between emoji and label */
   background: var(--success);
-  /* Green background */
   border: none;
-  /* Remove default border */
   padding: 12px 24px;
   /* Internal spacing */
   border-radius: 12px;
-  /* Rounded edges */
   cursor: pointer;
-  /* Pointer cursor on hover */
   font-size: 2rem;
   /* Large emoji size */
   transition: all 0.3s ease;
@@ -109,9 +88,7 @@ h1 {
   font-weight: 600;
   /* Semi-bold text */
   color: var(--dark);
-  /* Dark text color */
   width: 100%;
-  /* Full width */
 }
 
 /* Hover state for emoji toggle button */
@@ -119,7 +96,6 @@ h1 {
   transform: translateY(-2px);
   /* Slight lift effect */
   box-shadow: 0 6px 12px rgba(80, 250, 123, 0.3);
-  /* Green-ish shadow */
 }
 
 /* Active (pressed) state for button */
@@ -131,7 +107,6 @@ h1 {
 /* Label inside emoji toggle button */
 .emoji-toggle-btn .label {
   font-size: 0.8rem;
-  /* Smaller font size */
   letter-spacing: 0.5px;
   /* Slight spacing between letters */
 }
@@ -139,15 +114,12 @@ h1 {
 /* Modal overlay for emoji picker */
 .emoji-modal {
   position: fixed;
-  /* Stay fixed on screen */
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.7);
-  /* Semi-transparent black background */
   display: flex;
-  /* Flex container */
   justify-content: center;
   /* Center horizontally */
   align-items: center;
@@ -156,7 +128,6 @@ h1 {
   /* Ensure above other elements */
   padding: 20px;
   backdrop-filter: blur(4px);
-  /* Blur the background behind */
 }
 
 /* Hide modal by setting display none */
@@ -168,31 +139,23 @@ h1 {
 .emoji-modal-content {
   background: var(--secondary);
   border-radius: 16px;
-  /* Rounded corners */
   max-width: 500px;
-  /* Max width */
   width: 100%;
-  /* Responsive width */
   max-height: 80vh;
   /* Max height - viewport based */
   overflow-y: auto;
   /* Scroll vertically if needed */
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-  /* Shadow for depth */
 }
 
 /* Header section inside emoji modal */
 .emoji-modal-header {
   display: flex;
-  /* Flexbox layout */
   justify-content: space-between;
   /* Space between title and close button */
   align-items: center;
-  /* Vertically center contents */
   padding: 20px;
-  /* Internal padding */
   border-bottom: 2px solid var(--primary);
-  /* Bottom border */
 }
 
 /* Title inside emoji modal header */
@@ -204,14 +167,11 @@ h1 {
 /* Close button styles */
 .close-btn {
   background: var(--danger);
-  /* Red background */
   border: none;
   color: white;
-  /* White text */
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  /* Circular button */
   font-size: 1.2rem;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -225,7 +185,6 @@ h1 {
   transform: scale(1.1);
   /* Slightly bigger */
   box-shadow: 0 4px 8px rgba(255, 85, 85, 0.3);
-  /* Red glow */
 }
 
 /* Emoji picker grid - 4 emojis per row, evenly spaced */
@@ -241,9 +200,7 @@ h1 {
 /* Individual emoji option styles */
 .emoji-option {
   background: var(--primary);
-  /* Dark background */
   border: 2px solid transparent;
-  /* Transparent border for hover effect */
   border-radius: 8px;
   font-size: 2rem;
   /* Emoji size */
@@ -254,52 +211,38 @@ h1 {
   align-items: center;
   justify-content: center;
   min-height: 60px;
-  /* Minimum vertical size */
 }
 
 /* Hover effect for emoji option */
 .emoji-option:hover {
   border-color: var(--success);
-  /* Green border on hover */
   transform: scale(1.1);
-  /* Slightly bigger */
 }
 
 /* Active (clicked) state for emoji option */
 .emoji-option:active {
   transform: scale(0.95);
-  /* Shrinks slightly */
 }
 
 /* Container for sections that hold modules and buttons */
 .section {
   margin-bottom: 15px;
-  /* Space below each section */
   display: flex;
-  /* Flex container */
   flex-direction: column;
-  /* Stack contents vertically */
 }
 
 /* Base button styles */
 .btn {
   width: 100%;
-  /* Full width */
   padding: 14px 20px;
-  /* Vertical and horizontal spacing */
   border: none;
   border-radius: 12px;
-  /* Rounded edges */
   font-size: 1rem;
   font-weight: 600;
-  /* Semi-bold text */
   cursor: pointer;
   transition: all 0.3s ease;
-  /* Smooth transitions */
   text-transform: uppercase;
-  /* Uppercase text */
   letter-spacing: 0.5px;
-  /* Letter spacing */
 }
 
 /* Primary button style with success color */
@@ -387,10 +330,8 @@ h1 {
   flex: 1;
   /* Allow flexible width */
   text-align: center;
-  /* Center text */
   border: none;
   text-transform: uppercase;
-  /* Uppercase text */
   transition: all 0.3s ease;
   min-width: 0;
 }
@@ -465,7 +406,6 @@ h1 {
 /* Status message text */
 .status-text {
   color: var(--warning);
-  /* Yellow warning color */
   font-size: 0.85rem;
   text-align: center;
   font-weight: 500;
@@ -491,7 +431,6 @@ h1 {
   margin-top: 1.5rem;
   padding-top: 1rem;
   border-top: 1px solid rgba(68, 71, 90, 0.3);
-  /* Top border */
 }
 
 /* Base styles for environment buttons */
@@ -611,8 +550,6 @@ h1 {
   transform: translateY(0);
 }
 
-/* ===== Shareable Link Styles ===== */
-
 .share-link-section {
   /* Margin and padding for separation from above content */
   margin-top: 0.75rem;
@@ -637,7 +574,6 @@ h1 {
 /* Styling for the invite link text */
 .invite-link {
   font-family: "Courier New", monospace;
-  /* Monospace font for code style */
   font-size: 0.85rem;
   color: var(--info);
   text-align: center;
@@ -719,21 +655,3 @@ h1 {
     -webkit-transform: scale(1.02);
   }
 }
-
-/* OLD VERSION of glow animation commented out for reference */
-/* 
-@keyframes pulseGlow {
-  0%,
-  100% {
-    box-shadow: 0 0 20px rgba(80, 250, 123, 0.6),
-      0 0 40px rgba(80, 250, 123, 0.4),
-      0 0 60px rgba(80, 250, 123, 0.2);
-  }
-
-  50% {
-    box-shadow: 0 0 30px rgba(80, 250, 123, 0.8),
-      0 0 60px rgba(80, 250, 123, 0.6),
-      0 0 90px rgba(80, 250, 123, 0.4);
-  }
-}
-*/

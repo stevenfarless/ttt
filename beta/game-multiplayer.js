@@ -1,6 +1,6 @@
 // game-multiplayer.js
 
-// import { firebaseConfig, replayStoredLogs } from "./utils.js";
+import { firebaseConfig, replayStoredLogs } from "./utils.js";
 
 // Constants
 const ANIMATION_DURATION = 600;

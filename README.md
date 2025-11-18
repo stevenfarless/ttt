@@ -1,26 +1,8 @@
 # 🎮 TTT - 2 Player Emoji Tic Tac Toe
 
-**Version:** 2.0.0 | **Release Date:** November 12, 2025
+**Version:** 1.1.0 | **Release Date:** November 4, 2025
 
-A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces, visual gradients, and role-based player tracking, built with vanilla JavaScript and Firebase.
-
-## 🆕 What's New in v2.0.0
-
-### Major Features
-
-- **✨ Duplicate Emoji Selection** - Both players can now choose the same emoji without conflicts!
-- **🎨 Visual Gradient Effects** - Blue radial glow behind your moves, red glow behind opponent's moves
-- **🔄 Role-Based Architecture** - Backend now tracks players as Host/Guest for more reliable game state
-- **♿ Enhanced Accessibility** - Better visual distinction through both color AND gradient highlights
-
-### ⚠️ Breaking Changes
-
-**Important:** v2.0.0 introduces architectural changes that makes it incompatible with v1.x games.
-
-- All players must be on v2.0.0 to play together
-- You may need to clear Firebase rooms from previous versions
-
----
+A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces and player perspective colors, built with vanilla JavaScript and Firebase.
 
 ## 📷 Screenshots
 
@@ -34,20 +16,17 @@ A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces, visua
 - **🎯 Classic Tic Tac Toe Gameplay** - The timeless 3x3 grid game you know and love
 - **👥 Real-Time Multiplayer** - Firebase-powered live game synchronization
 - **🎨 Custom Emoji Pieces** - Choose from 20+ emojis as your game piece
-- **✨ Duplicate Emoji Support** - **NEW!** Both players can select the same emoji
-- **🌈 Visual Gradient Effects** - **NEW!** Blue glow for your moves, red glow for opponent's moves
-- **🎨 Player Perspective Colors** - Your moves in BLUE text, opponent's in RED text
+- **🌈 Player Perspective Colors** - See your moves in BLUE and opponent's in RED for clarity
 - **🏠 Room Codes** - Share a 4-character room code with your opponent to join a game
 - **📱 Mobile Responsive** - Play on desktop, tablet, or mobile seamlessly
 - **⚡ Real-Time Sync** - Moves sync instantly across both players' screens
 - **🎨 Dark UI** - Dracula-inspired color scheme with smooth animations
-- **🔄 Role-Based Tracking** - **NEW!** More reliable player identification and turn management
 
 ---
 
 ## 🚀 Quick Start
 
-### Prerequisites
+---
 
 - Modern web browser (Chrome, Firefox, Safari, Edge)
 - Internet connection
@@ -56,14 +35,12 @@ A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces, visua
 ### Installation
 
 1. **Clone the repository**
-
    ```
    git clone https://github.com/stevenfarless/ttt.git
    cd ttt
    ```
 
 2. **Open in your browser**
-
    ```
    open index.html
    ```
@@ -73,8 +50,7 @@ A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces, visua
    - Create a new project
    - Enable Realtime Database
    - Copy your Firebase config from Project Settings
-   - Update the Firebase configuration in `multiplayer.js` with your credentials:
-
+   - Update the Firebase configuration in `home.html` with your credentials:
      ```
      const firebaseConfig = {
        apiKey: "YOUR_API_KEY",
@@ -92,40 +68,34 @@ A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces, visua
 ## 🎮 How to Play Multiplayer
 
 ### Player 1 (Host)
-
-1. Open `index.html`
-2. Select your emoji piece from the picker
-3. Click **"Create Game"**
-4. Share the 4-character room code with Player 2
+- Open `index.html`
+- Select your emoji piece from the picker
+- Click "Create Room"
+- Share the 4-character room code with Player 2
 
 ### Player 2 (Guest)
-
-1. Open `index.html`
-2. Select your emoji piece (can be the same as Player 1!)
-3. Enter the room code from Player 1
-4. Click **"Join Game"**
+- Open `index.html`
+- Select your emoji piece
+- Enter the room code from Player 1
+- Click "Join Room"
 
 ### Playing
-
 - Players take turns clicking cells on the 3x3 grid
-- Host (Player 1) always goes first
-- **Your moves appear with BLUE text + blue gradient glow**
-- **Opponent's moves appear with RED text + red gradient glow**
+- Host always goes first
+- Your moves appear in **BLUE**, opponent's in **RED**
 - Win by getting three in a row (horizontal, vertical, or diagonal)
 - Game ends with a win or draw
-- Use **"Reset Game"** to start a new match
-- Use **"Back to Menu"** to return to the lobby
 
 ---
 
 ## 🎨 Available Emoji Pieces
 
-Choose any of these 20 emojis as your game piece (both players can use the same emoji!):
+Choose any of these 20 emojis as your game piece:
 
-❌ ⭕ ❤️ 💲  
-😀 💀 🤖 👽  
-🐶 😺 💩 🦐  
-🍕 🍣 🍓 🍤  
+❌ ⭕ ❤️ 💲
+😀 💀 🤖 👽
+🐶 😺 💩 🦐
+🍕 🍣 🍓 🍤
 🌙 ☀️ ⭐ 🚀
 
 ---
@@ -134,13 +104,13 @@ Choose any of these 20 emojis as your game piece (both players can use the same 
 
 ```
 ttt/
-├── index.html              # Main menu/lobby
+├── index.html               # Main menu/lobby
 ├── game.html               # Game board interface
-├── style.css               # Game board styling (includes gradient effects)
+├── style.css               # Game board styling
 ├── home.css                # Menu styling
-├── multiplayer.js          # Room creation & joining logic (role-based)
-├── game-multiplayer.js     # Game logic & Firebase sync (role-based)
-├── utils.js                # Utility functions & console logging
+├── multiplayer.js          # Room creation & joining logic
+├── game-multiplayer.js     # Game logic & Firebase sync
+├── utils.js                # Utility functions
 ├── README.md               # This file
 └── LICENSE                 # GPL License
 ```
@@ -150,35 +120,10 @@ ttt/
 ## 🛠️ Technologies Used
 
 - **HTML5** - Semantic markup and structure
-- **CSS3** - Modern styling with Flexbox, Grid, animations, and radial gradients
-- **Vanilla JavaScript (ES6+)** - No frameworks, pure JS with ES6 modules
+- **CSS3** - Modern styling with Flexbox & Grid, animations
+- **Vanilla JavaScript (ES6+)** - No frameworks, pure JS
 - **Firebase Realtime Database** - Real-time multiplayer synchronization
 - **Emoji Support** - Dynamic emoji rendering and display
-
----
-
-## 🏗️ Architecture (v2.0.0)
-
-### Role-Based Player Identity
-
-In v2.0.0, the backend tracks players as **Host** and **Guest** rather than by their chosen emojis. This allows:
-
-- Both players to select the same emoji
-- More reliable turn and winner detection
-- Cleaner separation between game logic and visual display
-
-### Data Structure
-
-```
-// Firebase stores roles, not emojis
-room: {
-  board: { 0: 'host', 1: 'guest', 2: null, ... },
-  turn: 'host',  // or 'guest'
-  winner: 'host', // or 'guest', or 'draw'
-  hostEmoji: '🚀',
-  guestEmoji: '🚀'  // Can be the same!
-}
-```
 
 ---
 
@@ -193,20 +138,17 @@ room: {
 
 ## 🐛 Known Issues & Limitations
 
+- Firebase free tier has rate limits (may affect rapid gameplay)
 - Emoji rendering varies across browsers and operating systems
 - Reconnection handling is basic (full page refresh recommended if disconnected)
 - Room data persists in Firebase after game ends
 - Player indicator updates may briefly lag on very slow connections
 - Mobile emoji sizes may render inconsistently on older devices
-- **Games from v1.x are incompatible with v2.0.0 due to architectural changes**
 
 ---
 
 ## 🗺️ Roadmap
 
-- [x] ~~Visual gradients for player distinction~~ ✅ Completed in v2.0.0
-- [x] ~~Duplicate emoji selection~~ ✅ Completed in v2.0.0
-- [ ] Room cleanup automation
 - [ ] AI opponent for single player
 - [ ] User authentication & accounts
 - [ ] Leaderboard and statistics tracking
@@ -214,36 +156,17 @@ room: {
 - [ ] Dark/Light theme selector
 - [ ] Tournament mode (best of 3/5)
 - [ ] Custom username display
-
----
-
-## 🔄 Migration from v1.x to v2.0.0
-
-If you're upgrading from v1.x:
-
-1. **Clear old Firebase rooms** - v1.x games won't work with v2.0.0
-2. **Ensure all players update** - Mixed versions cannot play together
-3. **No code changes needed** - Just pull the latest version
-4. **Note:** Game data structure has changed (emoji-based → role-based)
+- [ ] Game history & replays
 
 ---
 
 ## 🤝 Contributing
 
 This project welcomes contributions and feedback! Please feel free to:
-
 - Report bugs via GitHub Issues
 - Suggest features and improvements
 - Submit pull requests with enhancements
 - Test on different devices and browsers
-
-### Development Setup
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ---
 
@@ -269,33 +192,12 @@ Found a bug? Have a suggestion? Please open an issue on GitHub!
 | Real-Time Multiplayer | ✅ Working |
 | Turn Management | ✅ Functional |
 | Player Perspective Colors | ✅ Implemented |
-| Visual Gradients | ✅ **NEW in v2.0.0** |
-| Duplicate Emoji Support | ✅ **NEW in v2.0.0** |
-| Role-Based Architecture | ✅ **NEW in v2.0.0** |
 | Mobile Responsive | ✅ Responsive |
 | Firebase Integration | ✅ Functional |
-| UI/UX Polish | ✅ Improved |
+| UI/UX Polish | 🟡 In Progress |
 | Error Handling | 🟡 In Progress |
 
 ---
 
-## 📝 Changelog
-
-### v2.0.0 (November 12, 2025)
-
-- ✨ Added duplicate emoji selection support
-- ✨ Added visual gradient effects (blue/red glows)
-- 🔄 Refactored to role-based player tracking (Host/Guest)
-- 🐛 Fixed z-index layering for gradients
-- ⚠️ **BREAKING:** Incompatible with v1.x Firebase data structure
-
-### v1.1.0 (November 4, 2025)
-
-- 🎨 Improved player perspective colors
-- 🐛 Bug fixes and stability improvements
-
----
-
 **Built with ❤️ by Steven Farless**
-
-🌟 **Star this repo if you enjoy the game!** 🌟
+```

@@ -291,7 +291,9 @@ h1 {
 .code-display {
   background: var(--primary);
   border-left: 4px solid var(--success);
-  /* Left green border accent */
+  /* Left border accent */
+  border-right: 4px solid var(--success);
+  /* Right border accent */
   border-radius: 8px 8px 0 0;
   /* Rounded top corners */
   padding: 16px;
@@ -414,6 +416,7 @@ h1 {
   background: var(--primary);
   padding: 8px 16px;
   border-left: 4px solid var(--success);
+  border-right: 4px solid var(--success);
   /* Green accent */
   border-radius: 0 0 8px 8px;
   /* Rounded bottom corners */

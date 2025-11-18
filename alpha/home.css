@@ -534,6 +534,17 @@ h1 {
   transition: all 0.2s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  /* space between icon and text */
+}
+
+.action-btn svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 /* Secondary style for action buttons (blue info color) */
@@ -552,6 +563,7 @@ h1 {
 .action-btn.secondary:active {
   transform: translateY(0);
 }
+
 
 .share-link-section {
   /* Margin and padding for separation from above content */

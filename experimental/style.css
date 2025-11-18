@@ -1,5 +1,4 @@
 /* styles.css */
-
 :root {
   --primary: #282a36;
   --secondary: #44475a;
@@ -65,42 +64,11 @@ h1 {
   text-align: center;
   transition: all 0.3s ease;
   border: 2px solid transparent;
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
 }
 
-/* Gradient layer for player indicators */
-.player-indicator::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 8px;
-  pointer-events: none;
-  z-index: -1;
-}
-
-/* Blue border and gradient for active "self" player */
-.player-indicator.active[data-player="self"] {
-  --player-color: 80, 150, 255;
-  border: 2px solid rgb(var(--player-color));
-}
-
-.player-indicator.active[data-player="self"]::before {
-  background: radial-gradient(circle, rgba(var(--player-color), 0.35) 0%, transparent 70%);
-}
-
-/* Red border and gradient for active "opponent" player */
-.player-indicator.active[data-player="opponent"] {
-  --player-color: 255, 80, 80;
-  border: 2px solid rgb(var(--player-color));
-}
-
-.player-indicator.active[data-player="opponent"]::before {
-  background: radial-gradient(circle, rgba(var(--player-color), 0.20) 0%, transparent 70%);
+.player-indicator.active {
+  border: 2px solid var(--success);
+  filter: drop-shadow(0 0 8px rgba(80, 250, 123, 0.4));
 }
 
 .player-indicator span:first-child {
@@ -120,10 +88,12 @@ h1 {
     border-color: var(--light);
     box-shadow: none;
   }
+
   50% {
     border-color: var(--success);
     box-shadow: 0 0 15px rgba(80, 250, 123, 0.5);
   }
+
   100% {
     border-color: var(--light);
     box-shadow: none;
@@ -136,10 +106,12 @@ h1 {
     outline: 2px solid var(--success);
     outline-offset: 0;
   }
+
   50% {
     outline: 3px solid rgba(80, 250, 123, 0.6);
     outline-offset: 4px;
   }
+
   100% {
     outline: 2px solid rgba(80, 250, 123, 0);
     outline-offset: 8px;
@@ -188,24 +160,12 @@ h1 {
   z-index: -1;
 }
 
-/* Blue gradient and border for your pieces */
-.cell[data-player="self"] {
-  --player-color: 80, 150, 255;
-  border: 2px solid rgb(var(--player-color));
-}
-
 .cell[data-player="self"]::before {
-  background: radial-gradient(circle, rgba(var(--player-color), 0.35) 0%, transparent 75%);
-}
-
-/* Red gradient and border for opponent's pieces */
-.cell[data-player="opponent"] {
-  --player-color: 255, 80, 80;
-  border: 2px solid rgb(var(--player-color));
+  background: radial-gradient(circle, rgba(80, 150, 255, 0.35) 0%, transparent 70%);
 }
 
 .cell[data-player="opponent"]::before {
-  background: radial-gradient(circle, rgba(var(--player-color), 0.35) 0%, transparent 75%);
+  background: radial-gradient(circle, rgba(255, 80, 80, 0.35) 0%, transparent 70%);
 }
 
 /* Hover state */

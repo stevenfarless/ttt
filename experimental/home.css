@@ -502,58 +502,20 @@ h1 {
   }
 }
 
-/* Simpler glow - better iOS compatibility */
-.btn-primary.glow {
-  border: 2px solid var(--success);
-  box-shadow: 0 0 20px rgba(80, 250, 123, 0.6);
-  animation: simpleGlow 2s ease-in-out infinite;
-  -webkit-animation: simpleGlow 2s ease-in-out infinite;
-  /* Add this for iOS */
+/* console at bottom of screen */
+.console-line {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #111;
+  color: #0f0;
+  font-family: monospace;
+  font-size: 12px;
+  padding: 2px 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 1000;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
 }
-
-@keyframes simpleGlow {
-
-  0%,
-  100% {
-    box-shadow: 0 0 20px rgba(80, 250, 123, 0.6);
-    transform: scale(1);
-  }
-
-  50% {
-    box-shadow: 0 0 30px rgba(80, 250, 123, 0.9);
-    transform: scale(1.02);
-  }
-}
-
-/* Add webkit prefix for better iOS support */
-@-webkit-keyframes simpleGlow {
-
-  0%,
-  100% {
-    box-shadow: 0 0 20px rgba(80, 250, 123, 0.6);
-    -webkit-transform: scale(1);
-  }
-
-  50% {
-    box-shadow: 0 0 30px rgba(80, 250, 123, 0.9);
-    -webkit-transform: scale(1.02);
-  }
-}
-
-/* OLD VERSION - Commented out for reference */
-/* 
-@keyframes pulseGlow {
-  0%,
-  100% {
-    box-shadow: 0 0 20px rgba(80, 250, 123, 0.6),
-      0 0 40px rgba(80, 250, 123, 0.4),
-      0 0 60px rgba(80, 250, 123, 0.2);
-  }
-
-  50% {
-    box-shadow: 0 0 30px rgba(80, 250, 123, 0.8),
-      0 0 60px rgba(80, 250, 123, 0.6),
-      0 0 90px rgba(80, 250, 123, 0.4);
-  }
-}
-*/

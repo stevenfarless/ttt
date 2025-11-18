@@ -1,7 +1,7 @@
 // utils.js
 
 // Firebase Configuration object containing all keys and identifiers to connect to Firebase services
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyAQO1xbKz5yjo3TAqqU1gFZYrI-qBugRNs",
   authDomain: "tic-tac-toe-80bd7.firebaseapp.com",
   databaseURL: "https://tic-tac-toe-80bd7-default-rtdb.firebaseio.com",
@@ -20,7 +20,7 @@ const firebaseConfig = {
  * The characters exclude ambiguous ones like I, L, O, and 0 for clarity.
  * @returns {string} - A 4-character uppercase room code
  */
-function generateRoomCode() {
+export function generateRoomCode() {
   const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ123456789'; // Allowed characters (no I, L, O, or 0)
   let code = '';
   for (let i = 0; i < 4; i++) {
@@ -37,7 +37,7 @@ function generateRoomCode() {
  * @param {string} message - The error message text to display
  * @param {number} timeout - Duration in ms to show error before clearing (default 5000ms)
  */
-function showError(element, message, timeout = 5000) {
+export function showError(element, message, timeout = 5000) {
   element.textContent = message;           // Set text content with error message
   element.classList.add('error');          // Add 'error' class for styling
   if (timeout) {
@@ -55,7 +55,7 @@ function showError(element, message, timeout = 5000) {
  * @param {string} code - The room code string to validate
  * @returns {boolean} - True if valid, false otherwise
  */
-function validateRoomCode(code) {
+export function validateRoomCode(code) {
   // Regex explanation:
   // ^ = start of string
   // [A-HJ-KM-NP-Z1-9]{4} = exactly 4 chars, in allowed range (no ambiguous letters/numbers)
@@ -71,7 +71,7 @@ function validateRoomCode(code) {
  * @param {string[]} allowedEmojis - Array of string emojis allowed in the game
  * @returns {string} - The sanitized emoji choice
  */
-function sanitizeEmojiChoice(choice, allowedEmojis) {
+export function sanitizeEmojiChoice(choice, allowedEmojis) {
   return allowedEmojis.includes(choice) ? choice : allowedEmojis[0];
 }
 
@@ -79,7 +79,16 @@ function sanitizeEmojiChoice(choice, allowedEmojis) {
 // Placeholder functions kept for backwards compatibility.
 // They used to handle console log persistence but now do nothing.
 
-// function replayStoredLogs() {
-// }
-// function clearStoredLogs() {
-// }
+/**
+ * Placeholder function to replay stored logs (no operation).
+ */
+export function replayStoredLogs() {
+  // Removed: console log persistence system
+}
+
+/**
+ * Placeholder function to clear stored logs (no operation).
+ */
+export function clearStoredLogs() {
+  // Removed: console log persistence system
+}

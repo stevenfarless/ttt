@@ -1,6 +1,6 @@
 // game-multiplayer.js
 
-// import { firebaseConfig, replayStoredLogs } from "./utils.js";
+import { firebaseConfig, replayStoredLogs } from "./utils.js";
 
 // Constants
 const ANIMATION_DURATION = 600;
@@ -8,7 +8,7 @@ const ANIMATION_DURATION = 600;
 // ============================================
 // REPLAY STORED LOGS FROM PREVIOUS PAGE
 // ============================================
-// replayStoredLogs();
+replayStoredLogs();
 
 // Validate session and initialize Firebase
 const roomCode = sessionStorage.getItem("roomCode");

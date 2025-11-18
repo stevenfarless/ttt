@@ -22,7 +22,7 @@
 
 /* General styles for the page body */
 body {
-  background: linear-gradient(135deg, var(--secondary) 0%, var(--dark) 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
   min-height: 100vh;
   display: flex;
   /* Use flexbox for centering content */

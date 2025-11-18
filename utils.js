@@ -79,16 +79,7 @@ function sanitizeEmojiChoice(choice, allowedEmojis) {
 // Placeholder functions kept for backwards compatibility.
 // They used to handle console log persistence but now do nothing.
 
-/**
- * Placeholder function to replay stored logs (no operation).
- */
-function replayStoredLogs() {
-  // Removed: console log persistence system
-}
-
-/**
- * Placeholder function to clear stored logs (no operation).
- */
-function clearStoredLogs() {
-  // Removed: console log persistence system
-}
+// function replayStoredLogs() {
+// }
+// function clearStoredLogs() {
+// }

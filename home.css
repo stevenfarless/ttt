@@ -1,6 +1,4 @@
 /* home.css */
-
-/* Define CSS custom properties (variables) for consistent color scheme */
 :root {
   --primary: #282a36;
   --secondary: #44475a;
@@ -12,29 +10,22 @@
   --dark: #1e1f29;
 }
 
-/* Reset margin and padding for all elements and set box-sizing for easier sizing */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  /* Makes width/height include padding and border */
 }
 
-/* General styles for the page body */
 body {
   background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
   min-height: 100vh;
   display: flex;
-  /* Use flexbox for centering content */
   justify-content: center;
-  /* Horizontally center */
   align-items: center;
-  /* Vertically center */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding: 20px;
 }
 
-/* Main container where the UI components live */
 #container {
   background: var(--secondary);
   border-radius: 16px;
@@ -47,71 +38,48 @@ body {
 h1 {
   text-align: center;
   color: var(--info);
-  margin-bottom: 0px;
+  margin-bottom: 30px;
   font-size: 2.5rem;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-}
-
-.version-number {
-  text-align: center;
-  color: var(--info);
-  margin-bottom: 20px;
-  margin-top: 2px;
-  font-size: 1rem;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 .emoji-section {
   text-align: center;
+  /* margin-bottom: 30px; */
   margin-bottom: 20px;
 }
 
-/* Emoji toggle button styles */
 .emoji-toggle-btn {
   display: flex;
   flex-direction: column;
-  /* Stack children vertically */
   align-items: center;
-  /* Center horizontally */
   gap: 8px;
-  /* Space between emoji and label */
   background: var(--success);
   border: none;
   padding: 12px 24px;
-  /* Internal spacing */
   border-radius: 12px;
   cursor: pointer;
   font-size: 2rem;
-  /* Large emoji size */
   transition: all 0.3s ease;
-  /* Smooth transitions */
   font-weight: 600;
-  /* Semi-bold text */
   color: var(--dark);
   width: 100%;
 }
 
-/* Hover state for emoji toggle button */
 .emoji-toggle-btn:hover {
   transform: translateY(-2px);
-  /* Slight lift effect */
   box-shadow: 0 6px 12px rgba(80, 250, 123, 0.3);
 }
 
-/* Active (pressed) state for button */
 .emoji-toggle-btn:active {
   transform: translateY(0);
-  /* Button returns to normal position */
 }
 
-/* Label inside emoji toggle button */
 .emoji-toggle-btn .label {
   font-size: 0.8rem;
   letter-spacing: 0.5px;
-  /* Slight spacing between letters */
 }
 
-/* Modal overlay for emoji picker */
 .emoji-modal {
   position: fixed;
   top: 0;
@@ -121,50 +89,39 @@ h1 {
   background: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
-  /* Center horizontally */
   align-items: center;
-  /* Center vertically */
   z-index: 1000;
-  /* Ensure above other elements */
   padding: 20px;
   backdrop-filter: blur(4px);
 }
 
-/* Hide modal by setting display none */
 .emoji-modal.hidden {
   display: none;
 }
 
-/* Content box inside the emoji modal */
 .emoji-modal-content {
   background: var(--secondary);
   border-radius: 16px;
   max-width: 500px;
   width: 100%;
   max-height: 80vh;
-  /* Max height - viewport based */
   overflow-y: auto;
-  /* Scroll vertically if needed */
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
-/* Header section inside emoji modal */
 .emoji-modal-header {
   display: flex;
   justify-content: space-between;
-  /* Space between title and close button */
   align-items: center;
   padding: 20px;
   border-bottom: 2px solid var(--primary);
 }
 
-/* Title inside emoji modal header */
 .emoji-modal-header h2 {
   color: var(--info);
   font-size: 1.3rem;
 }
 
-/* Close button styles */
 .close-btn {
   background: var(--danger);
   border: none;
@@ -180,30 +137,24 @@ h1 {
   justify-content: center;
 }
 
-/* Hover effect on close button */
 .close-btn:hover {
   transform: scale(1.1);
-  /* Slightly bigger */
   box-shadow: 0 4px 8px rgba(255, 85, 85, 0.3);
 }
 
-/* Emoji picker grid - 4 emojis per row, evenly spaced */
+/* Emoji Grid - 4 Emojis per row no matter the size */
 .emoji-picker {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  /* 4 equal columns */
   gap: 10px;
-  /* Space between emojis */
   padding: 20px;
 }
 
-/* Individual emoji option styles */
 .emoji-option {
   background: var(--primary);
   border: 2px solid transparent;
   border-radius: 8px;
   font-size: 2rem;
-  /* Emoji size */
   padding: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -213,25 +164,23 @@ h1 {
   min-height: 60px;
 }
 
-/* Hover effect for emoji option */
 .emoji-option:hover {
   border-color: var(--success);
   transform: scale(1.1);
 }
 
-/* Active (clicked) state for emoji option */
 .emoji-option:active {
   transform: scale(0.95);
 }
 
-/* Container for sections that hold modules and buttons */
+/* Sections - Flex container to keep module + button together */
 .section {
+  /* margin-bottom: 25px; */
   margin-bottom: 15px;
   display: flex;
   flex-direction: column;
 }
 
-/* Base button styles */
 .btn {
   width: 100%;
   padding: 14px 20px;
@@ -245,36 +194,29 @@ h1 {
   letter-spacing: 0.5px;
 }
 
-/* Primary button style with success color */
 .btn-primary {
   background: var(--success);
   color: var(--dark);
 }
 
-/* Hover effect for primary button */
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(80, 250, 123, 0.3);
 }
 
-/* Active (clicked) state for primary button */
 .btn-primary:active {
   transform: translateY(0);
 }
 
-/* Room modules (create/join game) styling */
 .room-module {
   margin: 0;
   animation: slideDown 0.3s ease;
-  /* Smooth entrance animation */
 }
 
-/* Hide room modules when not in use */
 .room-module.hidden {
   display: none;
 }
 
-/* Slide down animation keyframes */
 @keyframes slideDown {
   from {
     opacity: 0;
@@ -287,38 +229,29 @@ h1 {
   }
 }
 
-/* Style for code display wrapper (used for room codes) */
+/* Code Display - Both Create & Join */
 .code-display {
   background: var(--primary);
   border-left: 4px solid var(--success);
-  /* Left border accent */
-  border-right: 4px solid var(--success);
-  /* Right border accent */
   border-radius: 8px 8px 0 0;
-  /* Rounded top corners */
   padding: 16px;
   margin-bottom: 0;
   overflow: hidden;
 }
 
-/* Container inside code display to layout label and code */
 .code-container {
   display: flex;
   align-items: center;
   gap: 12px;
-  /* Space between label and code */
 }
 
-/* Label style for code display */
 .code-container .label {
   color: var(--info);
   font-size: 0.9rem;
   font-weight: 600;
   white-space: nowrap;
-  /* Prevent label from breaking */
 }
 
-/* Room code styling (non-editable display) */
 .room-code,
 .room-code-input {
   background: var(--secondary);
@@ -328,9 +261,7 @@ h1 {
   padding: 8px 12px;
   border-radius: 6px;
   letter-spacing: 2px;
-  /* Extra letter spacing for codes */
   flex: 1;
-  /* Allow flexible width */
   text-align: center;
   border: none;
   text-transform: uppercase;
@@ -338,32 +269,24 @@ h1 {
   min-width: 0;
 }
 
-/* Display version of room code */
 .room-code {
   display: block;
 }
 
-/* Editable input version for room code */
 .room-code-input {
   font-family: inherit;
-  /* Use body font */
 }
 
-/* Focus styles for room code input */
 .room-code-input:focus {
   outline: none;
   box-shadow: 0 0 12px rgba(80, 250, 123, 0.3);
-  /* Green glowing outline */
 }
 
-/* Placeholder text style inside input */
 .room-code-input::placeholder {
   color: var(--primary);
   opacity: 0.5;
-  /* Lighter */
 }
 
-/* Buttons for copy and paste actions */
 .copy-btn,
 .paste-btn {
   background: var(--info);
@@ -382,61 +305,48 @@ h1 {
   padding: 8px;
 }
 
-/* SVG icon size inside the buttons */
 .copy-btn svg,
 .paste-btn svg {
   width: 20px;
   height: 20px;
   pointer-events: none;
-  /* Disables interaction on SVG itself */
 }
 
-/* Hover effect for copy/paste buttons */
 .copy-btn:hover,
 .paste-btn:hover {
   transform: scale(1.1);
   box-shadow: 0 4px 8px rgba(139, 233, 253, 0.3);
-  /* Light blue shadow */
 }
 
-/* Active (pressed) state for buttons */
 .copy-btn:active,
 .paste-btn:active {
   transform: scale(0.95);
 }
 
-/* Status message text */
+/* Status Messages */
 .status-text {
   color: var(--warning);
   font-size: 0.85rem;
   text-align: center;
   font-weight: 500;
   min-height: 1.2em;
-  /* Reserve space */
   background: var(--primary);
   padding: 8px 16px;
   border-left: 4px solid var(--success);
-  border-right: 4px solid var(--success);
-  /* Green accent */
   border-radius: 0 0 8px 8px;
-  /* Rounded bottom corners */
   margin-bottom: 0;
   white-space: pre-line;
-  /* Preserve new lines */
 }
 
-/* Environment navigation links container */
 #env-nav {
   display: flex;
   justify-content: center;
   gap: 0.5rem;
-  /* Horizontal space between buttons */
   margin-top: 1.5rem;
   padding-top: 1rem;
   border-top: 1px solid rgba(68, 71, 90, 0.3);
 }
 
-/* Base styles for environment buttons */
 .env-btn {
   background: rgba(68, 71, 90, 0.4);
   color: rgba(248, 248, 242, 0.6);
@@ -450,44 +360,39 @@ h1 {
   letter-spacing: 0.3px;
 }
 
-/* Hover effect for environment buttons */
 .env-btn:hover {
   background: rgba(68, 71, 90, 0.6);
   color: var(--light);
   transform: translateY(-1px);
-  /* Slight lift */
 }
 
-/* Active (clicked) state */
 .env-btn:active {
   transform: translateY(0);
 }
 
-/* Hover border colors for different environments */
 .env-main:hover {
   border-color: rgba(80, 250, 123, 0.3);
-  /* Success green */
 }
 
 .env-beta:hover {
   border-color: rgba(241, 250, 140, 0.3);
-  /* Warning yellow */
 }
 
 .env-alpha:hover {
   border-color: rgba(139, 233, 253, 0.3);
-  /* Info blue */
 }
 
-/* Responsive styles for smaller screens (phone sized) */
 @media (max-width: 480px) {
   #container {
+    /* padding: 25px 20px; */
     padding: 20px 15px;
     max-width: 100%;
   }
 
   h1 {
+    /* font-size: 2rem; */
     font-size: 1.75rem;
+    /* margin-bottom: 20px; */
     margin-bottom: 15px;
   }
 
@@ -523,7 +428,7 @@ h1 {
   }
 }
 
-/* Styles for action buttons used in share section */
+/* Action Button Styles */
 .action-btn {
   padding: 10px 16px;
   border: none;
@@ -534,80 +439,68 @@ h1 {
   transition: all 0.2s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  /* space between icon and text */
 }
 
-.action-btn svg {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-}
-
-/* Secondary style for action buttons (blue info color) */
 .action-btn.secondary {
   background: var(--info);
   color: var(--dark);
 }
 
-/* Hover state for secondary buttons */
 .action-btn.secondary:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(139, 233, 253, 0.3);
 }
 
-/* Active (pressed) state for secondary buttons */
 .action-btn.secondary:active {
   transform: translateY(0);
 }
 
+/* ============================================ */
+/* SHAREABLE LINK STYLES */
+/* ============================================ */
 
 .share-link-section {
-  /* Margin and padding for separation from above content */
+  /* margin-top: 1.5rem; */
   margin-top: 0.75rem;
-  /* padding-top: 0.75rem; */
+  /* padding-top: 1.5rem; */
+  padding-top: 0.75rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  /* Thin top border */
 }
 
-/* Container for the display of the invite link */
 .invite-link-container {
   background: rgba(0, 0, 0, 0.3);
-  /* Semi-transparent black */
   border: 2px solid rgba(255, 255, 255, 0.1);
-  /* Light border */
   border-radius: 12px;
+  /* padding: 1rem; */
   padding: 0.75rem;
+  /* margin: 0.75rem 0; */
   margin: 0.5rem 0;
   word-break: break-all;
-  /* Allows wrapping long links */
 }
 
-/* Styling for the invite link text */
 .invite-link {
   font-family: "Courier New", monospace;
+  /* font-size: 0.9rem; */
   font-size: 0.85rem;
   color: var(--info);
   text-align: center;
+  /* line-height: 1.4; */
   line-height: 1.3;
 }
 
-/* Container for share buttons aligned horizontally */
 .share-buttons {
   display: flex;
+  /* gap: 0.75rem; */
   gap: 0.5rem;
+  /* margin-top: 0.75rem; */
   margin-top: 0.5rem;
 }
 
-/* Make share buttons flex-grow equally */
 .share-buttons .action-btn {
   flex: 1;
 }
 
-/* Responsive styles for mobile devices for share links */
+/* Mobile responsive adjustments */
 @media (max-width: 480px) {
   .invite-link {
     font-size: 0.75rem;
@@ -615,7 +508,6 @@ h1 {
 
   .share-buttons {
     flex-direction: column;
-    /* Stack vertically on small screens */
   }
 
   .share-buttons .action-btn {
@@ -623,16 +515,15 @@ h1 {
   }
 }
 
-/* Glowing effect for primary buttons for emphasis */
+/* Simpler glow - better iOS compatibility */
 .btn-primary.glow {
   border: 2px solid var(--success);
   box-shadow: 0 0 20px rgba(80, 250, 123, 0.6);
   animation: simpleGlow 2s ease-in-out infinite;
   -webkit-animation: simpleGlow 2s ease-in-out infinite;
-  /* For iOS compatibility */
+  /* Add this for iOS */
 }
 
-/* Instruction text styling */
 .instruction {
   margin-top: 0.5rem;
   margin-bottom: 0.25rem;
@@ -641,7 +532,7 @@ h1 {
   font-size: 0.85rem;
 }
 
-/* Simple glow animation keyframes */
+
 @keyframes simpleGlow {
 
   0%,
@@ -656,7 +547,7 @@ h1 {
   }
 }
 
-/* Webkit-prefixed version for iOS */
+/* Add webkit prefix for better iOS support */
 @-webkit-keyframes simpleGlow {
 
   0%,
@@ -670,3 +561,21 @@ h1 {
     -webkit-transform: scale(1.02);
   }
 }
+
+/* OLD VERSION - Commented out for reference */
+/* 
+@keyframes pulseGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(80, 250, 123, 0.6),
+      0 0 40px rgba(80, 250, 123, 0.4),
+      0 0 60px rgba(80, 250, 123, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 0 30px rgba(80, 250, 123, 0.8),
+      0 0 60px rgba(80, 250, 123, 0.6),
+      0 0 90px rgba(80, 250, 123, 0.4);
+  }
+}
+*/

@@ -1,6 +1,6 @@
 // multiplayer.js
 
-// import { firebaseConfig, clearStoredLogs } from "./utils.js";
+import { firebaseConfig, clearStoredLogs } from "./utils.js";
 
 // Initialize Firebase
 

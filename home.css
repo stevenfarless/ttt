@@ -38,8 +38,17 @@ body {
 h1 {
   text-align: center;
   color: var(--info);
-  margin-bottom: 30px;
+  margin-bottom: 0px;
   font-size: 2.5rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.version-number {
+  text-align: center;
+  color: var(--info);
+  margin-bottom: 20px;
+  margin-top: 2px;
+  font-size: 1rem;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 

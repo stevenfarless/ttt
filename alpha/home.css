@@ -48,8 +48,8 @@ h1 {
   text-align: center;
   color: var(--info);
   margin-bottom: 0px;
-    font-size: 2.5rem;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  font-size: 2.5rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 .version-number {
@@ -172,7 +172,6 @@ h1 {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  /* Circular button */
   font-size: 1.2rem;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -201,9 +200,7 @@ h1 {
 /* Individual emoji option styles */
 .emoji-option {
   background: var(--primary);
-  /* Dark background */
   border: 2px solid transparent;
-  /* Transparent border for hover effect */
   border-radius: 8px;
   font-size: 2rem;
   /* Emoji size */
@@ -214,52 +211,38 @@ h1 {
   align-items: center;
   justify-content: center;
   min-height: 60px;
-  /* Minimum vertical size */
 }
 
 /* Hover effect for emoji option */
 .emoji-option:hover {
   border-color: var(--success);
-  /* Green border on hover */
   transform: scale(1.1);
-  /* Slightly bigger */
 }
 
 /* Active (clicked) state for emoji option */
 .emoji-option:active {
   transform: scale(0.95);
-  /* Shrinks slightly */
 }
 
 /* Container for sections that hold modules and buttons */
 .section {
   margin-bottom: 15px;
-  /* Space below each section */
   display: flex;
-  /* Flex container */
   flex-direction: column;
-  /* Stack contents vertically */
 }
 
 /* Base button styles */
 .btn {
   width: 100%;
-  /* Full width */
   padding: 14px 20px;
-  /* Vertical and horizontal spacing */
   border: none;
   border-radius: 12px;
-  /* Rounded edges */
   font-size: 1rem;
   font-weight: 600;
-  /* Semi-bold text */
   cursor: pointer;
   transition: all 0.3s ease;
-  /* Smooth transitions */
   text-transform: uppercase;
-  /* Uppercase text */
   letter-spacing: 0.5px;
-  /* Letter spacing */
 }
 
 /* Primary button style with success color */
@@ -347,10 +330,8 @@ h1 {
   flex: 1;
   /* Allow flexible width */
   text-align: center;
-  /* Center text */
   border: none;
   text-transform: uppercase;
-  /* Uppercase text */
   transition: all 0.3s ease;
   min-width: 0;
 }
@@ -425,7 +406,6 @@ h1 {
 /* Status message text */
 .status-text {
   color: var(--warning);
-  /* Yellow warning color */
   font-size: 0.85rem;
   text-align: center;
   font-weight: 500;
@@ -451,7 +431,6 @@ h1 {
   margin-top: 1.5rem;
   padding-top: 1rem;
   border-top: 1px solid rgba(68, 71, 90, 0.3);
-  /* Top border */
 }
 
 /* Base styles for environment buttons */
@@ -571,8 +550,6 @@ h1 {
   transform: translateY(0);
 }
 
-/* ===== Shareable Link Styles ===== */
-
 .share-link-section {
   /* Margin and padding for separation from above content */
   margin-top: 0.75rem;
@@ -597,7 +574,6 @@ h1 {
 /* Styling for the invite link text */
 .invite-link {
   font-family: "Courier New", monospace;
-  /* Monospace font for code style */
   font-size: 0.85rem;
   color: var(--info);
   text-align: center;
@@ -679,21 +655,3 @@ h1 {
     -webkit-transform: scale(1.02);
   }
 }
-
-/* OLD VERSION of glow animation commented out for reference */
-/* 
-@keyframes pulseGlow {
-  0%,
-  100% {
-    box-shadow: 0 0 20px rgba(80, 250, 123, 0.6),
-      0 0 40px rgba(80, 250, 123, 0.4),
-      0 0 60px rgba(80, 250, 123, 0.2);
-  }
-
-  50% {
-    box-shadow: 0 0 30px rgba(80, 250, 123, 0.8),
-      0 0 60px rgba(80, 250, 123, 0.6),
-      0 0 90px rgba(80, 250, 123, 0.4);
-  }
-}
-*/

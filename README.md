@@ -9,7 +9,7 @@ A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces and pl
 <img height="600" alt="homescreen" src="https://github.com/user-attachments/assets/72f15ab0-e795-4de7-8191-cee53e5eb81d" />
 <img height="600" alt="gameboard" src="https://github.com/user-attachments/assets/7d1ee014-7a7c-4fef-aea8-9204b98f56f8" />
 
----
+***
 
 ## ✨ Features
 
@@ -22,11 +22,11 @@ A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces and pl
 - **⚡ Real-Time Sync** - Moves sync instantly across both players' screens
 - **🎨 Dark UI** - Dracula-inspired color scheme with smooth animations
 
----
+***
 
 ## 🚀 Quick Start
 
----
+***
 
 - Modern web browser (Chrome, Firefox, Safari, Edge)
 - Internet connection
@@ -35,23 +35,27 @@ A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces and pl
 ### Installation
 
 1. **Clone the repository**
-   ```
+
+   ```bash
    git clone https://github.com/stevenfarless/ttt.git
    cd ttt
    ```
 
 2. **Open in your browser**
-   ```
+
+   ```bash
    open index.html
    ```
 
 3. **Configure Firebase (Multiplayer Mode)**
+
    - Go to [Firebase Console](https://console.firebase.google.com)
    - Create a new project
    - Enable Realtime Database
    - Copy your Firebase config from Project Settings
    - Update the Firebase configuration in `home.html` with your credentials:
-     ```
+
+     ```javascript
      const firebaseConfig = {
        apiKey: "YOUR_API_KEY",
        authDomain: "YOUR_AUTH_DOMAIN",
@@ -63,30 +67,33 @@ A modern, real-time multiplayer Tic Tac Toe game with custom emoji pieces and pl
      };
      ```
 
----
+***
 
 ## 🎮 How to Play Multiplayer
 
 ### Player 1 (Host)
+
 - Open `index.html`
 - Select your emoji piece from the picker
 - Click "Create Room"
 - Share the 4-character room code with Player 2
 
 ### Player 2 (Guest)
+
 - Open `index.html`
 - Select your emoji piece
 - Enter the room code from Player 1
 - Click "Join Room"
 
 ### Playing
+
 - Players take turns clicking cells on the 3x3 grid
 - Host always goes first
 - Your moves appear in **BLUE**, opponent's in **RED**
 - Win by getting three in a row (horizontal, vertical, or diagonal)
 - Game ends with a win or draw
 
----
+***
 
 ## 🎨 Available Emoji Pieces
 
@@ -98,11 +105,11 @@ Choose any of these 20 emojis as your game piece:
 🍕 🍣 🍓 🍤
 🌙 ☀️ ⭐ 🚀
 
----
+***
 
 ## 📁 Project Structure
 
-```
+```text
 ttt/
 ├── index.html               # Main menu/lobby
 ├── game.html               # Game board interface
@@ -115,7 +122,7 @@ ttt/
 └── LICENSE                 # GPL License
 ```
 
----
+***
 
 ## 🛠️ Technologies Used
 
@@ -125,7 +132,7 @@ ttt/
 - **Firebase Realtime Database** - Real-time multiplayer synchronization
 - **Emoji Support** - Dynamic emoji rendering and display
 
----
+***
 
 ## 📱 Browser Support
 
@@ -134,7 +141,7 @@ ttt/
 - Safari 14+
 - Edge 90+
 
----
+***
 
 ## 🐛 Known Issues & Limitations
 
@@ -145,7 +152,7 @@ ttt/
 - Player indicator updates may briefly lag on very slow connections
 - Mobile emoji sizes may render inconsistently on older devices
 
----
+***
 
 ## 🗺️ Roadmap
 
@@ -158,23 +165,24 @@ ttt/
 - [ ] Custom username display
 - [ ] Game history & replays
 
----
+***
 
 ## 🤝 Contributing
 
 This project welcomes contributions and feedback! Please feel free to:
+
 - Report bugs via GitHub Issues
 - Suggest features and improvements
 - Submit pull requests with enhancements
 - Test on different devices and browsers
 
----
+***
 
 ## 📄 License
 
 GPL 3 License - see LICENSE file for details
 
----
+***
 
 ## 📞 Support & Feedback
 
@@ -182,7 +190,7 @@ Found a bug? Have a suggestion? Please open an issue on GitHub!
 
 **GitHub Issues:** [https://github.com/stevenfarless/ttt/issues](https://github.com/stevenfarless/ttt/issues)
 
----
+***
 
 ## ⚡ Development Status
 
@@ -197,7 +205,8 @@ Found a bug? Have a suggestion? Please open an issue on GitHub!
 | UI/UX Polish | 🟡 In Progress |
 | Error Handling | 🟡 In Progress |
 
----
+***
 
-**Built with ❤️ by Steven Farless**
-```
+## 👨‍💻 Author
+
+Built with ❤️ by Steven Farless

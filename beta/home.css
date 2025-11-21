@@ -169,8 +169,8 @@ h1 {
   background: var(--danger);
   border: none;
   color: white;
-  width: 40px;
-  height: 40px;
+  width: 20px; // changed from 40
+  height: 20px; // changed from 40
   border-radius: 50%;
   font-size: 1.2rem;
   cursor: pointer;

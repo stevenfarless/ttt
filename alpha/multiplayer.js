@@ -62,7 +62,7 @@ const persistedEmoji = sessionStorage.getItem('currentEmojiSelection');
 if (persistedEmoji) {
   emojiDisplay.textContent = persistedEmoji;
 } else {
-  emojiDisplay.textContent = "❌";
+  // emojiDisplay.textContent = "❌";
 }
 
 
@@ -244,7 +244,7 @@ customEmojiInput.addEventListener("input", () => {
 // }
 
 // ✅ Set default to "❌" on initial load (hosting player default)
-emojiDisplay.textContent = "❌";
+// emojiDisplay.textContent = "❌";
 
 // ✅ Initialize emoji picker so users can customize
 initEmojiPicker();
@@ -274,7 +274,7 @@ createRoomBtn.addEventListener("click", (e) => {
   }
 
   // ✅ Set default emoji to "❌" for hosting player
-  emojiDisplay.textContent = "❌";
+  // emojiDisplay.textContent = "❌";
 
   createModule.classList.remove("hidden");
   joinModule.classList.add("hidden");

@@ -18,31 +18,24 @@
 <body>
   <!-- Main container for the entire page content -->
   <div id="container">
-    <!-- Heading with the game title and version number -->
     <h1>Tic Tac Toe</h1>
     <div class="version-number">
-      <p>2.3.2 Beta</p>
+      <p>2.3.2 Alpha</p>
     </div>
 
     <!-- Emoji Picker Section -->
     <div class="emoji-section">
-      <!-- Button to toggle the emoji picker modal -->
       <button id="emojiToggle" class="emoji-toggle-btn">
-        <!-- Displays the currently selected emoji (default is a game controller) -->
         <span id="emojiDisplay">🎮</span>
-        <!-- Label for the emoji selection button -->
         <span class="label">Select Emoji</span>
       </button>
     </div>
 
     <!-- Modal Emoji Picker (hidden by default) -->
     <div id="emojiModal" class="emoji-modal hidden">
-      <!-- Content box inside the modal -->
       <div class="emoji-modal-content">
-        <!-- Header of the emoji modal with title and close button -->
         <div class="emoji-modal-header">
           <h2>Choose Your Game Piece</h2>
-          <!-- Button to close the emoji picker modal -->
           <button id="closeEmojiModal" class="close-btn">✕</button>
         </div>
         <!-- Container where emoji options will be dynamically added by JavaScript -->
@@ -57,14 +50,10 @@
       <!-- Button to begin creating a new game room -->
       <button id="createRoomBtn" class="btn btn-primary">Create Game</button>
 
-      <!-- Create Game Module: hidden by default, becomes visible when creating game -->
       <div id="createModule" class="room-module hidden">
-        <!-- Display area for the generated room code -->
         <div class="code-display">
           <div class="code-container">
-            <!-- Label for the room code -->
             <span class="label">Room Code:</span>
-            <!-- Element where the actual room code will be shown (default "XXXX") -->
             <div id="roomCodeDisplay" class="room-code">XXXX</div>
             <!-- Button to copy the room code to clipboard -->
             <button id="copyCodeBtn" class="copy-btn">
@@ -78,20 +67,16 @@
           </div>
         </div>
 
-        <!-- Shareable Link Section -->
         <div class="share-link-section">
-          <!-- Instruction text for sharing the game link -->
           <p class="instruction"
             style="margin-top: 1rem; margin-bottom: 0.5rem; text-align: center; color: var(--info); font-size: 0.85rem;">
             Or share this link:
           </p>
-          <!-- Container displaying the invite link that players can use to join -->
           <div class="invite-link-container">
             <div id="inviteLinkDisplay" class="invite-link">
               Link will appear here...
             </div>
           </div>
-          <!-- Buttons to copy or share the invite link -->
           <div class="share-buttons">
             <button id="copyLinkBtn" class="action-btn secondary">
               📋 Copy Link
@@ -102,24 +87,18 @@
           </div>
         </div>
 
-        <!-- Status messages related to creating the game room -->
         <p id="createStatus" class="status-text"></p>
       </div>
     </div>
 
     <!-- Join Game Section -->
     <div class="section">
-      <!-- Module for joining an existing game room, hidden by default -->
       <div id="joinModule" class="room-module hidden">
         <div class="code-display">
           <div class="code-container">
-            <!-- Label for entering the room code -->
             <span class="label">Enter Code:</span>
-            <!-- Input field for entering a 4-character room code -->
             <input id="roomCodeInput" type="text" maxlength="4" class="room-code-input">
-            <!-- Button to paste code from clipboard into the input field -->
             <button id="pasteCodeBtn" class="paste-btn" type="button" title="Paste from clipboard">
-              <!-- SVG icon representing paste action -->
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
@@ -128,18 +107,15 @@
             </button>
           </div>
         </div>
-        <!-- Area for status or error messages related to joining a room -->
         <p id="joinStatus" class="status-text"></p>
       </div>
-      <!-- Button to trigger join room module or attempt to join the game -->
       <button id="joinRoomBtn" class="btn btn-primary">Join Game</button>
     </div>
 
-    <!-- Navigation links, allowing quick switching between different app environments or versions -->
     <div id="env-nav">
       <!-- <a href="https://stevenfarless.github.io/ttt" class="env-btn env-main">Main</a> -->
       <a href="https://stevenfarless.github.io/ttt/" class="env-btn env-main">Main</a>
-      <a href="https://stevenfarless.github.io/ttt/alpha" class="env-btn env-alpha">Alpha</a>
+      <a href="https://stevenfarless.github.io/ttt/beta" class="env-btn env-beta">Beta</a>
       <a href="https://stevenfarless.github.io/ttt/experimental" class="env-btn env-experimental">Experimental</a>
     </div>
   </div>

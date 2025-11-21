@@ -3,36 +3,23 @@
 <!-- Game HTML: The user interface for the Tic Tac Toe game itself -->
 
 <head>
-  <!-- Character encoding declaration -->
   <meta charset="UTF-8">
-  <!-- Viewport settings to ensure responsive layout on different devices -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Title shown on browser tab -->
   <title>Tic Tac Toe - Game</title>
-  <!-- External CSS file for styling this page -->
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-  <!-- Main container for the game UI -->
   <div id="game-container">
-    <!-- Main heading displaying the game name -->
     <h1>Tic Tac Toe</h1>
 
-    <!-- Player indicators showing each player’s emoji and label -->
     <div id="player-indicators">
-      <!-- Player 1 indicator -->
       <div class="player-indicator">
-        <!-- Emoji representing the player’s game piece -->
         <span id="player1-emoji">❌</span>
-        <!-- Label clarifying this is "You" -->
         <div class="player-label">You</div>
       </div>
-      <!-- Player 2 indicator -->
       <div class="player-indicator">
-        <!-- Emoji representing the opponent’s game piece -->
         <span id="player2-emoji">⭕</span>
-        <!-- Label clarifying this is the "Opponent" -->
         <div class="player-label">Opponent</div>
       </div>
     </div>
@@ -53,12 +40,8 @@
 
     <!-- Container to show game result messages like win/lose/draw -->
     <div id="result"></div>
-
-    <!-- Container for game action buttons -->
     <div id="button-container">
-      <!-- Button to reset the game for a new match -->
       <button id="reset">Play Again</button>
-      <!-- Button to navigate back to the main menu -->
       <button id="backToMenu">Back to Menu</button>
     </div>
   </div>
@@ -69,8 +52,6 @@
   <!-- Firebase libraries for app initialization and real-time database support -->
   <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-
-  <!-- The main JavaScript module handling multiplayer game logic and interactions -->
   <script type="module" src="game-multiplayer.js"></script>
 </body>
 

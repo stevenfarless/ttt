@@ -18,7 +18,6 @@
 <body>
   <!-- Main container for the entire page content -->
   <div id="container">
-    <!-- Heading with the game title and version number -->
     <h1>Tic Tac Toe</h1>
     <div class="version-number">
       <p>2.3.2</p>
@@ -26,23 +25,17 @@
 
     <!-- Emoji Picker Section -->
     <div class="emoji-section">
-      <!-- Button to toggle the emoji picker modal -->
       <button id="emojiToggle" class="emoji-toggle-btn">
-        <!-- Displays the currently selected emoji (default is a game controller) -->
         <span id="emojiDisplay">🎮</span>
-        <!-- Label for the emoji selection button -->
         <span class="label">Select Emoji</span>
       </button>
     </div>
 
     <!-- Modal Emoji Picker (hidden by default) -->
     <div id="emojiModal" class="emoji-modal hidden">
-      <!-- Content box inside the modal -->
       <div class="emoji-modal-content">
-        <!-- Header of the emoji modal with title and close button -->
         <div class="emoji-modal-header">
           <h2>Choose Your Game Piece</h2>
-          <!-- Button to close the emoji picker modal -->
           <button id="closeEmojiModal" class="close-btn">✕</button>
         </div>
         <!-- Container where emoji options will be dynamically added by JavaScript -->

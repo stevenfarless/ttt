@@ -291,9 +291,7 @@ h1 {
 .code-display {
   background: var(--primary);
   border-left: 4px solid var(--success);
-  /* Left border accent */
-  border-right: 4px solid var(--success);
-  /* Right border accent */
+  /* Left green border accent */
   border-radius: 8px 8px 0 0;
   /* Rounded top corners */
   padding: 16px;
@@ -416,7 +414,6 @@ h1 {
   background: var(--primary);
   padding: 8px 16px;
   border-left: 4px solid var(--success);
-  border-right: 4px solid var(--success);
   /* Green accent */
   border-radius: 0 0 8px 8px;
   /* Rounded bottom corners */
@@ -534,17 +531,6 @@ h1 {
   transition: all 0.2s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  /* space between icon and text */
-}
-
-.action-btn svg {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
 }
 
 /* Secondary style for action buttons (blue info color) */
@@ -563,7 +549,6 @@ h1 {
 .action-btn.secondary:active {
   transform: translateY(0);
 }
-
 
 .share-link-section {
   /* Margin and padding for separation from above content */

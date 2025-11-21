@@ -63,15 +63,18 @@ let generatedRoomCode = null;
 // ============================================
 
 /**
-* Parses URL parameters and auto-joins room if present
-*/
+ * Parses URL parameters and auto-joins room if present
+ */
 function checkForRoomInURL() {
   const urlParams = new URLSearchParams(window.location.search);
   const roomCode = urlParams.get("room");
 
-  if (roomCode && roomCode.length === 4) {
+  if (roomCode && roomCode.length >= 4) {
     const sanitizedCode = roomCode.toUpperCase().replace(/[^A-Z0-9]/g, "");
     if (sanitizedCode.length === 4) {
+      // ✅ Set default to "O" for joining player via URL
+      emojiDisplay.textContent = "O";
+
       // Show join module
       joinModule.classList.remove("hidden");
       createModule.classList.add("hidden");
@@ -102,16 +105,16 @@ function checkForRoomInURL() {
 }
 
 /**
-* Generates shareable invitation link
-*/
+ * Generates shareable invitation link
+ */
 function generateInviteLink(roomCode) {
   const baseUrl = window.location.origin + window.location.pathname;
   return `${baseUrl}?room=${roomCode}`;
 }
 
 /**
-* Copies invite link to clipboard
-*/
+ * Copies invite link to clipboard
+ */
 async function copyInviteLink(roomCode) {
   const link = generateInviteLink(roomCode);
   try {
@@ -137,8 +140,8 @@ async function copyInviteLink(roomCode) {
 }
 
 /**
-* Shares invite link using Web Share API (mobile-friendly)
-*/
+ * Shares invite link using Web Share API (mobile-friendly)
+ */
 async function shareInviteLink(roomCode) {
   const link = generateInviteLink(roomCode);
   const hostEmoji = emojiDisplay.textContent;
@@ -188,9 +191,10 @@ function getRandomEmoji() {
   return emoji;
 }
 
-// Set random emoji on page load
-const initialEmoji = getRandomEmoji();
-emojiDisplay.textContent = initialEmoji;
+// ✅ Set default to "X" on initial load (hosting player default)
+emojiDisplay.textContent = "X";
+
+// ✅ Initialize emoji picker so users can customize
 initEmojiPicker();
 
 // Check for room code in URL on page load
@@ -217,8 +221,12 @@ createRoomBtn.addEventListener("click", (e) => {
     return;
   }
 
+  // ✅ Set default emoji to "X" for hosting player
+  emojiDisplay.textContent = "X";
+
   createModule.classList.remove("hidden");
   joinModule.classList.add("hidden");
+
   joinRoomBtn.disabled = false;
   joinStatus.textContent = "";
   roomCodeInput.value = "";
@@ -242,8 +250,12 @@ joinRoomBtn.addEventListener("click", (e) => {
     return;
   }
 
+  // ✅ Set default emoji to "O" for joining player
+  emojiDisplay.textContent = "O";
+
   joinModule.classList.remove("hidden");
   createModule.classList.add("hidden");
+
   createRoomBtn.disabled = false;
   createStatus.textContent = "";
 
@@ -280,7 +292,6 @@ roomCodeInput.addEventListener("input", (e) => {
   // Clear status when user is typing
   joinStatus.textContent = "";
 });
-
 
 // Copy room code
 copyCodeBtn?.addEventListener("click", async () => {

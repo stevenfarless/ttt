@@ -303,7 +303,7 @@ joinRoomBtn.addEventListener("click", (e) => {
   }
 
   // ✅ Set default emoji to "O" for joining player
-  emojiDisplay.textContent = "⭕";
+  // emojiDisplay.textContent = "⭕";
 
   joinModule.classList.remove("hidden");
   createModule.classList.add("hidden");

@@ -16,14 +16,12 @@
 </head>
 
 <body>
-  <!-- Main container for the entire page content -->
   <div id="container">
     <h1>Tic Tac Toe</h1>
     <div class="version-number">
       <p>2.3.3 Beta</p>
     </div>
 
-    <!-- Emoji Picker Section -->
     <div class="emoji-section">
       <button id="emojiToggle" class="emoji-toggle-btn">
         <span id="emojiDisplay">🎮</span>
@@ -31,23 +29,18 @@
       </button>
     </div>
 
-    <!-- Modal Emoji Picker (hidden by default) -->
     <div id="emojiModal" class="emoji-modal hidden">
       <div class="emoji-modal-content">
         <div class="emoji-modal-header">
           <h2>Choose Your Game Piece</h2>
           <button id="closeEmojiModal" class="close-btn">✕</button>
         </div>
-        <!-- Container where emoji options will be dynamically added by JavaScript -->
         <div id="emojiPicker" class="emoji-picker">
-          <!-- Populated by JS -->
         </div>
       </div>
     </div>
 
-    <!-- Create Game Section -->
     <div class="section">
-      <!-- Button to begin creating a new game room -->
       <button id="createRoomBtn" class="btn btn-primary">Create Game</button>
 
       <div id="createModule" class="room-module hidden">
@@ -55,9 +48,7 @@
           <div class="code-container">
             <span class="label">Room Code:</span>
             <div id="roomCodeDisplay" class="room-code">XXXX</div>
-            <!-- Button to copy the room code to clipboard -->
             <button id="copyCodeBtn" class="copy-btn">
-              <!-- SVG icon representing copy action -->
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -91,7 +82,6 @@
       </div>
     </div>
 
-    <!-- Join Game Section -->
     <div class="section">
       <div id="joinModule" class="room-module hidden">
         <div class="code-display">
@@ -120,11 +110,8 @@
     </div>
   </div>
 
-  <!-- Firebase SDK for initializing Firebase app -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <!-- Firebase Realtime Database SDK for real-time game data storage and sync -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <!-- Main JavaScript module controlling multiplayer game logic -->
   <script type="module" src="multiplayer.js"></script>
 </body>
 

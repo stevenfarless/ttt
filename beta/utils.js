@@ -12,7 +12,6 @@ export const firebaseConfig = {
   measurementId: "G-2WC5RPCT3Q"
 };
 
-
 // Utility Functions
 
 /**
@@ -75,6 +74,46 @@ export function sanitizeEmojiChoice(choice, allowedEmojis) {
   return allowedEmojis.includes(choice) ? choice : allowedEmojis[0];
 }
 
+/**
+ * Validates that input contains exactly one valid emoji character.
+ * Prevents XSS attacks, validates Unicode emoji ranges, and ensures single character.
+ * @param {string} input - The user input to validate
+ * @returns {{valid: boolean, emoji: string, error: string}} - Validation result
+ */
+export function validateCustomEmoji(input) {
+  // Sanitize and trim input
+  const trimmed = input.trim();
+
+  // Check if empty
+  if (!trimmed) {
+    return { valid: false, emoji: '', error: 'Please enter an emoji' };
+  }
+
+  // Check for potentially dangerous characters (XSS prevention)
+  const dangerousChars = /<|>|&|"|'|`|\/|\\|script/gi;
+  if (dangerousChars.test(trimmed)) {
+    return { valid: false, emoji: '', error: 'Invalid characters detected' };
+  }
+
+  // Unicode emoji regex - matches most common emoji ranges
+  // Includes: basic emojis, skin tones, ZWJ sequences, flags
+  const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)(\u200D(\p{Emoji_Presentation}|\p{Emoji}\uFE0F))*$/u;
+
+  if (!emojiRegex.test(trimmed)) {
+    return { valid: false, emoji: '', error: 'Please enter a valid emoji' };
+  }
+
+  // Use Array.from to handle multi-byte characters correctly
+  const chars = Array.from(trimmed);
+
+  // Ensure it's not too long (accounting for ZWJ sequences like family emojis)
+  if (chars.length > 7) {
+    return { valid: false, emoji: '', error: 'Emoji too complex, please use a simpler one' };
+  }
+
+  // Success
+  return { valid: true, emoji: trimmed, error: '' };
+}
 
 // Placeholder functions kept for backwards compatibility.
 // They used to handle console log persistence but now do nothing.

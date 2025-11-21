@@ -1,9 +1,8 @@
 // multiplayer.js
 
-import { firebaseConfig, clearStoredLogs } from "./utils.js";
+import { firebaseConfig, clearStoredLogs, validateCustomEmoji } from "./utils.js";
 
 // Initialize Firebase
-
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -41,6 +40,9 @@ const emojiToggle = document.getElementById("emojiToggle");
 const emojiModal = document.getElementById("emojiModal");
 const closeEmojiModal = document.getElementById("closeEmojiModal");
 const emojiPicker = document.getElementById("emojiPicker");
+const customEmojiInput = document.getElementById("customEmojiInput");
+const useCustomEmojiBtn = document.getElementById("useCustomEmoji");
+const customEmojiHint = document.querySelector(".custom-emoji-hint");
 const createRoomBtn = document.getElementById("createRoomBtn");
 const joinRoomBtn = document.getElementById("joinRoomBtn");
 const createModule = document.getElementById("createModule");
@@ -54,6 +56,15 @@ const pasteCodeBtn = document.getElementById("pasteCodeBtn");
 const copyLinkBtn = document.getElementById("copyLinkBtn");
 const shareLinkBtn = document.getElementById("shareLinkBtn");
 const inviteLinkDisplay = document.getElementById("inviteLinkDisplay");
+
+// Restore persisted emoji selection or default to ❌
+const persistedEmoji = sessionStorage.getItem('currentEmojiSelection');
+if (persistedEmoji) {
+  emojiDisplay.textContent = persistedEmoji;
+} else {
+  // emojiDisplay.textContent = "❌";
+}
+
 
 // Track generated room code
 let generatedRoomCode = null;
@@ -168,7 +179,7 @@ async function shareInviteLink(roomCode) {
 // Initialize emoji picker
 function initEmojiPicker() {
   emojiPicker.innerHTML = "";
-  emojis.forEach((emoji, index) => {
+  emojis.forEach((emoji) => {
     const option = document.createElement("button");
     option.className = "emoji-option";
     option.textContent = emoji;
@@ -181,18 +192,59 @@ function initEmojiPicker() {
   });
 }
 
+// Select emoji from picker or custom input
 function selectEmoji(emoji) {
   emojiDisplay.textContent = emoji;
+  sessionStorage.setItem('currentEmojiSelection', emoji);
   emojiModal.classList.add("hidden");
 }
 
-function getRandomEmoji() {
-  const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-  return emoji;
-}
+
+// Custom emoji input handler
+useCustomEmojiBtn.addEventListener("click", () => {
+  const input = customEmojiInput.value;
+  const validation = validateCustomEmoji(input);
+  if (validation.valid) {
+    selectEmoji(validation.emoji);
+    customEmojiHint.textContent = "✓ Custom emoji selected!";
+    customEmojiHint.style.color = "var(--success)";
+    setTimeout(() => {
+      emojiModal.classList.add("hidden");
+      customEmojiInput.value = "";
+      customEmojiHint.textContent = "Paste a single emoji character";
+      customEmojiHint.style.color = "var(--info)";
+    }, 800);
+  } else {
+    customEmojiHint.textContent = "✗ " + validation.error;
+    customEmojiHint.style.color = "var(--danger)";
+    customEmojiInput.classList.add("shake");
+    setTimeout(() => {
+      customEmojiInput.classList.remove("shake");
+    }, 500);
+  }
+});
+
+// Submit custom emoji on Enter key
+customEmojiInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    useCustomEmojiBtn.click();
+  }
+});
+
+// Reset custom emoji hint on input
+customEmojiInput.addEventListener("input", () => {
+  customEmojiHint.textContent = "Paste a single emoji character";
+  customEmojiHint.style.color = "var(--info)";
+});
+
+// function getRandomEmoji() {
+//   const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+//   return emoji;
+// }
 
 // ✅ Set default to "❌" on initial load (hosting player default)
-emojiDisplay.textContent = "❌";
+// emojiDisplay.textContent = "❌";
 
 // ✅ Initialize emoji picker so users can customize
 initEmojiPicker();
@@ -222,7 +274,7 @@ createRoomBtn.addEventListener("click", (e) => {
   }
 
   // ✅ Set default emoji to "❌" for hosting player
-  emojiDisplay.textContent = "❌";
+  // emojiDisplay.textContent = "❌";
 
   createModule.classList.remove("hidden");
   joinModule.classList.add("hidden");
@@ -251,7 +303,7 @@ joinRoomBtn.addEventListener("click", (e) => {
   }
 
   // ✅ Set default emoji to "O" for joining player
-  emojiDisplay.textContent = "⭕";
+  // emojiDisplay.textContent = "⭕";
 
   joinModule.classList.remove("hidden");
   createModule.classList.add("hidden");
@@ -356,12 +408,15 @@ pasteCodeBtn?.addEventListener("click", async () => {
 
 // Create game
 createRoomBtn.addEventListener("click", () => {
-  // ✅ Prevent creating if button is disabled (valid code entered in join field)
-  if (createRoomBtn.disabled) {
-    return;
+  if (createRoomBtn.disabled) return;
+
+  // Prevent overriding already selected emoji
+  if (!emojiDisplay.textContent || emojiDisplay.textContent.trim() === "") {
+    // emojiDisplay.textContent = "❌";
   }
 
-  // If code already exists, just show the module
+  const selectedEmoji = emojiDisplay.textContent;
+
   if (generatedRoomCode) {
     createModule.classList.remove("hidden");
     return;
@@ -376,7 +431,6 @@ createRoomBtn.addEventListener("click", () => {
   }
 
   generatedRoomCode = code;
-  const selectedEmoji = emojiDisplay.textContent;
 
   const roomData = {
     roomCode: code,
@@ -384,17 +438,7 @@ createRoomBtn.addEventListener("click", () => {
     guestJoined: false,
     hostEmoji: selectedEmoji,
     guestEmoji: null,
-    board: {
-      0: null,
-      1: null,
-      2: null,
-      3: null,
-      4: null,
-      5: null,
-      6: null,
-      7: null,
-      8: null,
-    },
+    board: { 0: null, 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null },
     turn: "host",
     winner: null,
   };
@@ -403,8 +447,7 @@ createRoomBtn.addEventListener("click", () => {
     .set(roomData)
     .then(() => {
       roomCodeDisplay.textContent = code;
-      const inviteLink = generateInviteLink(code);
-      inviteLinkDisplay.textContent = inviteLink;
+      inviteLinkDisplay.textContent = generateInviteLink(code);
       createStatus.textContent = "Waiting for opponent...";
       createStatus.style.color = "var(--warning)";
 
@@ -431,6 +474,7 @@ createRoomBtn.addEventListener("click", () => {
       generatedRoomCode = null;
     });
 });
+
 
 // Join game
 joinRoomBtn.addEventListener("click", () => {

@@ -41,6 +41,13 @@ const emojiModal = document.getElementById("emojiModal");
 const closeEmojiModal = document.getElementById("closeEmojiModal");
 const emojiPicker = document.getElementById("emojiPicker");
 const customEmojiInput = document.getElementById("customEmojiInput");
+
+customEmojiInput.addEventListener('focus', function () {
+  setTimeout(() => {
+    customEmojiInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 300);
+});
+
 const useCustomEmojiBtn = document.getElementById("useCustomEmoji");
 const customEmojiHint = document.querySelector(".custom-emoji-hint");
 const createRoomBtn = document.getElementById("createRoomBtn");

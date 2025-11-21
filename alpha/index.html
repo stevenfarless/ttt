@@ -35,8 +35,27 @@
           <h2>Choose Your Game Piece</h2>
           <button id="closeEmojiModal" class="close-btn">✕</button>
         </div>
+
+        <!-- Preset emoji buttons get dynamically inserted here -->
         <div id="emojiPicker" class="emoji-picker">
+          <!-- JavaScript will populate this with 20 preset emojis -->
         </div>
+
+        <!-- ✅ Custom Emoji Input Section - OUTSIDE emojiPicker -->
+        <div class="custom-emoji-section">
+          <label for="customEmojiInput" class="custom-emoji-label">
+            Or paste your own emoji:
+          </label>
+          <div class="custom-emoji-input-wrapper">
+            <input type="text" id="customEmojiInput" class="custom-emoji-input" placeholder="Paste emoji here..."
+              maxlength="10" autocomplete="off" spellcheck="false" />
+            <button id="useCustomEmoji" class="use-custom-btn" type="button">
+              ✓ Use
+            </button>
+          </div>
+          <p class="custom-emoji-hint">Paste a single emoji character</p>
+        </div>
+
       </div>
     </div>
 

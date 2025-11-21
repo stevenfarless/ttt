@@ -1,9 +1,8 @@
 // multiplayer.js
 
-import { firebaseConfig, clearStoredLogs } from "./utils.js";
+import { firebaseConfig, clearStoredLogs, validateCustomEmoji } from "./utils.js";
 
 // Initialize Firebase
-
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -41,6 +40,9 @@ const emojiToggle = document.getElementById("emojiToggle");
 const emojiModal = document.getElementById("emojiModal");
 const closeEmojiModal = document.getElementById("closeEmojiModal");
 const emojiPicker = document.getElementById("emojiPicker");
+const customEmojiInput = document.getElementById("customEmojiInput");
+const useCustomEmojiBtn = document.getElementById("useCustomEmoji");
+const customEmojiHint = document.querySelector(".custom-emoji-hint");
 const createRoomBtn = document.getElementById("createRoomBtn");
 const joinRoomBtn = document.getElementById("joinRoomBtn");
 const createModule = document.getElementById("createModule");
@@ -168,7 +170,7 @@ async function shareInviteLink(roomCode) {
 // Initialize emoji picker
 function initEmojiPicker() {
   emojiPicker.innerHTML = "";
-  emojis.forEach((emoji, index) => {
+  emojis.forEach((emoji) => {
     const option = document.createElement("button");
     option.className = "emoji-option";
     option.textContent = emoji;
@@ -181,15 +183,54 @@ function initEmojiPicker() {
   });
 }
 
+// Select emoji from picker or custom input
 function selectEmoji(emoji) {
   emojiDisplay.textContent = emoji;
   emojiModal.classList.add("hidden");
 }
 
-function getRandomEmoji() {
-  const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-  return emoji;
-}
+// Custom emoji input handler
+useCustomEmojiBtn.addEventListener("click", () => {
+  const input = customEmojiInput.value;
+  const validation = validateCustomEmoji(input);
+  if (validation.valid) {
+    selectEmoji(validation.emoji);
+    customEmojiHint.textContent = "✓ Custom emoji selected!";
+    customEmojiHint.style.color = "var(--success)";
+    setTimeout(() => {
+      emojiModal.classList.add("hidden");
+      customEmojiInput.value = "";
+      customEmojiHint.textContent = "Paste a single emoji character";
+      customEmojiHint.style.color = "var(--info)";
+    }, 800);
+  } else {
+    customEmojiHint.textContent = "✗ " + validation.error;
+    customEmojiHint.style.color = "var(--danger)";
+    customEmojiInput.classList.add("shake");
+    setTimeout(() => {
+      customEmojiInput.classList.remove("shake");
+    }, 500);
+  }
+});
+
+// Submit custom emoji on Enter key
+customEmojiInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    useCustomEmojiBtn.click();
+  }
+});
+
+// Reset custom emoji hint on input
+customEmojiInput.addEventListener("input", () => {
+  customEmojiHint.textContent = "Paste a single emoji character";
+  customEmojiHint.style.color = "var(--info)";
+});
+
+// function getRandomEmoji() {
+//   const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+//   return emoji;
+// }
 
 // ✅ Set default to "❌" on initial load (hosting player default)
 emojiDisplay.textContent = "❌";

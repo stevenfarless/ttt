@@ -393,6 +393,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Join game handler
   if (joinRoomBtn) {
     joinRoomBtn.addEventListener("click", async () => {
+      console.log("Join button clicked");
       if (!roomCodeInput) return;
 
       const code = roomCodeInput.value.trim().toUpperCase();

@@ -536,3 +536,57 @@ backToMenuBtn?.addEventListener("click", goBackToMenu);
 // Initialize
 listenToGameChanges();
 updateTurnHighlight();
+
+const randomizerContainer = document.getElementById("randomizer-container");
+
+function randomizeFirstPlayer(hostEmoji, guestEmoji) {
+  return new Promise((resolve) => {
+    randomizerContainer.textContent = "Deciding who starts...";
+    randomizerContainer.style.color = "var(--info)";
+
+    // Create emoji spans for animation
+    const hostSpan = document.createElement("span");
+    hostSpan.textContent = hostEmoji;
+    hostSpan.className = "randomizer-emoji";
+
+    const guestSpan = document.createElement("span");
+    guestSpan.textContent = guestEmoji;
+    guestSpan.className = "randomizer-emoji";
+
+    // Clear container and add emojis
+    randomizerContainer.innerHTML = '';
+    randomizerContainer.appendChild(hostSpan);
+    randomizerContainer.appendChild(guestSpan);
+
+    // Animation cycles count and interval
+    let cycles = 6;
+    let current = 0;
+    let activeEmoji = null;
+
+    const interval = setInterval(() => {
+      // Alternate highlighting host and guest emoji
+      hostSpan.style.opacity = current % 2 === 0 ? "1" : "0.3";
+      guestSpan.style.opacity = current % 2 === 1 ? "1" : "0.3";
+      current++;
+
+      if (current >= cycles) {
+        clearInterval(interval);
+
+        // Randomly select starter
+        activeEmoji = Math.random() < 0.5 ? "host" : "guest";
+        randomizerContainer.innerHTML = '';
+
+        // Show final result with highlight
+        const winnerSpan = document.createElement("span");
+        winnerSpan.textContent = activeEmoji === "host" ? hostEmoji : guestEmoji;
+        winnerSpan.className = "randomizer-emoji randomizer-selected";
+
+        randomizerContainer.appendChild(document.createTextNode("Starts first: "));
+        randomizerContainer.appendChild(winnerSpan);
+
+        // Resolve with selection result
+        resolve(activeEmoji);
+      }
+    }, 300);
+  });
+}

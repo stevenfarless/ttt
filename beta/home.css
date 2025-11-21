@@ -692,7 +692,7 @@ h1 {
   text-align: center;
   transition: all 0.3s ease;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', sans-serif;
-  height: 32px;            /* explicitly set lower height */
+  height: 40px; /* 32px;            explicitly set lower height */
   min-height: 32px;
   box-sizing: border-box;
   display: flex;

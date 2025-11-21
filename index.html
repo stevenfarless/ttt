@@ -19,12 +19,12 @@
   <div id="container">
     <h1>Tic Tac Toe</h1>
     <div class="version-number">
-      <p>2.3.3</p>
+      <p>2.3.2 Beta</p>
     </div>
 
     <div class="emoji-section">
       <button id="emojiToggle" class="emoji-toggle-btn">
-        <span id="emojiDisplay">🎮</span>
+        <span id="emojiDisplay">❌</span>
         <span class="label">Select Emoji</span>
       </button>
     </div>
@@ -32,11 +32,30 @@
     <div id="emojiModal" class="emoji-modal hidden">
       <div class="emoji-modal-content">
         <div class="emoji-modal-header">
-          <h2>Choose Your Game Piece</h2>
+          <h2>Choose an emoji 😀</h2>
           <button id="closeEmojiModal" class="close-btn">✕</button>
         </div>
+
+        <!-- Preset emoji buttons get dynamically inserted here -->
         <div id="emojiPicker" class="emoji-picker">
+          <!-- JavaScript will populate this with 20 preset emojis -->
         </div>
+
+        <!-- ✅ Custom Emoji Input Section - OUTSIDE emojiPicker -->
+        <div class="custom-emoji-section">
+          <label for="customEmojiInput" class="custom-emoji-label">
+            Or use your own emoji:
+          </label>
+          <div class="custom-emoji-input-wrapper">
+            <input type="text" id="customEmojiInput" class="custom-emoji-input" placeholder="Paste emoji here..."
+              maxlength="10" autocomplete="off" spellcheck="false" />
+            <button id="useCustomEmoji" class="use-custom-btn" type="button">
+              ✓ Use
+            </button>
+          </div>
+          <!-- <p class="custom-emoji-hint">Use a single emoji character</p> -->
+        </div>
+
       </div>
     </div>
 
@@ -104,7 +123,7 @@
 
     <div id="env-nav">
       <!-- <a href="https://stevenfarless.github.io/ttt" class="env-btn env-main">Main</a> -->
-      <a href="https://stevenfarless.github.io/ttt/beta" class="env-btn env-beta">Beta</a>
+      <a href="https://stevenfarless.github.io/ttt/" class="env-btn env-beta">Beta</a>
       <a href="https://stevenfarless.github.io/ttt/alpha" class="env-btn env-alpha">Alpha</a>
       <a href="https://stevenfarless.github.io/ttt/experimental" class="env-btn env-experimental">Experimental</a>
     </div>

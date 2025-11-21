@@ -180,6 +180,7 @@ h1 {
   justify-content: center;
 }
 
+
 /* Hover effect on close button */
 .close-btn:hover {
   transform: scale(1.1);
@@ -654,4 +655,118 @@ h1 {
     box-shadow: 0 0 30px rgba(80, 250, 123, 0.9);
     -webkit-transform: scale(1.02);
   }
+}
+
+/* Custom Emoji Input Section */
+.custom-emoji-section {
+  padding: 15px 20px 20px;
+  border-top: 2px solid var(--primary);
+  margin-top: 10px;
+  text-align: center;
+}
+
+.custom-emoji-label {
+  display: block;
+  color: var(--info);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.custom-emoji-input-wrapper {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.custom-emoji-input {
+  flex: 1;
+  max-width: 120px;        /* shrink width for compact look */
+  background: var(--primary);
+  color: var(--light);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 8px;            /* reduce vertical and horizontal padding */
+  font-size: 1.2rem;       /* reduce font size */
+  text-align: center;
+  transition: all 0.3s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', sans-serif;
+  height: 32px;            /* explicitly set lower height */
+  min-height: 32px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+}
+
+
+.custom-emoji-input:focus {
+  outline: none;
+  border-color: var(--success);
+  box-shadow: 0 0 0 3px rgba(80, 250, 123, 0.2);
+}
+
+.custom-emoji-input::placeholder {
+  color: var(--secondary);
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.use-custom-btn {
+  background: var(--success);
+  color: var(--dark);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;       /* reduce vertical padding */
+  font-size: 0.9rem;       /* reduce font size */
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.1s ease;
+  white-space: nowrap;
+  user-select: none;
+  height: 32px;            /* explicitly set lower height */
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.use-custom-btn:hover {
+  background: #5fff84;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(80, 250, 123, 0.3);
+}
+
+.use-custom-btn:active {
+  transform: translateY(0);
+}
+
+.custom-emoji-hint {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: var(--info);
+  min-height: 18px;
+  transition: color 0.3s ease;
+}
+
+/* Shake animation for invalid input */
+@keyframes shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-10px);
+  }
+
+  75% {
+    transform: translateX(10px);
+  }
+}
+
+.shake {
+  animation: shake 0.4s ease-in-out;
 }

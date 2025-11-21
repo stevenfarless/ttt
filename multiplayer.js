@@ -73,7 +73,7 @@ function checkForRoomInURL() {
     const sanitizedCode = roomCode.toUpperCase().replace(/[^A-Z0-9]/g, "");
     if (sanitizedCode.length === 4) {
       // ✅ Set default to "O" for joining player via URL
-      emojiDisplay.textContent = "O";
+      emojiDisplay.textContent = "⭕";
 
       // Show join module
       joinModule.classList.remove("hidden");
@@ -191,8 +191,8 @@ function getRandomEmoji() {
   return emoji;
 }
 
-// ✅ Set default to "X" on initial load (hosting player default)
-emojiDisplay.textContent = "X";
+// ✅ Set default to "❌" on initial load (hosting player default)
+emojiDisplay.textContent = "❌";
 
 // ✅ Initialize emoji picker so users can customize
 initEmojiPicker();
@@ -221,8 +221,8 @@ createRoomBtn.addEventListener("click", (e) => {
     return;
   }
 
-  // ✅ Set default emoji to "X" for hosting player
-  emojiDisplay.textContent = "X";
+  // ✅ Set default emoji to "❌" for hosting player
+  emojiDisplay.textContent = "❌";
 
   createModule.classList.remove("hidden");
   joinModule.classList.add("hidden");
@@ -251,7 +251,7 @@ joinRoomBtn.addEventListener("click", (e) => {
   }
 
   // ✅ Set default emoji to "O" for joining player
-  emojiDisplay.textContent = "O";
+  emojiDisplay.textContent = "⭕";
 
   joinModule.classList.remove("hidden");
   createModule.classList.add("hidden");

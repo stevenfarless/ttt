@@ -60,7 +60,7 @@ A modern, feature-rich real-time multiplayer Tic Tac Toe game with custom emoji 
 ### Play Online (Recommended)
 
 1. Visit **[https://stevenfarless.github.io/ttt](https://stevenfarless.github.io/ttt)**
-2. Select your emoji
+2. Select your emoji (now supports pasting any emoji!)
 3. Create or join a game
 4. Share the link with your friend
 
@@ -68,7 +68,7 @@ A modern, feature-rich real-time multiplayer Tic Tac Toe game with custom emoji 
 
 ```bash
 # Clone the repository
-git clone [https://github.com/stevenfarless/ttt.git](https://github.com/stevenfarless/ttt.git)
+git clone https://github.com/stevenfarless/ttt.git
 cd ttt
 
 # Open in browser (requires live server for ES6 modules)
@@ -90,14 +90,14 @@ To use your own Firebase instance:
 
 ```javascript
 export const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  databaseURL: "YOUR_DATABASE_URL",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_ID",
-  appId: "YOUR_APP_ID",
-  measurementId: "YOUR_MEASUREMENT_ID"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  databaseURL: "YOUR_DATABASE_URL",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_ID",
+  appId: "YOUR_APP_ID",
+  measurementId: "YOUR_MEASUREMENT_ID"
 };
 ```
 
@@ -108,12 +108,12 @@ export const firebaseConfig = {
 ### Creating a Game (Host)
 
 1. Open the app
-2. Click the emoji button to select your game piece (now supports pasting any emoji!)
+2. Click the emoji button to select your game piece (supports pasting or choosing any emoji!)
 3. Click **"Create Game"**
 4. Share the room code OR invite link with your opponent
-   - Copy the 4-character code
-   - Copy the full invite link
-   - Use the Share button (mobile)
+   - Copy the 4-character code
+   - Copy the full invite link
+   - Use the Share button (mobile)
 
 ### Joining a Game (Guest)
 
@@ -159,17 +159,17 @@ You can paste *any* emoji! Or, choose from these 20 presets:
 
 ```text
 ttt/
-├── index.html              # Main menu and lobby interface
-├── game.html               # Game board and gameplay interface
-├── home.css                # Styling for menu/lobby
-├── style.css               # Styling for game board
-├── utils.js                # Firebase config + utility functions
-├── multiplayer.js          # Room creation, joining, and sharing logic
-├── game-multiplayer.js     # Core game logic and Firebase sync
-├── svg-icons.html          # SVG icon reference (backup)
-├── favicon files           # Various favicon formats
-├── README.md               # This file
-└── LICENSE                 # GPL-3.0 License
+├── index.html              # Main menu and lobby interface
+├── game.html               # Game board and gameplay interface
+├── home.css                # Styling for menu/lobby
+├── style.css               # Styling for game board
+├── utils.js                # Firebase config + utility functions
+├── multiplayer.js          # Room creation, joining, and sharing logic
+├── game-multiplayer.js     # Core game logic and Firebase sync
+├── svg-icons.html          # SVG icon reference (backup)
+├── favicon files           # Various favicon formats
+├── README.md               # This file
+└── LICENSE                 # GPL-3.0 License
 ```
 
 ***
@@ -245,7 +245,7 @@ Use the environment switcher at the bottom of the home screen to navigate betwee
 ### Planned Features
 
 - [ ] Timed turns with countdown
-- [❌] Custom emoji input (Fixed [#20](https://github.com/stevenfarless/ttt/issues/20))
+- [x] Custom emoji input (Closes (https://github.com/stevenfarless/ttt/issues/20))
 - [ ] Tournament mode (best of 3/5/7)
 - [ ] Sound effects with toggle control
 - [ ] AI opponent for single-player mode

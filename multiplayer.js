@@ -57,6 +57,15 @@ const copyLinkBtn = document.getElementById("copyLinkBtn");
 const shareLinkBtn = document.getElementById("shareLinkBtn");
 const inviteLinkDisplay = document.getElementById("inviteLinkDisplay");
 
+// Restore persisted emoji selection or default to ❌
+const persistedEmoji = sessionStorage.getItem('currentEmojiSelection');
+if (persistedEmoji) {
+  emojiDisplay.textContent = persistedEmoji;
+} else {
+  emojiDisplay.textContent = "❌";
+}
+
+
 // Track generated room code
 let generatedRoomCode = null;
 
@@ -186,8 +195,10 @@ function initEmojiPicker() {
 // Select emoji from picker or custom input
 function selectEmoji(emoji) {
   emojiDisplay.textContent = emoji;
+  sessionStorage.setItem('currentEmojiSelection', emoji);
   emojiModal.classList.add("hidden");
 }
+
 
 // Custom emoji input handler
 useCustomEmojiBtn.addEventListener("click", () => {
@@ -397,12 +408,15 @@ pasteCodeBtn?.addEventListener("click", async () => {
 
 // Create game
 createRoomBtn.addEventListener("click", () => {
-  // ✅ Prevent creating if button is disabled (valid code entered in join field)
-  if (createRoomBtn.disabled) {
-    return;
+  if (createRoomBtn.disabled) return;
+
+  // Prevent overriding already selected emoji
+  if (!emojiDisplay.textContent || emojiDisplay.textContent.trim() === "") {
+    // emojiDisplay.textContent = "❌";
   }
 
-  // If code already exists, just show the module
+  const selectedEmoji = emojiDisplay.textContent;
+
   if (generatedRoomCode) {
     createModule.classList.remove("hidden");
     return;
@@ -417,7 +431,6 @@ createRoomBtn.addEventListener("click", () => {
   }
 
   generatedRoomCode = code;
-  const selectedEmoji = emojiDisplay.textContent;
 
   const roomData = {
     roomCode: code,
@@ -425,17 +438,7 @@ createRoomBtn.addEventListener("click", () => {
     guestJoined: false,
     hostEmoji: selectedEmoji,
     guestEmoji: null,
-    board: {
-      0: null,
-      1: null,
-      2: null,
-      3: null,
-      4: null,
-      5: null,
-      6: null,
-      7: null,
-      8: null,
-    },
+    board: { 0: null, 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null },
     turn: "host",
     winner: null,
   };
@@ -444,8 +447,7 @@ createRoomBtn.addEventListener("click", () => {
     .set(roomData)
     .then(() => {
       roomCodeDisplay.textContent = code;
-      const inviteLink = generateInviteLink(code);
-      inviteLinkDisplay.textContent = inviteLink;
+      inviteLinkDisplay.textContent = generateInviteLink(code);
       createStatus.textContent = "Waiting for opponent...";
       createStatus.style.color = "var(--warning)";
 
@@ -472,6 +474,7 @@ createRoomBtn.addEventListener("click", () => {
       generatedRoomCode = null;
     });
 });
+
 
 // Join game
 joinRoomBtn.addEventListener("click", () => {

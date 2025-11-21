@@ -660,7 +660,8 @@ h1 {
 
 /* Custom Emoji Input Section */
 .custom-emoji-section {
-  padding: 15px 20px 20px;
+  padding: 10px 20px 12px;
+  /* reduced top and bottom padding */
   border-top: 2px solid var(--primary);
   margin-top: 10px;
   text-align: center;
@@ -671,8 +672,7 @@ h1 {
   color: var(--info);
   font-size: 0.9rem;
   font-weight: 600;
-  margin-bottom: 8px;
-  /* reduce from 10px if needed */
+  margin-bottom: 10px;
 }
 
 .custom-emoji-input-wrapper {
@@ -733,8 +733,7 @@ h1 {
 }
 
 .custom-emoji-hint {
-  margin-top: 6px;
-  /* reduce from 8px */
+  margin-top: 8px;
   font-size: 0.8rem;
   color: var(--info);
   min-height: 18px;

@@ -91,7 +91,10 @@ function checkForRoomInURL() {
     const sanitizedCode = roomCode.toUpperCase().replace(/[^A-Z0-9]/g, "");
     if (sanitizedCode.length === 4) {
       // ✅ Set default to "O" for joining player via URL
-      emojiDisplay.textContent = "⭕";
+      // Only set default emoji for join via URL if not already a custom emoji
+      if (!emojiDisplay.textContent || emojiDisplay.textContent === "❌") {
+        emojiDisplay.textContent = "⭕";
+      }
 
       // Show join module
       joinModule.classList.remove("hidden");

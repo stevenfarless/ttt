@@ -471,3 +471,33 @@ button:disabled {
     filter: grayscale(1) brightness(0.7);
   }
 }
+
+@keyframes flashEmoji {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.3;
+    transform: scale(1.3);
+  }
+}
+
+.randomizer-emoji {
+  display: inline-block;
+  margin: 0 10px;
+  animation: flashEmoji 0.8s ease-in-out infinite;
+  font-size: 2.5rem;
+  cursor: default;
+  user-select: none;
+}
+
+.randomizer-selected {
+  color: var(--success);
+  font-weight: bold;
+  animation: none;
+  transform: scale(1.5);
+}

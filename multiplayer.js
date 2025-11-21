@@ -465,4 +465,5 @@ document.addEventListener("DOMContentLoaded", () => {
     joinRoomBtn.disabled = false;
   }
 });
-
+}
+})

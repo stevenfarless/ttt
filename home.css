@@ -154,7 +154,8 @@ h1 {
   justify-content: space-between;
   /* Space between title and close button */
   align-items: center;
-  padding: 10px;  /* reduced from 20px */
+  padding: 10px;
+  /* reduced from 20px */
   border-bottom: 2px solid var(--primary);
 }
 
@@ -670,7 +671,8 @@ h1 {
   color: var(--info);
   font-size: 0.9rem;
   font-weight: 600;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  /* reduce from 10px if needed */
 }
 
 .custom-emoji-input-wrapper {
@@ -731,7 +733,8 @@ h1 {
 }
 
 .custom-emoji-hint {
-  margin-top: 8px;
+  margin-top: 6px;
+  /* reduce from 8px */
   font-size: 0.8rem;
   color: var(--info);
   min-height: 18px;

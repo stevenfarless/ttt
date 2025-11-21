@@ -307,6 +307,24 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  joinRoomBtn.addEventListener("click", (e) => {
+    if (!joinModule.classList.contains("hidden")) {
+      return;
+    }
+
+    // Set default emoji to "⭕" for joining player (optional)
+    // emojiDisplay.textContent = "⭕";
+
+    joinModule.classList.remove("hidden");
+    createModule.classList.add("hidden");
+
+    createRoomBtn.disabled = false;
+    createStatus.textContent = "";
+
+    // Reset create button styling when joining
+    createRoomBtn.style.opacity = "1";
+  });
+
   // Create game handler
   if (createRoomBtn) {
     createRoomBtn.addEventListener("click", async () => {

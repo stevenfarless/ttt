@@ -1,6 +1,6 @@
 # 🎮 TTT - Multiplayer Emoji Tic Tac Toe
 
-**Version:** 2.3.1 | **Last Updated:** November 20, 2025
+**Version:** 2.3.2 | **Last Updated:** November 20, 2025
 
 A modern, feature-rich real-time multiplayer Tic Tac Toe game with custom emoji pieces, player perspective colors, and seamless game sharing. Built with vanilla JavaScript and Firebase Realtime Database.
 
@@ -21,7 +21,7 @@ A modern, feature-rich real-time multiplayer Tic Tac Toe game with custom emoji 
 
 - **🎯 Classic Tic Tac Toe** - Traditional 3x3 grid gameplay with modern enhancements
 - **👥 Real-Time Multiplayer** - Firebase-powered instant synchronization across devices
-- **🎨 20+ Custom Emojis** - Personalize your game piece from a diverse emoji collection
+- **🎨 Custom Emoji Input** – Paste *any* Unicode emoji or choose from 20+ presets to personalize your game piece!
 - **🌈 Player Perspective Colors** - Your moves in BLUE, opponent's in RED for instant clarity
 
 ### Sharing & Connectivity
@@ -68,7 +68,7 @@ A modern, feature-rich real-time multiplayer Tic Tac Toe game with custom emoji 
 
 ```bash
 # Clone the repository
-git clone https://github.com/stevenfarless/ttt.git
+git clone [https://github.com/stevenfarless/ttt.git](https://github.com/stevenfarless/ttt.git)
 cd ttt
 
 # Open in browser (requires live server for ES6 modules)
@@ -90,14 +90,14 @@ To use your own Firebase instance:
 
 ```javascript
 export const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  databaseURL: "YOUR_DATABASE_URL",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_ID",
-  appId: "YOUR_APP_ID",
-  measurementId: "YOUR_MEASUREMENT_ID"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  databaseURL: "YOUR_DATABASE_URL",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_ID",
+  appId: "YOUR_APP_ID",
+  measurementId: "YOUR_MEASUREMENT_ID"
 };
 ```
 
@@ -108,12 +108,12 @@ export const firebaseConfig = {
 ### Creating a Game (Host)
 
 1. Open the app
-2. Click the emoji button to select your game piece
+2. Click the emoji button to select your game piece (now supports pasting any emoji!)
 3. Click **"Create Game"**
 4. Share the room code OR invite link with your opponent
-   - Copy the 4-character code
-   - Copy the full invite link
-   - Use the Share button (mobile)
+   - Copy the 4-character code
+   - Copy the full invite link
+   - Use the Share button (mobile)
 
 ### Joining a Game (Guest)
 
@@ -145,7 +145,7 @@ export const firebaseConfig = {
 
 ## 🎨 Available Emoji Pieces
 
-Choose any of these 20 emojis as your game piece:
+You can paste *any* emoji! Or, choose from these 20 presets:
 
 ❌ ⭕ ❤️ 💲<br>
 😀 💀 🤖 👽<br>
@@ -159,17 +159,17 @@ Choose any of these 20 emojis as your game piece:
 
 ```text
 ttt/
-├── index.html              # Main menu and lobby interface
-├── game.html               # Game board and gameplay interface
-├── home.css                # Styling for menu/lobby
-├── style.css               # Styling for game board
-├── utils.js                # Firebase config + utility functions
-├── multiplayer.js          # Room creation, joining, and sharing logic
-├── game-multiplayer.js     # Core game logic and Firebase sync
-├── svg-icons.html          # SVG icon reference (backup)
-├── favicon files           # Various favicon formats
-├── README.md               # This file
-└── LICENSE                 # GPL-3.0 License
+├── index.html              # Main menu and lobby interface
+├── game.html               # Game board and gameplay interface
+├── home.css                # Styling for menu/lobby
+├── style.css               # Styling for game board
+├── utils.js                # Firebase config + utility functions
+├── multiplayer.js          # Room creation, joining, and sharing logic
+├── game-multiplayer.js     # Core game logic and Firebase sync
+├── svg-icons.html          # SVG icon reference (backup)
+├── favicon files           # Various favicon formats
+├── README.md               # This file
+└── LICENSE                 # GPL-3.0 License
 ```
 
 ***
@@ -245,7 +245,7 @@ Use the environment switcher at the bottom of the home screen to navigate betwee
 ### Planned Features
 
 - [ ] Timed turns with countdown
-- [ ] Custom emoji input
+- [❌] Custom emoji input (Fixed [#20](https://github.com/stevenfarless/ttt/issues/20))
 - [ ] Tournament mode (best of 3/5/7)
 - [ ] Sound effects with toggle control
 - [ ] AI opponent for single-player mode
@@ -354,7 +354,13 @@ This project is licensed under the **GNU General Public License v3.0** - see the
 
 ## 🏆 Changelog
 
-### Version 2.3.1 (Current)
+### Version 2.3.2 (Current)
+
+- Added custom emoji input: players can paste or enter any emoji for their game piece
+- Emoji selection now persists across sessions for returning users
+- Improved input validation for emoji entry to ensure smooth gameplay
+
+### Version 2.3.1
 
 - Full invite link sharing system with URL parameters
 - Web Share API integration for mobile devices
@@ -392,3 +398,5 @@ Built with ❤️ and lots of ☕
 ***
 
 **⭐ If you enjoy this game, please consider starring the repository!**
+
+***

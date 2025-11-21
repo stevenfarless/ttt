@@ -169,16 +169,17 @@ h1 {
   background: var(--danger);
   border: none;
   color: white;
-  width: 20px; // changed from 40
-  height: 20px; // changed from 40
+  width: 32px;        /* reduced from 40px */
+  height: 32px;       /* reduced from 40px */
   border-radius: 50%;
-  font-size: 1.2rem;
+  font-size: 1rem;    /* reduced from 1.2rem */
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 
 /* Hover effect on close button */
 .close-btn:hover {

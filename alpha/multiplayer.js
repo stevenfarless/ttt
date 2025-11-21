@@ -66,6 +66,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const persistedEmoji = sessionStorage.getItem('currentEmojiSelection');
   if (persistedEmoji && emojiDisplay) {
     emojiDisplay.textContent = persistedEmoji;
+  } else if (emojiDisplay && !emojiDisplay.textContent) {
+    emojiDisplay.textContent = "❌";
   }
 
   // Custom emoji input scroll handler
@@ -90,32 +92,26 @@ document.addEventListener("DOMContentLoaded", () => {
         if (emojiDisplay && (!emojiDisplay.textContent || emojiDisplay.textContent === "❌")) {
           emojiDisplay.textContent = "⭕";
         }
-
         if (joinModule) joinModule.classList.remove("hidden");
         if (createModule) createModule.classList.add("hidden");
-
         if (roomCodeInput) {
           roomCodeInput.value = sanitizedCode;
           roomCodeInput.dispatchEvent(new Event("input"));
         }
-
         if (joinRoomBtn) {
           joinRoomBtn.textContent = "START GAME";
           joinRoomBtn.classList.add("glow");
         }
-
         if (createRoomBtn) {
           createRoomBtn.disabled = true;
           createRoomBtn.style.opacity = "0.4";
           createRoomBtn.style.cursor = "not-allowed";
           createRoomBtn.title = "Clear the room code to create a new game";
         }
-
         if (joinStatus) {
           joinStatus.textContent = "Room code loaded from link.\nReady to join!";
           joinStatus.style.color = "var(--success)";
         }
-
         window.history.replaceState({}, document.title, window.location.pathname);
         return true;
       }
@@ -134,7 +130,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const link = generateInviteLink(roomCode);
     try {
       await navigator.clipboard.writeText(link);
-
       if (copyLinkBtn) {
         const originalText = copyLinkBtn.textContent;
         copyLinkBtn.textContent = "✓ Copied!";
@@ -161,7 +156,6 @@ document.addEventListener("DOMContentLoaded", () => {
   async function shareInviteLink(roomCode) {
     const link = generateInviteLink(roomCode);
     const hostEmoji = emojiDisplay ? emojiDisplay.textContent : "❌";
-
     if (navigator.share) {
       try {
         await navigator.share({
@@ -184,7 +178,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize emoji picker
   function initEmojiPicker() {
     if (!emojiPicker) return;
-
     emojiPicker.innerHTML = "";
     emojis.forEach((emoji) => {
       const option = document.createElement("button");
@@ -214,10 +207,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (useCustomEmojiBtn) {
     useCustomEmojiBtn.addEventListener("click", () => {
       if (!customEmojiInput) return;
-
       const input = customEmojiInput.value;
       const validation = validateCustomEmoji(input);
-
       if (validation.valid) {
         selectEmoji(validation.emoji);
         if (customEmojiHint) {
@@ -289,12 +280,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Create room button - toggle UI
+  // Create room toggle UI
   if (createRoomBtn) {
     createRoomBtn.addEventListener("click", (e) => {
-      if (createModule && !createModule.classList.contains("hidden")) {
-        return;
-      }
+      if (createModule && !createModule.classList.contains("hidden")) return;
 
       if (createModule) createModule.classList.remove("hidden");
       if (joinModule) joinModule.classList.add("hidden");
@@ -524,7 +513,6 @@ document.addEventListener("DOMContentLoaded", () => {
     copyCodeBtn.addEventListener("click", async () => {
       try {
         if (!roomCodeDisplay) return;
-
         const code = roomCodeDisplay.textContent;
         await navigator.clipboard.writeText(code);
 
